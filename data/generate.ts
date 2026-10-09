@@ -179,9 +179,11 @@ export function generatePros(takenNames: string[]): Pro[] {
       const close = 1050 + 30 * Math.floor(r() * 5)
       const kind: Pro['kind'] = solo ? (t.male ? 'Indépendant' : 'Indépendante') : t.shop
       const home = t.male ? 'Chez lui' : 'Chez elle'
+      // Un tiers des établissements se déplace aussi ; la moitié des indépendants propose les deux lieux.
       const where = !solo
-        ? [t.shop === 'Institut' ? "À l'institut" : 'Au salon']
-        : pick([['À domicile'], [home], [home, 'À domicile']])
+        ? [t.shop === 'Institut' ? "À l'institut" : 'Au salon', ...(r() < 0.33 ? ['À domicile'] : [])]
+        : pick([['À domicile'], [home], [home, 'À domicile'], [home, 'À domicile']])
+      const travel = where.includes('À domicile') ? pick([0, 5, 5, 8, 10, 15]) : undefined
 
       out.push({
         id: `g${String(++n).padStart(3, '0')}`,
@@ -189,6 +191,7 @@ export function generatePros(takenNames: string[]): Pro[] {
         owner: solo ? `${prenom} ${pick([...INITIALES])}.` : undefined,
         kind,
         where,
+        travel,
         commune,
         quartier: pick(quartiers),
         dist: Math.max(0.5, Math.round((km + (r() - 0.5) * Math.min(6, km)) * 10) / 10),

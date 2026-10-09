@@ -1,4 +1,4 @@
-// Bèl : appli web mobile (SPA). Les données vivent dans le navigateur tant que Supabase n'est pas branché.
+// VLADI : appli web mobile (SPA). Les données vivent dans le navigateur tant que Supabase n'est pas branché.
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   ssr: false,
@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   css: ['~/assets/main.css'],
   app: {
     head: {
-      title: 'Bèl',
+      title: 'VLADI',
       htmlAttrs: { lang: 'fr' },
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
@@ -14,6 +14,8 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#c2185b' },
       ],
       link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/icon.svg' },
+        { rel: 'apple-touch-icon', href: '/icon.svg' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap' },
       ],

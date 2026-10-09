@@ -2,7 +2,7 @@
 import { DEMO_PRO_ID } from '~/data/pros'
 
 const route = useRoute()
-const { state, pro, service, today } = useBel()
+const { state, pro, service, today, placeLabel } = useVladi()
 const b = computed(() => state.bookings.find(x => x.id === Number(route.params.id)))
 const p = computed(() => (b.value ? pro(b.value.proId) : undefined))
 const sv = computed(() => (p.value && b.value ? service(p.value, b.value.sid) : undefined))
@@ -15,8 +15,9 @@ const sv = computed(() => (p.value && b.value ? service(p.value, b.value.sid) : 
     <p>{{ sv.n }} chez {{ p.name }}<br><b>{{ dayLabel(b.date, today) }} à {{ hm(b.time) }}</b></p>
     <div class="box" style="text-align:left">
       <div class="kv"><span>Acompte payé</span><span>{{ euro(b.deposit) }}</span></div>
-      <div class="kv"><span>Reste à payer sur place</span><span>{{ euro(b.price - b.deposit) }}</span></div>
-      <div class="kv"><span>Lieu</span><span>{{ p.quartier }}, {{ p.commune }}</span></div>
+      <div class="kv"><span>Reste à payer le jour même</span><span>{{ euro(b.price - b.deposit) }}</span></div>
+      <div v-if="b.fee" class="kv"><span>Dont déplacement</span><span>{{ euro(b.fee) }}</span></div>
+      <div class="kv"><span>Lieu</span><span>{{ placeLabel(b) }}</span></div>
     </div>
     <NuxtLink class="btn block" to="/rdv">Voir mes rendez-vous</NuxtLink>
     <p v-if="p.id === DEMO_PRO_ID" class="sub">Ce rendez-vous est visible dans l'espace pro de {{ p.owner }} (Profil, puis Espace prestataire).</p>

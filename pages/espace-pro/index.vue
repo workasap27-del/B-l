@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { DEMO_PRO_ID } from '~/data/pros'
-import type { AgendaItem } from '~/composables/useBel'
+import type { AgendaItem } from '~/composables/useVladi'
 
-const { pro, today, nowMin, agenda, earliestIn, publishSlot, removeSlot, toast } = useBel()
+const { pro, today, nowMin, agenda, earliestIn, publishSlot, removeSlot, toast } = useVladi()
 const p = pro(DEMO_PRO_ID)!
 const days = computed(() => Array.from({ length: 4 }, (_, i) => addDays(today.value, i)))
 const date = ref(today.value)
@@ -72,9 +72,10 @@ function publish() {
         <time>{{ hm(e.a) }} à {{ hm(e.b) }}</time>
         <div class="grow">
           <b>{{ e.who }}</b>
-          <span v-if="e.kind === 'app'" class="tag new" style="margin-left:6px">via Bèl</span>
+          <span v-if="e.kind === 'app'" class="tag new" style="margin-left:6px">via VLADI</span>
           <span v-if="e.mode === 'lm'" class="tag k" style="margin-left:6px">Konyéla</span>
           <div class="sub">{{ e.what }} · {{ euro(e.price ?? 0) }}<template v-if="e.kind === 'app'"> · acompte {{ euro(e.deposit ?? 0) }} reçu</template></div>
+          <div v-if="e.kind === 'app'" class="sub">{{ e.place === 'client' ? `Chez la cliente : ${e.address}` : 'Chez toi' }}</div>
         </div>
       </div>
     </template>

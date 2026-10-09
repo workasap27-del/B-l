@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { DEMO_PRO_ID, RULES } from '~/data/pros'
 
-const { state, pro, today, agenda } = useBel()
+const { state, pro, today, agenda } = useVladi()
 const p = pro(DEMO_PRO_ID)!
 const appts = computed(() => agenda(today.value).filter(e => e.kind === 'rdv' || e.kind === 'app'))
 const minutes = computed(() => appts.value.reduce((a, e) => a + e.b - e.a, 0))
@@ -17,10 +17,10 @@ const viaRevenue = computed(() => viaApp.value.reduce((a, b) => a + b.price, 0))
     <div class="stat"><b>{{ appts.length }}</b><span>rendez-vous aujourd'hui</span></div>
     <div class="stat"><b>{{ fillRate }} %</b><span>de la journée remplie</span></div>
     <div class="stat"><b>{{ euro(revenue) }}</b><span>chiffre du jour</span></div>
-    <div class="stat"><b>{{ viaApp.length }}</b><span>réservation{{ viaApp.length > 1 ? 's' : '' }} via Bèl</span></div>
+    <div class="stat"><b>{{ viaApp.length }}</b><span>réservation{{ viaApp.length > 1 ? 's' : '' }} via VLADI</span></div>
   </div>
   <div class="box">
-    <b>Ce que Bèl prélève</b>
+    <b>Ce que VLADI prélève</b>
     <div class="kv"><span>Réservations via l'appli</span><span>{{ euro(viaRevenue) }}</span></div>
     <div class="kv"><span>Commission {{ RULES.commissionRate * 100 }} %</span><span>{{ euro(viaRevenue * RULES.commissionRate) }}</span></div>
     <div class="sub">Taux donné à titre d'hypothèse. Rien n'est prélevé sur tes clientes habituelles.</div>

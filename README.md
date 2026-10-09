@@ -1,4 +1,4 @@
-# Bèl
+# VLADI
 
 Appli web mobile de réservation beauté en Guadeloupe : ongles, cils, coiffure, tresses, maquillage, soins, barbier.
 Deux façons de réserver : à l'avance (classique) ou tout de suite sur un créneau qui se libère (Konyéla, avec remise).
@@ -26,8 +26,9 @@ Node 20 ou plus récent.
 ## Ce que fait l'appli
 
 Côté cliente
-- Accueil : recherche, choix de la commune, catégories, filtres salon / indépendant(e) / à domicile.
+- Accueil : recherche par prestation ("cils", "pose gel", "massage"), par nom ou par commune, catégories, filtres salon / indépendant(e) / chez moi / sur place.
 - Fiche prestataire : prestations, prix, durée, avis, favori.
+- Lieu au choix : chez le prestataire (salon, institut, son domicile) ou chez la cliente, avec adresse et frais de déplacement.
 - Réservation classique : jour, heure, récapitulatif, acompte de 20 %.
 - Konyéla : créneaux libres dans les prochaines heures, à prix réduit.
 - Mes rendez-vous : annulation (gratuite plus de 24 h avant), avis après le rendez-vous.
@@ -44,12 +45,15 @@ et de tout remettre à zéro.
 
 | Dossier | Rôle |
 |---|---|
-| `data/pros.ts` | Catalogue fictif (154 prestataires dans 32 communes), catégories, règles commerciales |
+| `data/pros.ts` | Catalogue fictif (155 prestataires dans 32 communes), catégories, règles commerciales |
 | `data/generate.ts` | Générateur du catalogue : communes, métiers, noms, cartes de prestations |
 | `utils/schedule.ts` | Logique d'agenda pure : dates, créneaux libres, trous. Testée dans `tests/` |
-| `composables/useBel.ts` | État de l'appli et toutes les actions. Seul fichier qui touche au stockage |
+| `utils/search.ts` | Recherche par prestation, métier, nom et commune (sans accents, singulier ou pluriel) |
+| `utils/places.ts` | Lieux de prestation et frais de déplacement |
+| `composables/useVladi.ts` | État de l'appli et toutes les actions. Seul fichier qui touche au stockage |
 | `pages/` | Un fichier par écran |
-| `components/` | Carte prestataire, carte Konyéla, feuille du bas |
+| `components/` | Logo, carte prestataire, carte Konyéla, feuille du bas |
+| `public/` | Logo (`logo.svg`, `logo.png`) et icône de l'appli (`icon.svg`) |
 | `supabase/` | Schéma de base, données de démo, tests des droits d'accès |
 
 ## Passer à une vraie base (Supabase)
@@ -59,7 +63,7 @@ Le schéma est prêt et testé sur PostgreSQL 16, mais **l'appli ne parle pas en
 1. Créer un projet sur supabase.com (région Europe).
 2. Dans l'éditeur SQL, lancer `supabase/schema.sql` puis `supabase/seed.sql`.
 3. Copier `.env.example` en `.env` et renseigner l'adresse et la clé publique du projet.
-4. Réécrire `composables/useBel.ts` pour lire et écrire dans Supabase au lieu du navigateur.
+4. Réécrire `composables/useVladi.ts` pour lire et écrire dans Supabase au lieu du navigateur.
    Les pages n'appellent que les fonctions de ce fichier, elles n'ont pas à changer.
 5. Ajouter la connexion (téléphone ou e-mail) avec Supabase Auth.
 

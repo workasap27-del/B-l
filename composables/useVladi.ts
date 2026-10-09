@@ -6,6 +6,8 @@ import { hash, rng } from '~/data/random'
 import type { Pro, Review, Service } from '~/data/pros'
 import { addDays, ceil30, dateKey, discounted, freeStarts, gaps, isClosed, simulatedAppointments } from '~/utils/schedule'
 import type { Interval } from '~/utils/schedule'
+import { allowedPlaces, proPlace, travelFee } from '~/utils/places'
+import type { Place } from '~/utils/places'
 
 export interface Booking {
   id: number
@@ -14,11 +16,17 @@ export interface Booking {
   date: string
   time: number
   dur: number
+  /** total à payer, frais de déplacement compris */
   price: number
   deposit: number
   mode: 'classic' | 'lm'
   status: 'confirmed' | 'cancelled'
   reviewed: boolean
+  /** chez le prestataire ou chez la cliente */
+  place: Place
+  address?: string
+  /** frais de déplacement compris dans le prix */
+  fee: number
 }
 
 export interface Slot {
@@ -43,6 +51,8 @@ export interface AgendaItem {
   mode?: 'classic' | 'lm'
   disc?: number
   id?: string
+  place?: Place
+  address?: string
 }
 
 interface State {
@@ -56,12 +66,14 @@ interface State {
   sim: number | null
   /** réservations reçues par le pro de démo et pas encore vues */
   unseen: number
+  /** dernière adresse saisie par la cliente pour une prestation chez elle */
+  address: string
 }
 
-const STORAGE_KEY = 'bel-v1'
+const STORAGE_KEY = 'vladi-v1'
 
 function blank(): State {
-  return { bookings: [], slots: [], fav: { kaz: true, reg: true }, reviews: {}, seq: 100, seededFor: '', sim: null, unseen: 0 }
+  return { bookings: [], slots: [], fav: { kaz: true, reg: true }, reviews: {}, seq: 100, seededFor: '', sim: null, unseen: 0, address: '' }
 }
 
 const state = reactive<State>(blank())
@@ -149,14 +161,14 @@ function seedBookings() {
   let past = addDays(today.value, -1)
   while (isClosed(reg, past)) past = addDays(past, -1)
   const lift = service(reg, 'd')!
-  state.bookings.push({ id: ++state.seq, proId: 'reg', sid: 'd', date: past, time: 1020, dur: lift.d, price: lift.p, deposit: Math.round(lift.p * RULES.depositRate), mode: 'classic', status: 'confirmed', reviewed: false })
+  state.bookings.push({ id: ++state.seq, proId: 'reg', sid: 'd', date: past, time: 1020, dur: lift.d, price: lift.p, deposit: Math.round(lift.p * RULES.depositRate), mode: 'classic', status: 'confirmed', reviewed: false, place: 'pro', fee: 0 })
   const hib = pro('hib')!
   const brush = service(hib, 'a')!
   for (let n = 3; n < 10; n++) {
     const date = addDays(today.value, n)
     const free = starts(hib, date, brush.d).filter(t => t >= 600)
     if (free.length) {
-      state.bookings.push({ id: ++state.seq, proId: 'hib', sid: 'a', date, time: free[0], dur: brush.d, price: brush.p, deposit: Math.round(brush.p * RULES.depositRate), mode: 'classic', status: 'confirmed', reviewed: false })
+      state.bookings.push({ id: ++state.seq, proId: 'hib', sid: 'a', date, time: free[0], dur: brush.d, price: brush.p, deposit: Math.round(brush.p * RULES.depositRate), mode: 'classic', status: 'confirmed', reviewed: false, place: 'pro', fee: 0 })
       break
     }
   }
@@ -176,10 +188,21 @@ function refundable(b: Booking): boolean {
   return b.mode !== 'lm' && minutesUntil(b) > RULES.freeCancelHours * 60
 }
 
-function book(input: { proId: string, sid: string, date: string, time: number, slotId?: string }): Booking | null {
+/** Où se passera le rendez-vous, en clair. */
+function placeLabel(b: Booking): string {
+  const p = pro(b.proId)
+  if (b.place === 'client') return `Chez toi${b.address ? ` · ${b.address}` : ''}`
+  return p ? `${proPlace(p) ?? 'Sur place'} · ${p.quartier}, ${p.commune}` : 'Sur place'
+}
+
+function book(input: { proId: string, sid: string, date: string, time: number, slotId?: string, place: Place, address?: string }): Booking | null {
   const p = pro(input.proId)
   const sv = p && service(p, input.sid)
   if (!p || !sv) return null
+  if (!allowedPlaces(p).includes(input.place)) return null
+  const address = input.place === 'client' ? (input.address ?? '').trim() : undefined
+  if (input.place === 'client' && (!address || address.length < 5)) return null
+  const fee = input.place === 'client' ? travelFee(p) : 0
   let price = sv.p
   if (input.slotId) {
     const slot = state.slots.find(s => s.id === input.slotId)
@@ -189,8 +212,10 @@ function book(input: { proId: string, sid: string, date: string, time: number, s
   } else if (!starts(p, input.date, sv.d).includes(input.time)) {
     return null
   }
-  const b: Booking = { id: ++state.seq, proId: p.id, sid: sv.id, date: input.date, time: input.time, dur: sv.d, price, deposit: Math.round(price * RULES.depositRate), mode: input.slotId ? 'lm' : 'classic', status: 'confirmed', reviewed: false }
+  price += fee
+  const b: Booking = { id: ++state.seq, proId: p.id, sid: sv.id, date: input.date, time: input.time, dur: sv.d, price, deposit: Math.round(price * RULES.depositRate), mode: input.slotId ? 'lm' : 'classic', status: 'confirmed', reviewed: false, place: input.place, address, fee }
   state.bookings.push(b)
+  if (address) state.address = address
   if (p.id === DEMO_PRO_ID) state.unseen++
   return b
 }
@@ -219,7 +244,7 @@ function agenda(date: string): AgendaItem[] {
   const items: AgendaItem[] = simulatedAppointments(p, date).map(x => ({ a: x.a, b: x.b, kind: 'rdv', who: x.who, what: x.what, price: x.price }))
   for (const b of state.bookings) {
     if (b.proId === p.id && b.date === date && b.status === 'confirmed') {
-      items.push({ a: b.time, b: b.time + b.dur, kind: 'app', who: DEMO_CLIENT.name, what: service(p, b.sid)?.n, price: b.price, deposit: b.deposit, mode: b.mode })
+      items.push({ a: b.time, b: b.time + b.dur, kind: 'app', who: DEMO_CLIENT.name, what: service(p, b.sid)?.n, price: b.price, deposit: b.deposit, mode: b.mode, place: b.place, address: b.address })
     }
   }
   for (const s of state.slots) {
@@ -282,13 +307,13 @@ function start() {
   watch(today, () => seedSlots())
 }
 
-export function useBel() {
+export function useVladi() {
   start()
   return {
     state, today, nowMin, toastMessage,
     pros: PROS, pro, service, reviewsOf, ratingOf,
     starts, openSlots, isDone, refundable, minutesUntil,
-    book, cancel, addReview, toggleFav,
+    book, cancel, addReview, toggleFav, placeLabel,
     agenda, earliestIn, publishSlot, removeSlot,
     setSim, toast, reset,
   }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { state, toastMessage } = useBel()
+const { state, toastMessage } = useVladi()
 const route = useRoute()
 const isPro = computed(() => route.path.startsWith('/espace-pro'))
 
@@ -23,6 +23,8 @@ const proTabs = [
   { to: '/profil', label: 'Côté cliente', icon: 'user' },
 ]
 const tabs = computed(() => (isPro.value ? proTabs : clientTabs))
+// Le logo s'affiche sur les écrans principaux, pas sur les fiches ni pendant une réservation.
+const showBrand = computed(() => tabs.value.some(t => t.to === route.path))
 
 watch(isPro, (v) => { if (v) state.unseen = 0 }, { immediate: true })
 </script>
@@ -30,6 +32,10 @@ watch(isPro, (v) => { if (v) state.unseen = 0 }, { immediate: true })
 <template>
   <div class="app">
     <div class="demo">Version de démonstration · données fictives</div>
+    <header v-if="showBrand" class="brandbar">
+      <NuxtLink to="/" aria-label="Accueil VLADI"><AppLogo /></NuxtLink>
+      <span v-if="isPro" class="tag new">Espace pro</span>
+    </header>
     <main class="screen">
       <slot />
     </main>

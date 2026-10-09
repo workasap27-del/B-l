@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { DEMO_CLIENT } from '~/data/pros'
 
-const { state, pros, nowMin, setSim, reset, toast } = useBel()
+const { state, pros, nowMin, setSim, reset, toast } = useVladi()
 const favs = computed(() => pros.filter(p => state.fav[p.id]))
 function doReset() {
   reset()

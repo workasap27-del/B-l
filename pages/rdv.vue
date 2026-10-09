@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Booking } from '~/composables/useBel'
+import type { Booking } from '~/composables/useVladi'
 
-const { state, pro, service, today, isDone, refundable, cancel, addReview, toast } = useBel()
+const { state, pro, service, today, isDone, refundable, cancel, addReview, toast, placeLabel } = useVladi()
 const stamp = (b: Booking) => `${b.date} ${String(b.time).padStart(4, '0')}`
 const upcoming = computed(() => state.bookings.filter(b => b.status === 'confirmed' && !isDone(b)).sort((a, b) => stamp(a).localeCompare(stamp(b))))
 const past = computed(() => state.bookings.filter(b => b.status === 'cancelled' || isDone(b)).sort((a, b) => stamp(b).localeCompare(stamp(a))))
@@ -35,7 +35,7 @@ function sendReview() {
   <div class="stack">
     <div v-for="b in upcoming" :key="b.id" class="box">
       <div class="row between"><b>{{ label(b) }}</b><span v-if="b.mode === 'lm'" class="tag k">Konyéla</span></div>
-      <div class="sub">{{ pro(b.proId)!.name }} · {{ pro(b.proId)!.commune }}</div>
+      <div class="sub">{{ pro(b.proId)!.name }} · {{ placeLabel(b) }}</div>
       <div class="row between">
         <span><b>{{ dayLabel(b.date, today) }} à {{ hm(b.time) }}</b> · {{ euro(b.price) }}</span>
         <button class="btn small line" @click="toCancel = b">Annuler</button>
@@ -47,7 +47,7 @@ function sendReview() {
   <div class="stack">
     <div v-for="b in past" :key="b.id" class="box">
       <div class="row between"><b>{{ label(b) }}</b><span v-if="b.mode === 'lm'" class="tag k">Konyéla</span></div>
-      <div class="sub">{{ pro(b.proId)!.name }} · {{ pro(b.proId)!.commune }}</div>
+      <div class="sub">{{ pro(b.proId)!.name }} · {{ placeLabel(b) }}</div>
       <div class="row between">
         <span><b>{{ dayLabel(b.date, today) }} à {{ hm(b.time) }}</b> · {{ euro(b.price) }}</span>
         <span v-if="b.status === 'cancelled'" class="warn">Annulé</span>

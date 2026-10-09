@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 268 80" width="536" height="160" fill="none" stroke="#2a1524" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+  <title>VLADI</title>
+  <path d="M10 12 L32 68 L54 12" stroke="#c2185b"/>
+  <circle cx="32" cy="16" r="7" fill="#f2b705" stroke="none"/>
+  <path d="M82 12 V68 H110"/>
+  <path d="M128 68 L150 12 L172 68"/>
+  <circle cx="150" cy="64" r="7" fill="#f2b705" stroke="none"/>
+  <path d="M198 12 V68 H206 A28 28 0 0 0 206 12 Z"/>
+  <path d="M258 12 V68"/>
+</svg>

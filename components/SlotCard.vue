@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Slot } from '~/composables/useBel'
+import type { Slot } from '~/composables/useVladi'
 
 const props = defineProps<{ item: Slot, withPro?: boolean }>()
-const { pro, service, nowMin, ratingOf } = useBel()
+const { pro, service, nowMin, ratingOf } = useVladi()
 const p = computed(() => pro(props.item.proId)!)
 const sv = computed(() => service(p.value, props.item.sid)!)
 const wait = computed(() => {

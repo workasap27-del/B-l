@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
 const router = useRouter()
-const { pro, state, toggleFav, openSlots, reviewsOf, ratingOf } = useBel()
+const { pro, state, toggleFav, openSlots, reviewsOf, ratingOf } = useVladi()
 const p = computed(() => pro(String(route.params.id)))
 const slots = computed(() => (p.value ? openSlots(p.value.id) : []))
 const km = (n: number) => String(n).replace('.', ',')
@@ -22,10 +22,15 @@ const km = (n: number) => String(n).replace('.', ',')
       <div class="sub">{{ p.quartier }}, {{ p.commune }} · {{ km(p.dist) }} km</div>
     </div>
     <div class="tags">
-      <span v-for="w in p.where" :key="w" class="tag new">{{ w }}</span>
+      <span v-for="w in placeBadges(p)" :key="w" class="tag new">{{ w }}</span>
       <span v-for="t in p.tags" :key="t" class="tag">{{ t }}</span>
     </div>
     <p>{{ p.about }}</p>
+    <div class="box">
+      <b>Où ça se passe</b>
+      <div v-if="proPlace(p)" class="kv"><span>{{ proPlace(p) }}</span><span>{{ p.quartier }}, {{ p.commune }}</span></div>
+      <div v-if="goesToClient(p)" class="kv"><span>Chez toi</span><span>{{ travelFee(p) ? `+ ${euro(travelFee(p))} de déplacement` : 'déplacement offert' }}</span></div>
+    </div>
     <template v-if="slots.length">
       <h2 class="h2">Libre aujourd'hui</h2>
       <SlotCard v-for="s in slots" :key="s.id" :item="s" />

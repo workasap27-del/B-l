@@ -1,4 +1,4 @@
--- Bèl : schéma de base de données pour Supabase (PostgreSQL).
+-- VLADI : schéma de base de données pour Supabase (PostgreSQL).
 -- À coller dans l'éditeur SQL de Supabase, puis lancer supabase/seed.sql pour les données de démonstration.
 -- Hypothèse du MVP : un prestataire = un seul poste. Deux rendez-vous confirmés ne peuvent pas se chevaucher chez lui.
 
@@ -8,6 +8,8 @@ create type pro_kind as enum ('Salon', 'Institut', 'Indépendante', 'Indépendan
 create type booking_mode as enum ('classic', 'konyela');
 create type booking_status as enum ('confirmed', 'cancelled');
 create type slot_status as enum ('open', 'booked', 'withdrawn');
+-- Lieu de la prestation : chez le prestataire (salon, institut, son domicile) ou chez la cliente.
+create type booking_place as enum ('pro', 'client');
 
 -- Comptes ---------------------------------------------------------------
 create table profiles (
@@ -24,7 +26,9 @@ create table pros (
   name text not null,
   owner_name text,
   kind pro_kind not null,
+  -- 'Au salon', 'À l''institut', 'Chez elle', 'Chez lui' (chez le prestataire) et 'À domicile' (chez la cliente)
   places text[] not null default '{}',
+  travel_fee_eur numeric(6, 2) not null default 0 check (travel_fee_eur >= 0),
   commune text not null,
   quartier text,
   categories text[] not null default '{}',
@@ -75,8 +79,13 @@ create table bookings (
   mode booking_mode not null default 'classic',
   status booking_status not null default 'confirmed',
   slot_id uuid references konyela_slots on delete set null,
+  place booking_place not null default 'pro',
+  client_address text,
+  travel_fee_eur numeric(6, 2) not null default 0,
   created_at timestamptz not null default now(),
   check (ends_at > starts_at),
+  -- Une prestation chez la cliente a forcément une adresse.
+  check (place = 'pro' or length(trim(coalesce(client_address, ''))) >= 5),
   -- Empêche la double réservation, même si deux clientes valident en même temps.
   constraint bookings_no_overlap exclude using gist (pro_id with =, tstzrange(starts_at, ends_at) with &&) where (status = 'confirmed')
 );
@@ -123,12 +132,14 @@ language sql stable security definer set search_path = public as $$
 $$;
 
 -- Réserve un créneau Konyéla de façon atomique : le premier arrivé l'emporte.
-create function book_konyela_slot(p_slot uuid, p_deposit_rate numeric default 0.2)
+create function book_konyela_slot(p_slot uuid, p_place booking_place default 'pro', p_address text default null, p_deposit_rate numeric default 0.2)
 returns bookings
 language plpgsql security definer set search_path = public as $$
 declare
   v_slot konyela_slots;
   v_service services;
+  v_pro pros;
+  v_fee numeric(6, 2) := 0;
   v_price numeric(7, 2);
   v_booking bookings;
 begin
@@ -140,12 +151,21 @@ begin
     raise exception 'Ce créneau n''est plus disponible';
   end if;
   select * into v_service from services where id = v_slot.service_id;
-  v_price := round(v_service.price_eur * (100 - v_slot.discount_pct) / 100.0);
+  select * into v_pro from pros where id = v_slot.pro_id;
+  if p_place = 'client' then
+    if not ('À domicile' = any (v_pro.places)) then
+      raise exception 'Ce prestataire ne se déplace pas';
+    end if;
+    v_fee := v_pro.travel_fee_eur;
+  elsif v_pro.places = array['À domicile'] then
+    raise exception 'Ce prestataire ne reçoit pas, il se déplace uniquement';
+  end if;
+  v_price := round(v_service.price_eur * (100 - v_slot.discount_pct) / 100.0) + v_fee;
   update konyela_slots set status = 'booked' where id = p_slot;
-  insert into bookings (pro_id, service_id, client_id, starts_at, ends_at, price_eur, deposit_eur, mode, slot_id)
+  insert into bookings (pro_id, service_id, client_id, starts_at, ends_at, price_eur, deposit_eur, mode, slot_id, place, client_address, travel_fee_eur)
   values (v_slot.pro_id, v_service.id, auth.uid(), v_slot.starts_at,
           v_slot.starts_at + make_interval(mins => v_service.duration_min),
-          v_price, round(v_price * p_deposit_rate), 'konyela', p_slot)
+          v_price, round(v_price * p_deposit_rate), 'konyela', p_slot, p_place, p_address, v_fee)
   returning * into v_booking;
   return v_booking;
 end;
@@ -192,5 +212,5 @@ grant update on pros to authenticated;
 grant select, insert, update on bookings to authenticated;
 grant insert on reviews to authenticated;
 grant execute on function busy_intervals(text, timestamptz, timestamptz) to anon, authenticated;
-grant execute on function book_konyela_slot(uuid, numeric) to authenticated;
-revoke execute on function book_konyela_slot(uuid, numeric) from public, anon;
+grant execute on function book_konyela_slot(uuid, booking_place, text, numeric) to authenticated;
+revoke execute on function book_konyela_slot(uuid, booking_place, text, numeric) from public, anon;

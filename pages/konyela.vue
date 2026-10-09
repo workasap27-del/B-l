@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { CATEGORIES } from '~/data/pros'
 
-const { openSlots, pro } = useBel()
+const { openSlots, pro } = useVladi()
 const cat = ref('all')
 const list = computed(() => openSlots().filter(s => cat.value === 'all' || pro(s.proId)!.cats.includes(cat.value as never)))
 </script>

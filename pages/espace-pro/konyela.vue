@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { DEMO_PRO_ID } from '~/data/pros'
 
-const { state, pro, service, today, nowMin } = useBel()
+const { state, pro, service, today, nowMin } = useVladi()
 const p = pro(DEMO_PRO_ID)!
 const mine = computed(() => state.slots.filter(s => s.proId === p.id && s.date === today.value).sort((a, b) => a.time - b.time))
 </script>
