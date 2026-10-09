@@ -24,6 +24,14 @@ Node 20 ou plus récent.
 2. Vercel reconnaît Nuxt tout seul, ne rien changer, cliquer sur Deploy.
 3. Chaque `git push` sur `main` redéploie.
 
+## L'installer sur un téléphone
+
+L'appli s'installe depuis le navigateur, sans passer par un magasin d'applications.
+- iPhone : ouvrir le lien dans Safari, bouton Partager, puis "Sur l'écran d'accueil".
+- Android : ouvrir le lien dans Chrome, menu à trois points, puis "Ajouter à l'écran d'accueil" ou "Installer l'application".
+
+Elle s'ouvre ensuite en plein écran avec son icône. Une connexion reste nécessaire.
+
 ## Ce que fait l'appli
 
 Côté cliente
