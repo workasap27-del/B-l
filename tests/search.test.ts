@@ -52,3 +52,33 @@ describe('lieux de prestation', () => {
     expect(PROS.filter(p => allowedPlaces(p).includes('client')).length).toBeGreaterThan(60)
   })
 })
+
+describe('distances', () => {
+  it('place chaque prestataire près du centre de sa commune', async () => {
+    const { communePoint, haversineKm, inGuadeloupe } = await import('../utils/geo')
+    for (const p of PROS) {
+      expect(haversineKm(p, communePoint(p.commune)), p.name).toBeLessThan(2)
+      expect(inGuadeloupe(p), p.name).toBe(true)
+    }
+  })
+  it('calcule des distances plausibles', async () => {
+    const { communePoint, roadKm, formatKm, inGuadeloupe, driveMinutes } = await import('../utils/geo')
+    const d = roadKm(communePoint('Les Abymes'), communePoint('Basse-Terre'))
+    expect(d).toBeGreaterThan(40)
+    expect(d).toBeLessThan(75)
+    expect(roadKm(communePoint('Les Abymes'), communePoint('Pointe-à-Pitre'))).toBeLessThan(8)
+    expect(formatKm(0.42)).toBe('400 m')
+    expect(formatKm(3.26)).toBe('3,3 km')
+    expect(formatKm(27.4)).toBe('27 km')
+    expect(driveMinutes(35)).toBe(60)
+    expect(inGuadeloupe({ lat: 49.2, lng: 1.0 })).toBe(false)
+  })
+  it('trie les résultats du plus proche au plus loin', async () => {
+    const { communePoint, roadKm } = await import('../utils/geo')
+    const from = communePoint('Basse-Terre')
+    const dist = (p: (typeof PROS)[number]) => roadKm(from, p)
+    const hits = searchPros(PROS, '', dist)
+    expect(hits[0].pro.commune).toBe('Basse-Terre')
+    for (let i = 1; i < hits.length; i++) expect(dist(hits[i].pro)).toBeGreaterThanOrEqual(dist(hits[i - 1].pro))
+  })
+})

@@ -1,30 +1,30 @@
 <script setup lang="ts">
 import type { Slot } from '~/composables/useVladi'
 
-const props = defineProps<{ item: Slot, withPro?: boolean }>()
-const { pro, service, nowMin, ratingOf } = useVladi()
+// Créneau Konyéla. "wide" pour la liste, sinon format compact pour le carrousel de l'accueil.
+const props = defineProps<{ item: Slot, wide?: boolean, hidePro?: boolean }>()
+const { pro, service, nowMin, km } = useVladi()
 const p = computed(() => pro(props.item.proId)!)
 const sv = computed(() => service(p.value, props.item.sid)!)
 const wait = computed(() => {
   const m = props.item.time - nowMin.value
   return m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, '0')}` : `${m} min`
 })
-const km = (n: number) => String(n).replace('.', ',')
+const to = computed(() => `/reserver/${p.value.id}/${sv.value.id}?creneau=${props.item.id}`)
 </script>
 
 <template>
-  <div class="kbox">
+  <NuxtLink class="kcard" :class="{ wide }" :to="to">
     <div class="row between">
-      <span class="tag k">dans {{ wait }} · {{ hm(item.time) }}</span>
+      <span class="when">{{ hm(item.time) }}</span>
+      <span class="badge k">-{{ item.disc }} %</span>
+    </div>
+    <div class="tiny">dans {{ wait }}</div>
+    <div class="name ellip">{{ sv.n }}</div>
+    <div v-if="!hidePro" class="meta"><span class="ellip">{{ p.name }} · {{ formatKm(km(p)) }}</span></div>
+    <div class="row between">
       <span class="price"><span class="strike">{{ euro(sv.p) }}</span>{{ euro(discounted(sv, item.disc)) }}</span>
+      <span v-if="wide" class="btn small sun">Réserver</span>
     </div>
-    <div>
-      <div class="name">{{ sv.n }} · {{ sv.d }} min</div>
-      <div v-if="withPro" class="sub">{{ p.name }} · {{ p.commune }} · {{ km(p.dist) }} km · ★ {{ km(ratingOf(p).rating) }}</div>
-    </div>
-    <div class="row">
-      <NuxtLink v-if="withPro" class="btn small line" :to="`/pro/${p.id}`">Voir la fiche</NuxtLink>
-      <NuxtLink class="btn small sun grow" :to="`/reserver/${p.id}/${sv.id}?creneau=${item.id}`">Prendre ce créneau, -{{ item.disc }} %</NuxtLink>
-    </div>
-  </div>
+  </NuxtLink>
 </template>

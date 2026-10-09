@@ -1,51 +1,44 @@
 <script setup lang="ts">
+import { CalendarDays, House, Search, User, Wallet, Zap } from 'lucide-vue-next'
+
 const { state, toastMessage } = useVladi()
 const route = useRoute()
 const isPro = computed(() => route.path.startsWith('/espace-pro'))
 
-const ICONS: Record<string, string> = {
-  home: '<path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/>',
-  bolt: '<path d="M13 3L5 13h6l-1 8 8-10h-6z"/>',
-  cal: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/>',
-  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',
-  chart: '<path d="M5 20V10M12 20V4M19 20v-7"/>',
-}
 const clientTabs = [
-  { to: '/', label: 'Accueil', icon: 'home' },
-  { to: '/konyela', label: 'Konyéla', icon: 'bolt' },
-  { to: '/rdv', label: 'Rendez-vous', icon: 'cal' },
-  { to: '/profil', label: 'Profil', icon: 'user' },
+  { to: '/', label: 'Accueil', icon: House },
+  { to: '/recherche', label: 'Recherche', icon: Search },
+  { to: '/konyela', label: 'Konyéla', icon: Zap, k: true },
+  { to: '/rdv', label: 'Rendez-vous', icon: CalendarDays },
+  { to: '/profil', label: 'Profil', icon: User },
 ]
 const proTabs = [
-  { to: '/espace-pro', label: 'Agenda', icon: 'cal' },
-  { to: '/espace-pro/konyela', label: 'Konyéla', icon: 'bolt' },
-  { to: '/espace-pro/activite', label: 'Activité', icon: 'chart' },
-  { to: '/profil', label: 'Côté cliente', icon: 'user' },
+  { to: '/espace-pro', label: 'Agenda', icon: CalendarDays },
+  { to: '/espace-pro/konyela', label: 'Konyéla', icon: Zap },
+  { to: '/espace-pro/activite', label: 'Activité', icon: Wallet },
+  { to: '/profil', label: 'Côté cliente', icon: User },
 ]
 const tabs = computed(() => (isPro.value ? proTabs : clientTabs))
-// Le logo s'affiche sur les écrans principaux, pas sur les fiches ni pendant une réservation.
-const showBrand = computed(() => tabs.value.some(t => t.to === route.path))
+// Pendant une fiche ou une réservation, la navigation laisse la place au bouton d'action.
+const focus = computed(() => route.path.startsWith('/pro/') || route.path.startsWith('/reserver/'))
+const flush = computed(() => route.path.startsWith('/pro/'))
 
 watch(isPro, (v) => { if (v) state.unseen = 0 }, { immediate: true })
 </script>
 
 <template>
   <div class="app">
-    <div class="demo">Version de démonstration · données fictives</div>
-    <header v-if="showBrand" class="brandbar">
-      <NuxtLink to="/" aria-label="Accueil VLADI"><AppLogo /></NuxtLink>
-      <span v-if="isPro" class="tag new">Espace pro</span>
-    </header>
-    <main class="screen">
+    <main class="screen" :class="{ flush }">
       <slot />
     </main>
     <div id="sheets" />
     <div v-if="toastMessage" class="toast" role="status">{{ toastMessage }}</div>
-    <nav class="tabbar" aria-label="Navigation">
-      <NuxtLink v-for="t in tabs" :key="t.to" :to="t.to" :class="{ on: route.path === t.to }">
-        <svg viewBox="0 0 24 24" aria-hidden="true" v-html="ICONS[t.icon]" />
+    <nav v-if="!focus" class="navbar" aria-label="Navigation">
+      <NuxtLink v-for="t in tabs" :key="t.to" :to="t.to" :class="{ on: route.path === t.to, k: 'k' in t && t.k }">
+        <span v-if="'k' in t && t.k" class="bubble"><component :is="t.icon" :size="22" /></span>
+        <component :is="t.icon" v-else :size="22" />
         {{ t.label }}
-        <span v-if="t.to === '/profil' && !isPro && state.unseen" class="badge">{{ state.unseen }}</span>
+        <span v-if="t.to === '/profil' && !isPro && state.unseen" class="dot">{{ state.unseen }}</span>
       </NuxtLink>
     </nav>
   </div>

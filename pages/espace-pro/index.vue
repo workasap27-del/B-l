@@ -49,7 +49,7 @@ function publish() {
 
 <template>
   <div>
-    <div class="sub">{{ p.name }} · {{ p.owner }}</div>
+    <div class="row between"><span class="sub">{{ p.name }} · {{ p.owner }}</span><span class="pill">Espace pro</span></div>
     <h1 class="h1">Mon agenda</h1>
   </div>
   <div class="chips">

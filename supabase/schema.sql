@@ -31,6 +31,9 @@ create table pros (
   travel_fee_eur numeric(6, 2) not null default 0 check (travel_fee_eur >= 0),
   commune text not null,
   quartier text,
+  -- position, pour la carte et le calcul de distance
+  lat double precision not null check (lat between -90 and 90),
+  lng double precision not null check (lng between -180 and 180),
   categories text[] not null default '{}',
   tags text[] not null default '{}',
   about text,

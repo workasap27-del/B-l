@@ -38,9 +38,9 @@ const has = (list: string[], token: string) => list.some(w => w.startsWith(token
 /** Petits mots sans intérêt pour la recherche ("extension de cils", "coupe pour homme"). */
 const STOP = new Set(['de', 'des', 'du', 'd', 'la', 'le', 'les', 'l', 'un', 'une', 'a', 'au', 'aux', 'et', 'ou', 'en', 'pour', 'avec', 'sur', 'chez', 'mes', 'me', 'je', 'veux', 'cherche'])
 
-export function searchPros(pros: Pro[], query: string): SearchHit[] {
+export function searchPros(pros: Pro[], query: string, distance: (p: Pro) => number = () => 0): SearchHit[] {
   const tokens = words(query).filter(t => !STOP.has(t))
-  if (!tokens.length) return pros.map(pro => ({ pro, services: [], score: 0 }))
+  if (!tokens.length) return pros.map(pro => ({ pro, services: [], score: 0 })).sort((a, b) => distance(a.pro) - distance(b.pro))
   const hits: SearchHit[] = []
   for (const pro of pros) {
     const identity = words([pro.name, pro.owner ?? '', pro.commune, pro.quartier, pro.kind].join(' '))
@@ -69,5 +69,5 @@ export function searchPros(pros: Pro[], query: string): SearchHit[] {
       return tokens.filter(t => has(w, t)).length
     }
   }
-  return hits.sort((a, b) => b.score - a.score || a.pro.dist - b.pro.dist)
+  return hits.sort((a, b) => b.score - a.score || distance(a.pro) - distance(b.pro))
 }

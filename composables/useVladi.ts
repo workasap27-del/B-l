@@ -8,6 +8,8 @@ import { addDays, ceil30, dateKey, discounted, freeStarts, gaps, isClosed, simul
 import type { Interval } from '~/utils/schedule'
 import { allowedPlaces, proPlace, travelFee } from '~/utils/places'
 import type { Place } from '~/utils/places'
+import { communePoint, inGuadeloupe, roadKm } from '~/utils/geo'
+import type { LatLng } from '~/utils/geo'
 
 export interface Booking {
   id: number
@@ -68,12 +70,14 @@ interface State {
   unseen: number
   /** dernière adresse saisie par la cliente pour une prestation chez elle */
   address: string
+  /** d'où l'on mesure les distances : la position du téléphone ou le centre d'une commune */
+  pos: LatLng & { label: string, gps: boolean }
 }
 
-const STORAGE_KEY = 'vladi-v1'
+const STORAGE_KEY = 'vladi-v2'
 
 function blank(): State {
-  return { bookings: [], slots: [], fav: { kaz: true, reg: true }, reviews: {}, seq: 100, seededFor: '', sim: null, unseen: 0, address: '' }
+  return { bookings: [], slots: [], fav: { kaz: true, reg: true }, reviews: {}, seq: 100, seededFor: '', sim: null, unseen: 0, address: '', pos: { ...communePoint(DEMO_CLIENT.commune), label: DEMO_CLIENT.commune, gps: false } }
 }
 
 const state = reactive<State>(blank())
@@ -172,6 +176,58 @@ function seedBookings() {
       break
     }
   }
+}
+
+/** Distance estimée par la route entre l'utilisateur et le prestataire, en km. */
+function km(p: Pro): number {
+  return roadKm(state.pos, p)
+}
+
+function setCommune(name: string) {
+  state.pos = { ...communePoint(name), label: name, gps: false }
+}
+
+/** Demande la position du téléphone. Renvoie un message d'erreur lisible, ou null si tout va bien. */
+function locate(): Promise<string | null> {
+  return new Promise((resolve) => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) return resolve("La localisation n'est pas disponible sur cet appareil.")
+    navigator.geolocation.getCurrentPosition(
+      (g) => {
+        const here = { lat: g.coords.latitude, lng: g.coords.longitude }
+        if (!inGuadeloupe(here)) return resolve("Tu n'es pas en Guadeloupe en ce moment : choisis une commune pour voir les distances.")
+        state.pos = { ...here, label: 'Ma position', gps: true }
+        resolve(null)
+      },
+      () => resolve("Position refusée ou introuvable. Choisis une commune à la place."),
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
+    )
+  })
+}
+
+/** Les prochains créneaux libres d'une prestation, sur une semaine. */
+function nextSlots(p: Pro, sv: Service, count = 3): { date: string, time: number }[] {
+  const out: { date: string, time: number }[] = []
+  for (let n = 0; n < 7 && out.length < count; n++) {
+    const date = addDays(today.value, n)
+    for (const time of starts(p, date, sv.d)) {
+      out.push({ date, time })
+      if (out.length >= count) break
+    }
+  }
+  return out
+}
+
+/** "Ouvert, ferme à 19h00", "Ouvre à 9h00", "Fermé aujourd'hui". */
+function openStatus(p: Pro): { open: boolean, text: string } {
+  if (isClosed(p, today.value)) return { open: false, text: "Fermé aujourd'hui" }
+  if (nowMin.value < p.open) return { open: false, text: `Ouvre à ${hmText(p.open)}` }
+  if (nowMin.value < p.close) return { open: true, text: `Ouvert · ferme à ${hmText(p.close)}` }
+  return { open: false, text: 'Fermé pour ce soir' }
+}
+
+function hmText(t: number): string {
+  const m = t % 60
+  return `${Math.floor(t / 60)}h${m < 10 ? '0' : ''}${m}`
 }
 
 function isDone(b: Booking): boolean {
@@ -296,7 +352,14 @@ function start() {
   started = true
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) Object.assign(state, blank(), JSON.parse(raw))
+    if (raw) {
+      const saved = JSON.parse(raw)
+      Object.assign(state, blank(), saved)
+      if (!saved.pos || typeof saved.pos.lat !== 'number') state.pos = blank().pos
+      // Une réservation dont le prestataire n'existe plus dans le catalogue est écartée.
+      state.bookings = state.bookings.filter(b => PROS.some(x => x.id === b.proId && x.services.some(v => v.id === b.sid)))
+      state.slots = state.slots.filter(k => PROS.some(x => x.id === k.proId && x.services.some(v => v.id === k.sid)))
+    }
   } catch { /* stockage indisponible : on repart de zéro */ }
   if (!state.bookings.length && !state.seededFor) seedBookings()
   seedSlots()
@@ -314,6 +377,7 @@ export function useVladi() {
     pros: PROS, pro, service, reviewsOf, ratingOf,
     starts, openSlots, isDone, refundable, minutesUntil,
     book, cancel, addReview, toggleFav, placeLabel,
+    km, setCommune, locate, nextSlots, openStatus,
     agenda, earliestIn, publishSlot, removeSlot,
     setSim, toast, reset,
   }

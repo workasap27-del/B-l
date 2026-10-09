@@ -11,7 +11,8 @@ enregistrées dans le navigateur de la personne qui teste, pas sur un serveur. L
 ```bash
 npm install
 npm run dev        # http://localhost:3000
-npm test           # tests de la logique d'agenda
+npm test           # tests de la logique (agenda, recherche, lieux, distances)
+npm run typecheck  # vérification des types
 npm run build      # version de production
 ```
 
@@ -26,15 +27,16 @@ Node 20 ou plus récent.
 ## Ce que fait l'appli
 
 Côté cliente
-- Accueil : recherche par prestation ("cils", "pose gel", "massage"), par nom ou par commune, catégories, filtres salon / indépendant(e) / chez moi / sur place.
-- Fiche prestataire : prestations, prix, durée, avis, favori.
-- Lieu au choix : chez le prestataire (salon, institut, son domicile) ou chez la cliente, avec adresse et frais de déplacement.
-- Réservation classique : jour, heure, récapitulatif, acompte de 20 %.
+- Accueil : lieu de départ (position du téléphone ou commune), recherche, catégories, créneaux Konyéla, prestataires proches, ceux qui se déplacent, les mieux notés.
+- Recherche : par prestation ("cils", "pose gel", "massage"), par nom ou par commune. Chaque résultat montre la prestation, son prix et les prochains créneaux, réservables en un geste. Filtres (lieu, type, distance, disponibilité du jour), tri, vue liste ou carte.
+- Distances : estimées depuis la position de l'utilisateur ou le centre de sa commune (vol d'oiseau majoré de 30 %, pas un calcul d'itinéraire). Le bouton "Itinéraire" ouvre l'application de cartes du téléphone.
+- Fiche prestataire : ouvert ou fermé, distance, prestations, avis, carte, horaires, favori.
+- Réservation : lieu (chez le prestataire ou chez la cliente, avec adresse et frais de déplacement), jour, heure, récapitulatif, acompte de 20 %.
 - Konyéla : créneaux libres dans les prochaines heures, à prix réduit.
-- Mes rendez-vous : annulation (gratuite plus de 24 h avant), avis après le rendez-vous.
+- Mes rendez-vous : itinéraire, annulation (gratuite plus de 24 h avant), avis, réserver à nouveau.
 
 Côté prestataire (compte de démonstration : Kaz a Zong), depuis Profil puis "Espace prestataire"
-- Agenda du jour et des trois jours suivants, avec les trous.
+- Agenda du jour et des trois jours suivants, avec les trous et le lieu de chaque rendez-vous.
 - "Proposer en Konyéla" sur un trou : prestation, heure, remise.
 - Activité : remplissage, chiffre du jour, commission.
 
@@ -46,15 +48,20 @@ et de tout remettre à zéro.
 | Dossier | Rôle |
 |---|---|
 | `data/pros.ts` | Catalogue fictif (155 prestataires dans 32 communes), catégories, règles commerciales |
-| `data/generate.ts` | Générateur du catalogue : communes, métiers, noms, cartes de prestations |
-| `utils/schedule.ts` | Logique d'agenda pure : dates, créneaux libres, trous. Testée dans `tests/` |
+| `data/generate.ts` | Générateur du catalogue : communes, métiers, noms, cartes de prestations, positions |
+| `utils/schedule.ts` | Logique d'agenda : dates, créneaux libres, trous |
 | `utils/search.ts` | Recherche par prestation, métier, nom et commune (sans accents, singulier ou pluriel) |
 | `utils/places.ts` | Lieux de prestation et frais de déplacement |
+| `utils/geo.ts` | Coordonnées des communes, distances, lien d'itinéraire |
 | `composables/useVladi.ts` | État de l'appli et toutes les actions. Seul fichier qui touche au stockage |
 | `pages/` | Un fichier par écran |
-| `components/` | Logo, carte prestataire, carte Konyéla, feuille du bas |
+| `components/` | Logo, visuel et cartes de prestataire, résultat de recherche, carte géographique, feuilles |
 | `public/` | Logo (`logo.svg`, `logo.png`) et icône de l'appli (`icon.svg`) |
 | `supabase/` | Schéma de base, données de démo, tests des droits d'accès |
+| `tests/` | Tests de l'agenda, de la recherche, des lieux et des distances |
+
+La carte utilise Leaflet et les tuiles publiques d'OpenStreetMap, correctes pour une démonstration.
+Avant un vrai lancement, passer à un fournisseur de tuiles prévu pour la production.
 
 ## Passer à une vraie base (Supabase)
 
@@ -77,6 +84,7 @@ un créneau Konyéla ne peut être pris qu'une fois, et personne ne voit les ré
 - Paiement réel de l'acompte (Stripe Connect, à valider pour la Guadeloupe).
 - Inscription des prestataires et gestion de leurs prestations et horaires.
 - Rappels par SMS ou notification.
-- Géolocalisation : les distances sont fixes, calculées depuis Les Abymes.
+- Vraies photos des prestataires : aujourd'hui chaque fiche a un visuel dessiné.
+- Vraies adresses et calcul d'itinéraire : les positions sont fictives et les distances estimées.
 - Mentions légales, CGU, RGPD.
 - Faire valider "Konyéla" et les textes en créole par un créolophone.

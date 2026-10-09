@@ -2,8 +2,9 @@
 // Le résultat est toujours le même (hasard à graine fixe), donc les liens et les réservations de test restent valides.
 import { rng } from './random'
 import type { Category, Pro, Service } from './pros'
+import { COMMUNE_COORDS } from '../utils/geo'
 
-/** Commune, distance approximative en km depuis Les Abymes, quartiers, nombre de prestataires fictifs. */
+/** Commune, (ancien repère de distance, inutilisé), quartiers, nombre de prestataires fictifs. */
 const COMMUNES: [string, number, string[], number][] = [
   ['Les Abymes', 2, ['Raizet', 'Grand-Camp', 'Dothémare', 'Boisripeaux', 'Chauvel', 'Petit-Pérou'], 15],
   ['Pointe-à-Pitre', 4, ['Centre-ville', 'Bergevin', 'Lauricisque', 'Massabielle', 'Carénage'], 11],
@@ -152,7 +153,8 @@ export function generatePros(takenNames: string[]): Pro[] {
   const out: Pro[] = []
   let n = 0
 
-  for (const [commune, km, quartiers, count] of COMMUNES) {
+  for (const [commune, , quartiers, count] of COMMUNES) {
+    const [cLat, cLng] = COMMUNE_COORDS[commune]
     for (let i = 0; i < count; i++) {
       const t = pickTrade()
       const solo = r() < t.indep
@@ -194,7 +196,8 @@ export function generatePros(takenNames: string[]): Pro[] {
         travel,
         commune,
         quartier: pick(quartiers),
-        dist: Math.max(0.5, Math.round((km + (r() - 0.5) * Math.min(6, km)) * 10) / 10),
+        lat: cLat + (r() - 0.5) * 0.02,
+        lng: cLng + (r() - 0.5) * 0.02,
         cats,
         tags: sample(t.tags, 3),
         rating: Math.round((4.2 + r() * 0.8) * 10) / 10,

@@ -1,59 +1,82 @@
 <script setup lang="ts">
-import { CATEGORIES, DEMO_CLIENT, TYPES } from '~/data/pros'
-import type { Pro } from '~/data/pros'
+import { ChevronDown, MapPin, Search } from 'lucide-vue-next'
+import { CATEGORIES, DEMO_CLIENT } from '~/data/pros'
+import type { Category } from '~/data/pros'
 
-const { pros, openSlots } = useVladi()
-const q = ref('')
-const cat = ref('all')
-const type = ref('all')
-const commune = ref('')
-const shown = ref(30)
-const communes = [...new Set(pros.map(p => p.commune))].sort((a, b) => a.localeCompare(b, 'fr'))
-watch([q, cat, type, commune], () => { shown.value = 30 })
+const { state, pros, openSlots, km, ratingOf, pro, service, today, isDone, placeLabel } = useVladi()
+const locOpen = ref(false)
+const cats = CATEGORIES.filter(c => c[0] !== 'all') as [Category, string][]
 
-function matchType(p: Pro) {
-  if (type.value === 'salon') return !p.kind.startsWith('Indépendant')
-  if (type.value === 'indep') return p.kind.startsWith('Indépendant')
-  if (type.value === 'dom') return goesToClient(p)
-  if (type.value === 'place') return !!proPlace(p)
-  return true
-}
-// La recherche porte d'abord sur les prestations, puis sur le métier, puis sur le nom et la commune.
-const list = computed(() => searchPros(pros, q.value).filter(({ pro: p }) => {
-  if (cat.value !== 'all' && !p.cats.includes(cat.value as never)) return false
-  if (commune.value && p.commune !== commune.value) return false
-  return matchType(p)
-}))
-const nk = computed(() => openSlots().length)
+const byDistance = computed(() => [...pros].sort((a, b) => km(a) - km(b)))
+const near = computed(() => byDistance.value.slice(0, 10))
+const atHome = computed(() => byDistance.value.filter(goesToClient).slice(0, 10))
+const best = computed(() => byDistance.value.slice(0, 60).filter(p => ratingOf(p).count >= 15).sort((a, b) => ratingOf(b).rating - ratingOf(a).rating).slice(0, 10))
+const slots = computed(() => openSlots().slice(0, 10))
+const nextBooking = computed(() => state.bookings
+  .filter(b => b.status === 'confirmed' && !isDone(b))
+  .sort((a, b) => `${a.date}${String(a.time).padStart(4, '0')}`.localeCompare(`${b.date}${String(b.time).padStart(4, '0')}`))[0])
 </script>
 
 <template>
-  <div>
-    <div class="sub">Autour de {{ DEMO_CLIENT.commune }}</div>
-    <h1 class="h1">Bonjour {{ DEMO_CLIENT.firstName }}, de quoi as-tu envie ?</h1>
+  <header class="homehead">
+    <AppLogo :height="24" />
+    <span class="pill">Démo</span>
+  </header>
+
+  <div class="stack" style="gap:6px">
+    <button class="loc" aria-label="Changer de lieu" @click="locOpen = true">
+      <MapPin :size="16" /><span class="where">{{ state.pos.label }}</span><ChevronDown :size="16" />
+    </button>
+    <h1 class="h1">De quoi as-tu envie, {{ DEMO_CLIENT.firstName }} ?</h1>
   </div>
-  <input id="q" v-model="q" class="search" type="search" placeholder="Cils, tresses, pose gel, massage..." aria-label="Rechercher une prestation, un prestataire ou une commune">
-  <select id="commune" v-model="commune" class="search" aria-label="Commune">
-    <option value="">Toute la Guadeloupe</option>
-    <option v-for="c in communes" :key="c" :value="c">{{ c }}</option>
-  </select>
-  <div class="chips">
-    <button v-for="c in CATEGORIES" :key="c[0]" class="chip" :aria-pressed="cat === c[0]" @click="cat = c[0]">{{ c[1] }}</button>
-  </div>
-  <NuxtLink v-if="nk && !q" class="kbanner" to="/konyela">
-    <span class="grow"><strong>Konyéla</strong>{{ nk }} créneau{{ nk > 1 ? 'x' : '' }} libre{{ nk > 1 ? 's' : '' }} dans les prochaines heures, jusqu'à -40 %</span>
-    <span class="arrow">›</span>
+
+  <NuxtLink class="searchpill" to="/recherche?saisie=1">
+    <Search :size="20" /><span>Cils, tresses, pose gel, massage...</span>
   </NuxtLink>
-  <div class="row between">
-    <h2 class="h2">{{ q.trim() ? 'Qui le propose' : 'Près de toi' }}</h2>
-    <span class="sub">{{ list.length }} résultat{{ list.length > 1 ? 's' : '' }}</span>
+
+  <div class="rail" aria-label="Catégories">
+    <NuxtLink v-for="c in cats" :key="c[0]" class="cat" :to="`/recherche?cat=${c[0]}`">
+      <span class="ico"><component :is="CAT_ICON[c[0]]" :size="26" /></span>{{ CAT_SHORT[c[0]] }}
+    </NuxtLink>
   </div>
-  <div class="chips">
-    <button v-for="t in TYPES" :key="t[0]" class="chip" :aria-pressed="type === t[0]" @click="type = t[0]">{{ t[1] }}</button>
-  </div>
-  <div class="stack">
-    <ProCard v-for="h in list.slice(0, shown)" :key="h.pro.id" :pro="h.pro" :services="h.services" />
-    <button v-if="list.length > shown" class="btn block line" @click="shown += 30">Afficher plus ({{ list.length - shown }} autres)</button>
-    <p v-if="!list.length" class="empty">Personne ne propose ça avec ces filtres. Essaie un autre mot, une autre commune ou enlève un filtre.</p>
-  </div>
+
+  <NuxtLink v-if="nextBooking" class="appt" to="/rdv">
+    <div class="datebox"><small>{{ dateParts(nextBooking.date).month }}</small><b>{{ dateParts(nextBooking.date).day }}</b></div>
+    <div class="grow">
+      <div class="tiny">Ton prochain rendez-vous</div>
+      <div class="name ellip">{{ service(pro(nextBooking.proId)!, nextBooking.sid)?.n }}</div>
+      <div class="meta"><span class="ellip">{{ dayLabel(nextBooking.date, today) }} à {{ hm(nextBooking.time) }} · {{ pro(nextBooking.proId)!.name }}</span></div>
+      <div class="tiny ellip">{{ placeLabel(nextBooking) }}</div>
+    </div>
+  </NuxtLink>
+
+  <section v-if="slots.length" class="sec">
+    <div class="sechead">
+      <div><h2 class="h2">Konyéla, tout de suite</h2><p class="sub">Des créneaux qui se libèrent aujourd'hui, à prix réduit</p></div>
+      <NuxtLink class="link" to="/konyela">Tout voir</NuxtLink>
+    </div>
+    <div class="rail"><SlotCard v-for="s in slots" :key="s.id" :item="s" /></div>
+  </section>
+
+  <section class="sec">
+    <div class="sechead"><h2 class="h2">Près de toi</h2><NuxtLink class="link" to="/recherche">Tout voir</NuxtLink></div>
+    <div class="rail"><ProCardBig v-for="p in near" :key="p.id" :pro="p" /></div>
+  </section>
+
+  <section v-if="atHome.length" class="sec">
+    <div class="sechead">
+      <div><h2 class="h2">Ils viennent chez toi</h2><p class="sub">Sans bouger de la maison</p></div>
+      <NuxtLink class="link" to="/recherche?lieu=client">Tout voir</NuxtLink>
+    </div>
+    <div class="rail"><ProCardBig v-for="p in atHome" :key="p.id" :pro="p" /></div>
+  </section>
+
+  <section v-if="best.length" class="sec">
+    <div class="sechead"><h2 class="h2">Les mieux notés autour de toi</h2><NuxtLink class="link" to="/recherche?tri=note">Tout voir</NuxtLink></div>
+    <div class="rail"><ProCardBig v-for="p in best" :key="p.id" :pro="p" /></div>
+  </section>
+
+  <p class="tiny" style="text-align:center">Version de démonstration : prestataires, prix, avis et positions sont fictifs.</p>
+
+  <LocationSheet v-if="locOpen" @close="locOpen = false" />
 </template>

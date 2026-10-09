@@ -59,6 +59,22 @@ export function dayChip(key: string, today: string): string {
   return `${DAY_NAMES[d.getDay()]} ${d.getDate()}`
 }
 
+/** "Auj.", "Dem." ou "mar." : pour les créneaux affichés en petit. */
+export function shortDay(key: string, today: string): string {
+  const n = diffDays(today, key)
+  if (n === 0) return 'Auj.'
+  if (n === 1) return 'Dem.'
+  return DAY_NAMES[parseKey(key).getDay()]
+}
+
+/** Jour de la semaine, numéro du jour et mois abrégés, pour les pastilles de date. */
+export function dateParts(key: string): { dow: string, day: number, month: string } {
+  const d = parseKey(key)
+  return { dow: DAY_NAMES[d.getDay()].replace('.', ''), day: d.getDate(), month: MONTHS[d.getMonth()].replace('.', '') }
+}
+
+export const WEEK = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
+
 export function hm(t: number): string {
   const h = Math.floor(t / 60)
   const m = t % 60
