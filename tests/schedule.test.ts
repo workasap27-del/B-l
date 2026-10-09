@@ -3,6 +3,7 @@ import { PROS } from '../data/pros'
 import { addDays, dayLabel, diffDays, discounted, freeStarts, gaps, hm, isClosed, simulatedAppointments } from '../utils/schedule'
 
 const kaz = PROS.find(p => p.id === 'kaz')!
+const names = PROS.map(p => p.name)
 
 describe('dates', () => {
   it('ajoute des jours en passant le mois', () => {
@@ -47,5 +48,24 @@ describe('agenda', () => {
   })
   it('arrondit le prix remisé', () => {
     expect(discounted(kaz.services[0], 30)).toBe(39)
+  })
+})
+
+describe('catalogue', () => {
+  it('couvre toute la Guadeloupe sans doublon', () => {
+    expect(PROS.length).toBeGreaterThan(120)
+    expect(new Set(names).size).toBe(names.length)
+    expect(new Set(PROS.map(p => p.id)).size).toBe(PROS.length)
+    expect(new Set(PROS.map(p => p.commune)).size).toBeGreaterThanOrEqual(30)
+  })
+  it('donne à chaque prestataire des prestations réservables dans ses horaires', () => {
+    for (const p of PROS) {
+      expect(p.services.length).toBeGreaterThanOrEqual(4)
+      expect(new Set(p.services.map(s => s.id)).size).toBe(p.services.length)
+      for (const s of p.services) {
+        expect(s.p).toBeGreaterThan(0)
+        expect(s.d).toBeLessThanOrEqual(p.close - p.open)
+      }
+    }
   })
 })

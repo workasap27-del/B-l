@@ -6,7 +6,7 @@ update pros set owner_id = '00000000-0000-0000-0000-0000000000b1' where id = 'ka
 -- 1. Une visiteuse non connectée lit le catalogue mais aucune réservation.
 set role anon;
 do $$ begin
-  if (select count(*) from pros) <> 14 then raise exception 'catalogue illisible en anonyme'; end if;
+  if (select count(*) from pros) < 14 then raise exception 'catalogue illisible en anonyme'; end if;
   begin
     perform count(*) from bookings;
     raise exception 'un anonyme lit les réservations';

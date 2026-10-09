@@ -26,7 +26,7 @@ Node 20 ou plus récent.
 ## Ce que fait l'appli
 
 Côté cliente
-- Accueil : recherche, catégories, filtres salon / indépendante / à domicile.
+- Accueil : recherche, choix de la commune, catégories, filtres salon / indépendant(e) / à domicile.
 - Fiche prestataire : prestations, prix, durée, avis, favori.
 - Réservation classique : jour, heure, récapitulatif, acompte de 20 %.
 - Konyéla : créneaux libres dans les prochaines heures, à prix réduit.
@@ -44,7 +44,8 @@ et de tout remettre à zéro.
 
 | Dossier | Rôle |
 |---|---|
-| `data/pros.ts` | Prestataires fictifs, catégories, règles commerciales (acompte, commission) |
+| `data/pros.ts` | Catalogue fictif (154 prestataires dans 32 communes), catégories, règles commerciales |
+| `data/generate.ts` | Générateur du catalogue : communes, métiers, noms, cartes de prestations |
 | `utils/schedule.ts` | Logique d'agenda pure : dates, créneaux libres, trous. Testée dans `tests/` |
 | `composables/useBel.ts` | État de l'appli et toutes les actions. Seul fichier qui touche au stockage |
 | `pages/` | Un fichier par écran |

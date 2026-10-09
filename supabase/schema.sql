@@ -4,7 +4,7 @@
 
 create extension if not exists btree_gist;
 
-create type pro_kind as enum ('Salon', 'Institut', 'Indépendante');
+create type pro_kind as enum ('Salon', 'Institut', 'Indépendante', 'Indépendant');
 create type booking_mode as enum ('classic', 'konyela');
 create type booking_status as enum ('confirmed', 'cancelled');
 create type slot_status as enum ('open', 'booked', 'withdrawn');

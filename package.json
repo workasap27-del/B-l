@@ -9,7 +9,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "test": "vitest run",
-    "seed:sql": "node scripts/gen-seed.mjs"
+    "seed:sql": "jiti scripts/gen-seed.ts"
   },
   "dependencies": {
     "nuxt": "^3.13.2",

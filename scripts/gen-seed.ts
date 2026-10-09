@@ -1,9 +1,9 @@
-// Génère supabase/seed.sql à partir de data/pros.ts : node scripts/gen-seed.mjs
+// Génère supabase/seed.sql à partir de data/pros.ts : npm run seed:sql
 import { writeFileSync } from 'node:fs'
-import { PROS } from '../data/pros.ts'
+import { PROS } from '../data/pros'
 
-const q = v => (v === undefined || v === null ? 'null' : `'${String(v).replace(/'/g, "''")}'`)
-const arr = (list, cast) => `array[${list.map(x => (typeof x === 'number' ? x : q(x))).join(', ')}]::${cast}[]`
+const q = (v: unknown) => (v === undefined || v === null ? 'null' : `'${String(v).replace(/'/g, "''")}'`)
+const arr = (list: (string | number)[], cast: string) => `array[${list.map(x => (typeof x === 'number' ? x : q(x))).join(', ')}]::${cast}[]`
 
 const lines = ['-- Données de démonstration (fictives). Fichier généré par scripts/gen-seed.mjs, ne pas modifier à la main.', '']
 for (const p of PROS) {

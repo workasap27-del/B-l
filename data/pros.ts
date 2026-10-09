@@ -1,4 +1,5 @@
 // Données de démonstration. Tous les établissements, personnes, prix et avis sont fictifs.
+import { generatePros } from './generate'
 
 export type Category = 'ongles' | 'cils' | 'coiffure' | 'tresses' | 'maquillage' | 'soins' | 'barbier'
 
@@ -22,7 +23,7 @@ export interface Pro {
   id: string
   name: string
   owner?: string
-  kind: 'Salon' | 'Institut' | 'Indépendante'
+  kind: 'Salon' | 'Institut' | 'Indépendante' | 'Indépendant'
   where: string[]
   commune: string
   quartier: string
@@ -59,13 +60,14 @@ export const CATEGORIES: [Category | 'all', string][] = [
 export const TYPES: [string, string][] = [
   ['all', 'Tous'],
   ['salon', 'Salons & instituts'],
-  ['indep', 'Indépendantes'],
+  ['indep', 'Indépendant(e)s'],
   ['dom', 'À domicile'],
 ]
 
 const s = (id: string, n: string, d: number, p: number): Service => ({ id, n, d, p })
 
-export const PROS: Pro[] = [
+/** Les 14 premiers prestataires, écrits à la main. */
+const HAND_MADE: Pro[] = [
   {
     id: 'kaz', name: 'Kaz a Zong', owner: 'Maëva L.', kind: 'Indépendante', where: ['Chez elle', 'À domicile'],
     commune: 'Les Abymes', quartier: 'Raizet', dist: 1.2, cats: ['ongles'], tags: ['Pose gel', 'Nail art', 'Semi-permanent'],
@@ -166,14 +168,17 @@ export const PROS: Pro[] = [
   },
 ]
 
+/** Catalogue complet : prestataires écrits à la main, puis catalogue généré pour toute la Guadeloupe. */
+export const PROS: Pro[] = [...HAND_MADE, ...generatePros(HAND_MADE.map(p => p.name))].sort((a, b) => a.dist - b.dist)
+
 export const REVIEW_TEXTS: Record<Category, string[]> = {
-  ongles: ['Pose impeccable, ça tient trois semaines sans bouger.', "Très minutieuse, et elle respecte l'heure.", "Le nail art est exactement ce que j'avais montré en photo."],
-  cils: ['Regard naturel, comme demandé. Aucune gêne après la pose.', 'Douce et précise, je me suis endormie pendant la pose.', 'Le rehaussement tient encore six semaines après.'],
-  coiffure: ["Enfin quelqu'un qui sait coiffer mes boucles.", "Brushing qui tient malgré l'humidité, bravo.", "Accueil chaleureux et pas d'attente."],
-  tresses: ['Tresses fines et régulières, pas trop serrées.', "Rapide et soignée, elle est venue à l'heure à la maison.", "Mes locks n'ont jamais été aussi propres."],
-  maquillage: ['Teint parfait toute la soirée, même en dansant.', 'Elle a su trouver la bonne teinte du premier coup.', 'Maquillage léger et lumineux, exactement mon style.'],
-  soins: ['Moment de détente, peau toute douce en sortant.', 'Épilation rapide et presque sans douleur.', 'Cabine propre et fraîche, je reviendrai.'],
-  barbier: ['Dégradé net, rien à redire.', 'Bon coup de ciseaux et bonne ambiance.', 'Mon fils ne veut plus aller ailleurs.'],
+  ongles: ['Pose impeccable, ça tient trois semaines sans bouger.', "Très minutieuse, et elle respecte l'heure.", "Le nail art est exactement ce que j'avais montré en photo.", 'Mes ongles naturels ne sont pas abîmés, enfin.', 'Un peu de retard mais le résultat vaut le coup.', 'Grand choix de couleurs, je reviendrai.', 'Travail propre, cuticules nickel.', 'Rapide et pas chère pour la qualité.'],
+  cils: ['Regard naturel, comme demandé. Aucune gêne après la pose.', 'Douce et précise, je me suis endormie pendant la pose.', 'Le rehaussement tient encore six semaines après.', 'Sourcils parfaitement symétriques.', 'Très bonne tenue, même avec la mer et la piscine.', 'Elle prend le temps de conseiller la bonne courbure.', 'Remplissage rapide, rien à redire.', 'Un peu cher mais le travail est soigné.'],
+  coiffure: ["Enfin quelqu'un qui sait coiffer mes boucles.", "Brushing qui tient malgré l'humidité, bravo.", "Accueil chaleureux et pas d'attente.", 'La couleur est exactement celle que je voulais.', 'Bons conseils pour entretenir mes cheveux à la maison.', 'Coupe fraîche, je me sens légère.', 'Salon propre et climatisé.', "J'ai attendu vingt minutes mais le résultat est top."],
+  tresses: ['Tresses fines et régulières, pas trop serrées.', "Rapide et soignée, elle est venue à l'heure à la maison.", "Mes locks n'ont jamais été aussi propres.", 'Ma fille a adoré, et ça a tenu un mois.', 'Aucune douleur au cuir chevelu, enfin.', 'Finitions propres, les raccords ne se voient pas.', 'Très patiente, six heures de travail sans se plaindre.', 'Prix honnête pour la longueur.'],
+  maquillage: ['Teint parfait toute la soirée, même en dansant.', 'Elle a su trouver la bonne teinte du premier coup.', 'Maquillage léger et lumineux, exactement mon style.', "Tout a tenu jusqu'à la fin du mariage.", "L'essai m'a rassurée, le jour J était parfait.", 'Ponctuelle et très douce.', 'Rendu magnifique en photo.', 'Elle écoute vraiment ce qu\'on veut.'],
+  soins: ['Moment de détente, peau toute douce en sortant.', 'Épilation rapide et presque sans douleur.', 'Cabine propre et fraîche, je reviendrai.', 'Massage excellent, mes épaules la remercient.', 'Le soin visage a vraiment éclairci mon teint.', 'Accueil souriant et tisane offerte.', 'Très pro, elle explique chaque étape.', 'Bon rapport qualité-prix.'],
+  barbier: ['Dégradé net, rien à redire.', 'Bon coup de ciseaux et bonne ambiance.', 'Mon fils ne veut plus aller ailleurs.', 'Contours au cordeau.', "Ponctuel, pas d'attente interminable.", 'Barbe bien taillée, il prend son temps.', 'Le meilleur dégradé du secteur.', 'Salon propre, matériel désinfecté.'],
 }
 
 export const CLIENT_NAMES = ['Laurine M.', 'Cindy B.', 'Aurélie T.', 'Mélissa R.', 'Jade K.', 'Sarah-Lyne P.', 'Ludivine G.', 'Anaëlle F.', 'Yoan D.', 'Stessy V.', 'Coralie N.', 'Maïté B.']
@@ -182,12 +187,6 @@ export const CLIENT_NAMES = ['Laurine M.', 'Cindy B.', 'Aurélie T.', 'Mélissa 
 export const DEMO_PRO_ID = 'kaz'
 /** Cliente connectée en mode démo. */
 export const DEMO_CLIENT = { name: 'Inès A.', firstName: 'Inès', commune: 'Les Abymes' }
-
-/** Créneaux Konyéla proposés chaque jour en démo : prestataire, prestation, remise en %. */
-export const KONYELA_SEEDS: [string, string, number][] = [
-  ['bar', 'a', 20], ['hib', 'a', 30], ['nai', 'c', 30], ['tre', 'c', 20],
-  ['reg', 'e', 25], ['col', 'd', 25], ['fle', 'e', 40], ['mad', 'd', 30],
-]
 
 /** Règles commerciales, données à titre d'hypothèse. */
 export const RULES = { depositRate: 0.2, commissionRate: 0.12, freeCancelHours: 24 }

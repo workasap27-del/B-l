@@ -1,9 +1,10 @@
 // État de l'appli en mode démo : tout vit dans le navigateur (localStorage).
 // Pour passer à Supabase, ce fichier est le seul point à remplacer : les pages n'appellent que ses fonctions.
 import { computed, reactive, ref, watch } from 'vue'
-import { DEMO_CLIENT, DEMO_PRO_ID, KONYELA_SEEDS, PROS, REVIEW_TEXTS, RULES, CLIENT_NAMES } from '~/data/pros'
+import { DEMO_CLIENT, DEMO_PRO_ID, PROS, REVIEW_TEXTS, RULES, CLIENT_NAMES } from '~/data/pros'
+import { hash, rng } from '~/data/random'
 import type { Pro, Review, Service } from '~/data/pros'
-import { addDays, ceil30, dateKey, discounted, freeStarts, gaps, hash, isClosed, rng, simulatedAppointments } from '~/utils/schedule'
+import { addDays, ceil30, dateKey, discounted, freeStarts, gaps, isClosed, simulatedAppointments } from '~/utils/schedule'
 import type { Interval } from '~/utils/schedule'
 
 export interface Booking {
@@ -82,10 +83,11 @@ function service(p: Pro, sid: string): Service | undefined {
 
 function baseReviews(p: Pro): Review[] {
   const r = rng(hash(`rev${p.id}`))
-  return REVIEW_TEXTS[p.cats[0]].map((t, i) => ({
+  const pool = [...REVIEW_TEXTS[p.cats[0]]]
+  return [0, 1, 2].map((i) => ({
     a: CLIENT_NAMES[Math.floor(r() * CLIENT_NAMES.length)],
     s: i === 1 && p.rating < 4.7 ? 4 : 5,
-    t,
+    t: pool.splice(Math.floor(r() * pool.length), 1)[0],
   }))
 }
 
@@ -128,13 +130,15 @@ function seedSlots(force = false) {
   const key = `${today.value}|${state.sim ?? 'réel'}`
   if (!force && state.seededFor === key) return
   state.slots = state.slots.filter(s => s.date === today.value && (s.by === 'pro' || s.status === 'booked'))
-  KONYELA_SEEDS.forEach(([proId, sid, disc], i) => {
-    const p = pro(proId)
-    const sv = p && service(p, sid)
-    if (!p || !sv) return
+  // Chaque jour, environ un prestataire sur cinq libère un créneau de dernière minute.
+  PROS.forEach((p, i) => {
+    if (p.id === DEMO_PRO_ID) return
+    const h = hash(`${today.value}|k|${p.id}`)
+    if (h % 5 !== 0) return
+    const sv = p.services[(h >>> 4) % p.services.length]
     const options = starts(p, today.value, sv.d).filter(t => t <= nowMin.value + 270)
     if (!options.length) return
-    state.slots.push({ id: `s${today.value}-${i}`, proId, sid, date: today.value, time: options[Math.min(i % 2, options.length - 1)], disc, status: 'open', by: 'seed' })
+    state.slots.push({ id: `s${today.value}-${p.id}`, proId: p.id, sid: sv.id, date: today.value, time: options[Math.min(i % 2, options.length - 1)], disc: [20, 25, 30, 40][(h >>> 8) % 4], status: 'open', by: 'seed' })
   })
   state.seededFor = key
 }
