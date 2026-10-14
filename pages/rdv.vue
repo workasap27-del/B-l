@@ -49,13 +49,15 @@ function sendReview() {
           <NuxtLink class="meta" :to="`/pro/${b.proId}`"><span class="ellip">{{ pro(b.proId)!.name }}</span></NuxtLink>
           <div class="tiny">{{ placeLabel(b) }}</div>
         </div>
+        <ArrivalBox v-if="tab === 'next'" :booking="b" side="client" />
         <div class="row wrap" style="gap:8px">
           <template v-if="tab === 'next'">
             <a v-if="b.place === 'pro'" class="btn small line" :href="directionsUrl(pro(b.proId)!)" target="_blank" rel="noopener"><Navigation :size="14" />Itinéraire</a>
-            <button class="btn small line" @click="toCancel = b">Annuler</button>
+            <button v-if="b.arrivedAt === undefined" class="btn small line" @click="toCancel = b">Annuler</button>
           </template>
           <template v-else>
             <span v-if="b.status === 'cancelled'" class="badge">Annulé</span>
+            <template v-else-if="b.noShow || b.disputed"><span class="badge">{{ b.disputed ? 'Litige en cours' : 'Absence' }}</span><ArrivalBox :booking="b" side="client" /></template>
             <span v-else-if="b.reviewed" class="badge ok">Avis envoyé</span>
             <button v-else class="btn small soft" @click="openReview(b)"><Star :size="14" />Laisser un avis</button>
             <NuxtLink class="btn small line" :to="`/reserver/${b.proId}/${b.sid}`">Réserver à nouveau</NuxtLink>

@@ -85,6 +85,13 @@ create table bookings (
   place booking_place not null default 'pro',
   client_address text,
   travel_fee_eur numeric(6, 2) not null default 0,
+  -- Suivi d'arrivée le jour J (celui qui se déplace signale, l'autre confirme)
+  arrived_at timestamptz,
+  arrival_confirmed_at timestamptz,
+  late_minutes smallint check (late_minutes between 5 and 15),
+  wait_until timestamptz,
+  no_show text check (no_show in ('client', 'pro')),
+  disputed_at timestamptz,
   created_at timestamptz not null default now(),
   check (ends_at > starts_at),
   -- Une prestation chez la cliente a forcément une adresse.

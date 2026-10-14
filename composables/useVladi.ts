@@ -8,10 +8,12 @@ import { addDays, ceil30, dateKey, discounted, freeStarts, gaps, isClosed, simul
 import type { Interval } from '~/utils/schedule'
 import { allowedPlaces, proPlace, travelFee } from '~/utils/places'
 import type { Place } from '~/utils/places'
+import { arrivalState, clampLate, deadline, TOLERANCE } from '~/utils/arrival'
+import type { ArrivalFields } from '~/utils/arrival'
 import { communePoint, inGuadeloupe, roadKm } from '~/utils/geo'
 import type { LatLng } from '~/utils/geo'
 
-export interface Booking {
+export interface Booking extends ArrivalFields {
   id: number
   proId: string
   sid: string
@@ -55,6 +57,7 @@ export interface AgendaItem {
   id?: string
   place?: Place
   address?: string
+  bookingId?: number
 }
 
 interface State {
@@ -231,7 +234,7 @@ function hmText(t: number): string {
 }
 
 function isDone(b: Booking): boolean {
-  return b.status === 'confirmed' && (b.date < today.value || (b.date === today.value && b.time + b.dur <= nowMin.value))
+  return b.status === 'confirmed' && (!!b.noShow || b.disputed === true || b.date < today.value || (b.date === today.value && b.time + b.dur <= nowMin.value))
 }
 
 function minutesUntil(b: Booking): number {
@@ -276,6 +279,42 @@ function book(input: { proId: string, sid: string, date: string, time: number, s
   return b
 }
 
+// Arrivée le jour J -------------------------------------------------------
+/** Qui se déplace : la cliente quand ça se passe chez le prestataire, le prestataire quand il vient chez elle. */
+function traveler(b: Booking): 'client' | 'pro' {
+  return b.place === 'client' ? 'pro' : 'client'
+}
+function arrival(b: Booking) {
+  return arrivalState(b, nowMin.value, b.date === today.value)
+}
+function find(id: number) {
+  return state.bookings.find(x => x.id === id)
+}
+function signalArrival(id: number) {
+  const b = find(id)
+  if (b && b.arrivedAt === undefined) b.arrivedAt = nowMin.value
+}
+function confirmArrival(id: number) {
+  const b = find(id)
+  if (b && b.arrivedAt !== undefined) b.confirmedAt = nowMin.value
+}
+function announceLate(id: number, minutes: number) {
+  const b = find(id)
+  if (b) b.lateBy = clampLate(minutes)
+}
+function waitMore(id: number) {
+  const b = find(id)
+  if (b) b.waitUntil = deadline(b) + TOLERANCE
+}
+function declareNoShow(id: number) {
+  const b = find(id)
+  if (b) b.noShow = traveler(b)
+}
+function dispute(id: number) {
+  const b = find(id)
+  if (b) b.disputed = true
+}
+
 function cancel(id: number) {
   const b = state.bookings.find(x => x.id === id)
   if (b) b.status = 'cancelled'
@@ -300,7 +339,7 @@ function agenda(date: string): AgendaItem[] {
   const items: AgendaItem[] = simulatedAppointments(p, date).map(x => ({ a: x.a, b: x.b, kind: 'rdv', who: x.who, what: x.what, price: x.price }))
   for (const b of state.bookings) {
     if (b.proId === p.id && b.date === date && b.status === 'confirmed') {
-      items.push({ a: b.time, b: b.time + b.dur, kind: 'app', who: DEMO_CLIENT.name, what: service(p, b.sid)?.n, price: b.price, deposit: b.deposit, mode: b.mode, place: b.place, address: b.address })
+      items.push({ a: b.time, b: b.time + b.dur, kind: 'app', who: DEMO_CLIENT.name, what: service(p, b.sid)?.n, price: b.price, deposit: b.deposit, mode: b.mode, place: b.place, address: b.address, bookingId: b.id })
     }
   }
   for (const s of state.slots) {
@@ -378,6 +417,7 @@ export function useVladi() {
     starts, openSlots, isDone, refundable, minutesUntil,
     book, cancel, addReview, toggleFav, placeLabel,
     km, setCommune, locate, nextSlots, openStatus,
+    traveler, arrival, signalArrival, confirmArrival, announceLate, waitMore, declareNoShow, dispute,
     agenda, earliestIn, publishSlot, removeSlot,
     setSim, toast, reset,
   }

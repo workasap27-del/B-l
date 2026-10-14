@@ -269,6 +269,12 @@ textarea { width: 100%; border: 1px solid var(--line); background: var(--surface
 .ev.gap { background: none; border: 1.5px dashed var(--line); }
 .ev.lm { background: var(--sun-soft); border: 1px solid var(--sun); }
 .ev time { font-weight: 700; font-variant-numeric: tabular-nums; width: 98px; flex: 0 0 auto; font-size: 13px; white-space: nowrap; }
+.arrival { display: flex; flex-direction: column; gap: 8px; border-radius: 12px; padding: 10px 12px; background: var(--accent-soft); width: 100%; }
+.arrival p { display: flex; align-items: flex-start; gap: 6px; max-width: none; }
+.arrival p svg { margin-top: 2px; }
+.arrival.arrive { background: var(--ok-soft); }
+.arrival.depasse, .arrival.absent, .arrival.litige, .arrival.en_retard { background: var(--warn-soft); }
+.small { font-size: 13px; }
 .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .stat { background: var(--surface2); border-radius: 14px; padding: 12px; }
 .stat b { font-family: var(--display); font-size: 24px; display: block; font-variant-numeric: tabular-nums; }

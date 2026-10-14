@@ -42,6 +42,7 @@ Côté cliente
 - Réservation : lieu (chez le prestataire ou chez la cliente, avec adresse et frais de déplacement), jour, heure, récapitulatif, acompte de 20 %.
 - Konyéla : créneaux libres dans les prochaines heures, à prix réduit.
 - Mes rendez-vous : itinéraire, annulation (gratuite plus de 24 h avant), avis, réserver à nouveau.
+- Le jour J : celui qui se déplace signale son arrivée ou un retard (5 à 15 min), l'autre confirme. Passé 15 min, l'attente peut être prolongée ou une absence déclarée. Un désaccord part au service client (pas de géolocalisation).
 
 Côté prestataire (compte de démonstration : Kaz a Zong), depuis Profil puis "Espace prestataire"
 - Agenda du jour et des trois jours suivants, avec les trous et le lieu de chaque rendez-vous.
@@ -60,6 +61,7 @@ et de tout remettre à zéro.
 | `utils/schedule.ts` | Logique d'agenda : dates, créneaux libres, trous |
 | `utils/search.ts` | Recherche par prestation, métier, nom et commune (sans accents, singulier ou pluriel) |
 | `utils/places.ts` | Lieux de prestation et frais de déplacement |
+| `utils/arrival.ts` | Suivi d'arrivée : tolérance, retard, absence, désaccord |
 | `utils/geo.ts` | Coordonnées des communes, distances, lien d'itinéraire |
 | `composables/useVladi.ts` | État de l'appli et toutes les actions. Seul fichier qui touche au stockage |
 | `pages/` | Un fichier par écran |

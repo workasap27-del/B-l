@@ -2,7 +2,8 @@
 import { DEMO_PRO_ID } from '~/data/pros'
 import type { AgendaItem } from '~/composables/useVladi'
 
-const { pro, today, nowMin, agenda, earliestIn, publishSlot, removeSlot, toast } = useVladi()
+const { pro, today, nowMin, agenda, earliestIn, publishSlot, removeSlot, toast, state } = useVladi()
+const bookingOf = (e: AgendaItem) => state.bookings.find(b => b.id === e.bookingId)
 const p = pro(DEMO_PRO_ID)!
 const days = computed(() => Array.from({ length: 4 }, (_, i) => addDays(today.value, i)))
 const date = ref(today.value)
@@ -68,7 +69,7 @@ function publish() {
         <div class="grow"><b>{{ e.what }}</b><div class="sub">En ligne sur Konyéla · -{{ e.disc }} %</div></div>
         <button class="btn small line" @click="removeSlot(e.id!)">Retirer</button>
       </div>
-      <div v-else class="ev" :class="{ past: isPast(e) }">
+      <div v-else class="ev" :class="{ past: isPast(e) && e.kind !== 'app' }">
         <time>{{ hm(e.a) }} à {{ hm(e.b) }}</time>
         <div class="grow">
           <b>{{ e.who }}</b>
@@ -77,6 +78,7 @@ function publish() {
           <div class="sub">{{ e.what }} · {{ euro(e.price ?? 0) }}<template v-if="e.kind === 'app'"> · acompte {{ euro(e.deposit ?? 0) }} reçu</template></div>
           <div v-if="e.kind === 'app'" class="sub">{{ e.place === 'client' ? `Chez la cliente : ${e.address}` : 'Chez toi' }}</div>
         </div>
+        <ArrivalBox v-if="e.kind === 'app' && bookingOf(e)" :booking="bookingOf(e)!" side="pro" />
       </div>
     </template>
   </div>
