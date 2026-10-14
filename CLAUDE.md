@@ -8,7 +8,7 @@ Appli Nuxt 3 (SPA, `ssr: false`) de réservation beauté en Guadeloupe. Voir REA
 - La recherche doit toujours trouver un prestataire par ce qu'il fait, même si son nom n'en dit rien (cas test : "Zombi" et les cils).
 - Heures en minutes depuis minuit, dates en clé `AAAA-MM-JJ` (heure locale).
 - Les données de `data/pros.ts` sont fictives. Après modification, relancer `npm run seed:sql`.
-- Couleurs uniquement via les jetons CSS de `assets/main.css` (thèmes clair et sombre).
+- Couleurs uniquement via les jetons CSS de `assets/main.css` (thèmes clair et sombre). Les cinq chartes en test sont dans `assets/chartes.css` et se choisissent sur l'accueil (`components/CharteSwitcher.vue`, à retirer une fois la charte choisie).
 - Les distances partent toujours de `state.pos` (position du téléphone ou commune choisie) via `km()`. Ne jamais remettre de distance fixe dans les données.
 - Icônes : `lucide-vue-next`. Carte : Leaflet, chargé uniquement dans `components/ProMap.vue`.
 - Avant de pousser : `npm test`, `npm run typecheck` et `npm run build`, puis un parcours complet dans un navigateur.

@@ -1,0 +1,66 @@
+/* Cinq chartes graphiques à comparer. Chacune redéfinit les jetons de main.css, en clair et en sombre.
+   Pas d'attribut data-charte = charte d'origine (rose et jaune). */
+
+/* 1. Lagon : turquoise des Caraïbes et corail, net et lumineux */
+:root[data-charte="lagon"] {
+  --bg: #f3f7f7; --surface: #ffffff; --surface2: #edf4f4; --ink: #0e1d21; --muted: #5a6a6e; --line: #dce6e7;
+  --accent: #0b8282; --accent-soft: #ddf2f1; --accent-ink: #ffffff;
+  --sun: #ff7a59; --sun-soft: #ffeae3; --sun-ink: #3a1206;
+  --display: "Outfit", "Trebuchet MS", system-ui, sans-serif;
+  --hue: 182; --spread: .22; --cover-sat: 62%;
+}
+/* 2. Onyx : noir, blanc et champagne, sobre et haut de gamme */
+:root[data-charte="onyx"] {
+  --bg: #f6f5f2; --surface: #ffffff; --surface2: #f0eee9; --ink: #141414; --muted: #67625b; --line: #e5e1da;
+  --accent: #141414; --accent-soft: #eceae5; --accent-ink: #ffffff;
+  --sun: #c9a46a; --sun-soft: #f4ecdd; --sun-ink: #2a1f0c;
+  --display: "Fraunces", Georgia, serif;
+  --hue: 38; --spread: .08; --cover-sat: 22%;
+}
+/* 3. Sauge : vert doux et miel, l'esprit spa et bien-être */
+:root[data-charte="sauge"] {
+  --bg: #f4f6f0; --surface: #ffffff; --surface2: #edf1e7; --ink: #1b2820; --muted: #5d6a60; --line: #dfe5d8;
+  --accent: #3d6a50; --accent-soft: #e2ede5; --accent-ink: #ffffff;
+  --sun: #e2ae48; --sun-soft: #f9efd6; --sun-ink: #2e2205;
+  --display: "Fraunces", Georgia, serif;
+  --hue: 128; --spread: .18; --cover-sat: 38%;
+}
+/* 4. Indigo : violet bleuté et menthe, l'appli tech */
+:root[data-charte="indigo"] {
+  --bg: #f4f5fb; --surface: #ffffff; --surface2: #eef0fa; --ink: #121833; --muted: #59617d; --line: #e0e3f1;
+  --accent: #4f46e5; --accent-soft: #e9e8fd; --accent-ink: #ffffff;
+  --sun: #12b886; --sun-soft: #dcf6ec; --sun-ink: #03271b;
+  --display: "Sora", "Trebuchet MS", system-ui, sans-serif;
+  --hue: 238; --spread: .2; --cover-sat: 70%;
+}
+/* 5. Océan : bleu franc et ambre, clair et rassurant */
+:root[data-charte="ocean"] {
+  --bg: #f3f6fa; --surface: #ffffff; --surface2: #ecf2f9; --ink: #0d1b2e; --muted: #56657a; --line: #dde5ef;
+  --accent: #0a5bd8; --accent-soft: #e2edfc; --accent-ink: #ffffff;
+  --sun: #ffb020; --sun-soft: #fff1d3; --sun-ink: #2e1d00;
+  --display: "Outfit", "Trebuchet MS", system-ui, sans-serif;
+  --hue: 212; --spread: .2; --cover-sat: 66%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-charte="lagon"] {
+    --bg: #0a1315; --surface: #101c1f; --surface2: #172729; --ink: #e6f2f2; --muted: #92a6a9; --line: #22363a;
+    --accent: #3cc6c0; --accent-soft: #0e3432; --accent-ink: #032220; --sun: #ff8d6e; --sun-soft: #3a1d14; --sun-ink: #2a0e05;
+  }
+  :root[data-charte="onyx"] {
+    --bg: #0c0c0c; --surface: #151515; --surface2: #1f1f1f; --ink: #f3f1ec; --muted: #a29d94; --line: #2b2b2b;
+    --accent: #f3f1ec; --accent-soft: #2a2a2a; --accent-ink: #141414; --sun: #d8b980; --sun-soft: #2e2718; --sun-ink: #1d1608;
+  }
+  :root[data-charte="sauge"] {
+    --bg: #0d130f; --surface: #141c17; --surface2: #1c2720; --ink: #e9f0e9; --muted: #9aa99e; --line: #27352c;
+    --accent: #7fc29a; --accent-soft: #183224; --accent-ink: #072013; --sun: #ebbd5f; --sun-soft: #33280f; --sun-ink: #241900;
+  }
+  :root[data-charte="indigo"] {
+    --bg: #0c0e1a; --surface: #131628; --surface2: #1b1f36; --ink: #e9ebfa; --muted: #9aa0c0; --line: #282d4a;
+    --accent: #8b85ff; --accent-soft: #24234d; --accent-ink: #0e0b33; --sun: #3ddc9f; --sun-soft: #0f3326; --sun-ink: #032016;
+  }
+  :root[data-charte="ocean"] {
+    --bg: #09111c; --surface: #0f1a28; --surface2: #172435; --ink: #e7eef8; --muted: #94a3b8; --line: #223247;
+    --accent: #5b9bff; --accent-soft: #13294a; --accent-ink: #04122b; --sun: #ffc04d; --sun-soft: #3a2a08; --sun-ink: #241700;
+  }
+}

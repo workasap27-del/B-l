@@ -23,6 +23,8 @@ const nextBooking = computed(() => state.bookings
     <span class="pill">Démo</span>
   </header>
 
+  <CharteSwitcher />
+
   <div class="stack" style="gap:6px">
     <button class="loc" aria-label="Changer de lieu" @click="locOpen = true">
       <MapPin :size="16" /><span class="where">{{ state.pos.label }}</span><ChevronDown :size="16" />

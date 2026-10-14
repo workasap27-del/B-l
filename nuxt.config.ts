@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   ssr: false,
   devtools: { enabled: false },
-  css: ['~/assets/main.css'],
+  css: ['~/assets/main.css', '~/assets/chartes.css'],
   app: {
     head: {
       title: 'VLADI',
@@ -24,7 +24,7 @@ export default defineNuxtConfig({
         { rel: 'apple-touch-icon', href: '/icon-180.png' },
         { rel: 'manifest', href: '/manifest.webmanifest' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap' },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Outfit:wght@500;600;700&family=Sora:wght@600;700&display=swap' },
       ],
     },
   },

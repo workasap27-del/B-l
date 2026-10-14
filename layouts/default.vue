@@ -24,6 +24,18 @@ const focus = computed(() => route.path.startsWith('/pro/') || route.path.starts
 const flush = computed(() => route.path.startsWith('/pro/'))
 
 watch(isPro, (v) => { if (v) state.unseen = 0 }, { immediate: true })
+
+// Applique la charte graphique choisie à toute l'appli, y compris la couleur de la barre du téléphone.
+watchEffect(() => {
+  const el = document.documentElement
+  if (state.charte) el.dataset.charte = state.charte
+  else delete el.dataset.charte
+  // On lit le jeton --bg, pas la couleur affichée, qui est encore en transition à cet instant.
+  requestAnimationFrame(() => {
+    const bg = getComputedStyle(el).getPropertyValue('--bg').trim()
+    if (bg) document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.setAttribute('content', bg))
+  })
+})
 </script>
 
 <template>

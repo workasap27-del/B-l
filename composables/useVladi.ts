@@ -73,6 +73,8 @@ interface State {
   unseen: number
   /** dernière adresse saisie par la cliente pour une prestation chez elle */
   address: string
+  /** charte graphique en test ('' = charte d'origine) */
+  charte: string
   /** d'où l'on mesure les distances : la position du téléphone ou le centre d'une commune */
   pos: LatLng & { label: string, gps: boolean }
 }
@@ -80,7 +82,7 @@ interface State {
 const STORAGE_KEY = 'vladi-v2'
 
 function blank(): State {
-  return { bookings: [], slots: [], fav: { kaz: true, reg: true }, reviews: {}, seq: 100, seededFor: '', sim: null, unseen: 0, address: '', pos: { ...communePoint(DEMO_CLIENT.commune), label: DEMO_CLIENT.commune, gps: false } }
+  return { bookings: [], slots: [], fav: { kaz: true, reg: true }, reviews: {}, seq: 100, seededFor: '', sim: null, unseen: 0, address: '', charte: 'lagon', pos: { ...communePoint(DEMO_CLIENT.commune), label: DEMO_CLIENT.commune, gps: false } }
 }
 
 const state = reactive<State>(blank())
