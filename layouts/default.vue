@@ -1,36 +1,25 @@
 <script setup lang="ts">
-import { CalendarDays, House, Search, User, Wallet, Zap } from 'lucide-vue-next'
+import { CalendarDays, House, Search, User, Zap } from 'lucide-vue-next'
 
-const { state, toastMessage } = useVladi()
+const { state, toastMessage, account } = useVladi()
 const route = useRoute()
-const isPro = computed(() => route.path.startsWith('/espace-pro'))
 
-const clientTabs = [
+const tabsLive = computed(() => [
   { to: '/', label: 'Accueil', icon: House },
-  { to: '/recherche', label: 'Recherche', icon: Search },
-  { to: '/konyela', label: 'Konyéla', icon: Zap, k: true },
+  { to: '/recherche', label: 'Rechercher', icon: Search },
+  { to: '/konyela', label: 'Konyéla', icon: Zap },
   { to: '/rdv', label: 'Rendez-vous', icon: CalendarDays },
-  { to: '/profil', label: 'Profil', icon: User },
-]
-const proTabs = [
-  { to: '/espace-pro', label: 'Agenda', icon: CalendarDays },
-  { to: '/espace-pro/konyela', label: 'Konyéla', icon: Zap },
-  { to: '/espace-pro/activite', label: 'Activité', icon: Wallet },
-  { to: '/profil', label: 'Côté cliente', icon: User },
-]
-const tabs = computed(() => (isPro.value ? proTabs : clientTabs))
-// Pendant une fiche ou une réservation, la navigation laisse la place au bouton d'action.
-const focus = computed(() => route.path.startsWith('/pro/') || route.path.startsWith('/reserver/'))
+  { to: '/profil', label: account.value ? 'Compte' : 'Connexion', icon: User },
+])
+const active = (to: string) => (to === '/' ? route.path === '/' : route.path.startsWith(to) || (to === '/profil' && (route.path.startsWith('/espace-pro') || route.path.startsWith('/connexion'))))
+// Pastille sur Compte : réservations reçues par la fiche d'exemple et pas encore vues.
+const badge = computed(() => state.unseen)
 const flush = computed(() => route.path.startsWith('/pro/'))
 
-watch(isPro, (v) => { if (v) state.unseen = 0 }, { immediate: true })
-
-// Applique la charte graphique choisie à toute l'appli, y compris la couleur de la barre du téléphone.
+// Applique la charte choisie à toute l'appli, y compris la couleur de la barre du téléphone.
 watchEffect(() => {
   const el = document.documentElement
-  if (state.charte) el.dataset.charte = state.charte
-  else delete el.dataset.charte
-  // On lit le jeton --bg, pas la couleur affichée, qui est encore en transition à cet instant.
+  el.dataset.charte = state.charte || 'noir'
   requestAnimationFrame(() => {
     const bg = getComputedStyle(el).getPropertyValue('--bg').trim()
     if (bg) document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.setAttribute('content', bg))
@@ -45,12 +34,11 @@ watchEffect(() => {
     </main>
     <div id="sheets" />
     <div v-if="toastMessage" class="toast" role="status">{{ toastMessage }}</div>
-    <nav v-if="!focus" class="navbar" aria-label="Navigation">
-      <NuxtLink v-for="t in tabs" :key="t.to" :to="t.to" :class="{ on: route.path === t.to, k: 'k' in t && t.k }">
-        <span v-if="'k' in t && t.k" class="bubble"><component :is="t.icon" :size="22" /></span>
-        <component :is="t.icon" v-else :size="22" />
+    <nav class="nav" aria-label="Navigation principale">
+      <NuxtLink v-for="t in tabsLive" :key="t.to" :to="t.to" :class="{ on: active(t.to) }">
+        <component :is="t.icon" :size="23" :stroke-width="1.8" />
         {{ t.label }}
-        <span v-if="t.to === '/profil' && !isPro && state.unseen" class="dot">{{ state.unseen }}</span>
+        <span v-if="t.to === '/profil' && badge" class="count">{{ badge }}</span>
       </NuxtLink>
     </nav>
   </div>

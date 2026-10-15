@@ -1,30 +1,30 @@
 <script setup lang="ts">
 import type { Slot } from '~/composables/useVladi'
 
-// Créneau Konyéla. "wide" pour la liste, sinon format compact pour le carrousel de l'accueil.
-const props = defineProps<{ item: Slot, wide?: boolean, hidePro?: boolean }>()
+// Créneau Konyéla : l'heure, la prestation, où, et le prix réduit.
+const props = defineProps<{ item: Slot, hidePro?: boolean }>()
 const { pro, service, nowMin, km } = useVladi()
 const p = computed(() => pro(props.item.proId)!)
 const sv = computed(() => service(p.value, props.item.sid)!)
 const wait = computed(() => {
   const m = props.item.time - nowMin.value
-  return m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, '0')}` : `${m} min`
+  return m >= 60 ? `dans ${Math.floor(m / 60)} h ${m % 60 ? String(m % 60).padStart(2, '0') : ''}`.trim() : `dans ${m} min`
 })
-const to = computed(() => `/reserver/${p.value.id}/${sv.value.id}?creneau=${props.item.id}`)
 </script>
 
 <template>
-  <NuxtLink class="kcard" :class="{ wide }" :to="to">
-    <div class="row between">
-      <span class="when">{{ hm(item.time) }}</span>
-      <span class="badge k">-{{ item.disc }} %</span>
+  <NuxtLink v-if="p && sv" class="kcard" :to="`/reserver/${p.id}/${sv.id}?creneau=${item.id}`">
+    <div class="when"><b>{{ hm(item.time) }}</b><span class="tiny">{{ wait }}</span></div>
+    <span class="vr" />
+    <div class="grow col gap4">
+      <span class="name ellip">{{ sv.n }}</span>
+      <span v-if="!hidePro" class="meta ellip">{{ p.name }}</span>
+      <span class="meta ellip">{{ p.commune }} · {{ formatKm(km(p)) }}</span>
     </div>
-    <div class="tiny">dans {{ wait }}</div>
-    <div class="name ellip">{{ sv.n }}</div>
-    <div v-if="!hidePro" class="meta"><span class="ellip">{{ p.name }} · {{ formatKm(km(p)) }}</span></div>
-    <div class="row between">
-      <span class="price"><span class="strike">{{ euro(sv.p) }}</span>{{ euro(discounted(sv, item.disc)) }}</span>
-      <span v-if="wide" class="btn small sun">Réserver</span>
+    <div class="price">
+      <span class="tag now">-{{ item.disc }} %</span>
+      <span class="num">{{ euro(discounted(sv, item.disc)) }}</span>
+      <span class="strike">{{ euro(sv.p) }}</span>
     </div>
   </NuxtLink>
 </template>

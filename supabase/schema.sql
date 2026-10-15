@@ -1,5 +1,6 @@
 -- VLADI : schéma de base de données pour Supabase (PostgreSQL).
--- À coller dans l'éditeur SQL de Supabase, puis lancer supabase/seed.sql pour les données de démonstration.
+-- À coller dans l'éditeur SQL de Supabase. Les fiches de démonstration restent dans l'appli (data/pros.ts) :
+-- la base ne contient que les vrais comptes. supabase/seed.sql sert uniquement aux tests en local.
 -- Hypothèse du MVP : un prestataire = un seul poste. Deux rendez-vous confirmés ne peuvent pas se chevaucher chez lui.
 
 create extension if not exists btree_gist;
@@ -15,9 +16,27 @@ create type booking_place as enum ('pro', 'client');
 create table profiles (
   id uuid primary key references auth.users on delete cascade,
   display_name text not null,
+  role text not null default 'client' check (role in ('client', 'pro')),
+  phone text,
   commune text,
   created_at timestamptz not null default now()
 );
+
+-- Le profil est créé automatiquement à l'inscription, à partir du prénom et du rôle choisis.
+create function handle_new_user() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  insert into profiles (id, display_name, role, phone)
+  values (
+    new.id,
+    coalesce(nullif(trim(new.raw_user_meta_data ->> 'display_name'), ''), split_part(new.email, '@', 1)),
+    case when new.raw_user_meta_data ->> 'role' = 'pro' then 'pro' else 'client' end,
+    nullif(trim(new.raw_user_meta_data ->> 'phone'), '')
+  );
+  return new;
+end;
+$$;
+create trigger on_auth_user_created after insert on auth.users for each row execute function handle_new_user();
 
 -- Prestataires et prestations --------------------------------------------
 create table pros (
@@ -26,6 +45,10 @@ create table pros (
   name text not null,
   owner_name text,
   kind pro_kind not null,
+  -- Seuls les prestataires déclarés sont acceptés (SIREN à 9 chiffres). Les fiches de test en sont dispensées.
+  siren text check (siren ~ '^[0-9]{9}$'),
+  phone text,
+  photo_url text,
   -- 'Au salon', 'À l''institut', 'Chez elle', 'Chez lui' (chez le prestataire) et 'À domicile' (chez la cliente)
   places text[] not null default '{}',
   travel_fee_eur numeric(6, 2) not null default 0 check (travel_fee_eur >= 0),
@@ -43,8 +66,11 @@ create table pros (
   hue smallint not null default 330,
   is_demo boolean not null default false,
   created_at timestamptz not null default now(),
-  check (closes_at > opens_at)
+  check (closes_at > opens_at),
+  check (is_demo or siren is not null)
 );
+-- Un compte prestataire = une fiche.
+create unique index pros_one_per_owner on pros (owner_id) where owner_id is not null;
 
 create table services (
   id uuid primary key default gen_random_uuid(),
@@ -75,6 +101,11 @@ create table bookings (
   pro_id text not null references pros on delete cascade,
   service_id uuid not null references services,
   client_id uuid not null references auth.users on delete cascade,
+  -- Nom et téléphone recopiés à la réservation : le prestataire n'a pas accès aux profils des clientes.
+  client_name text not null default '',
+  client_phone text,
+  -- Ce que la cliente veut signaler (grossesse, allergie, cheveux fragiles...). Rien n'est vérifié par VLADI.
+  client_note text,
   starts_at timestamptz not null,
   ends_at timestamptz not null,
   price_eur numeric(7, 2) not null,
@@ -142,7 +173,7 @@ language sql stable security definer set search_path = public as $$
 $$;
 
 -- Réserve un créneau Konyéla de façon atomique : le premier arrivé l'emporte.
-create function book_konyela_slot(p_slot uuid, p_place booking_place default 'pro', p_address text default null, p_deposit_rate numeric default 0.2)
+create function book_konyela_slot(p_slot uuid, p_place booking_place default 'pro', p_address text default null, p_deposit_rate numeric default 0.2, p_client_name text default '', p_client_phone text default null, p_client_note text default null)
 returns bookings
 language plpgsql security definer set search_path = public as $$
 declare
@@ -172,14 +203,60 @@ begin
   end if;
   v_price := round(v_service.price_eur * (100 - v_slot.discount_pct) / 100.0) + v_fee;
   update konyela_slots set status = 'booked' where id = p_slot;
-  insert into bookings (pro_id, service_id, client_id, starts_at, ends_at, price_eur, deposit_eur, mode, slot_id, place, client_address, travel_fee_eur)
-  values (v_slot.pro_id, v_service.id, auth.uid(), v_slot.starts_at,
+  insert into bookings (pro_id, service_id, client_id, client_name, client_phone, client_note, starts_at, ends_at, price_eur, deposit_eur, mode, slot_id, place, client_address, travel_fee_eur)
+  values (v_slot.pro_id, v_service.id, auth.uid(), coalesce(p_client_name, ''), p_client_phone, p_client_note, v_slot.starts_at,
           v_slot.starts_at + make_interval(mins => v_service.duration_min),
           v_price, round(v_price * p_deposit_rate), 'konyela', p_slot, p_place, p_address, v_fee)
   returning * into v_booking;
   return v_booking;
 end;
 $$;
+
+-- Le prix, l'acompte, les frais de déplacement et l'heure de fin sont calculés ici, jamais par l'appli.
+create function bookings_fill() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare
+  v_service services;
+  v_pro pros;
+begin
+  select * into v_service from services where id = new.service_id and pro_id = new.pro_id and active;
+  if not found then
+    raise exception 'Prestation inconnue chez ce prestataire';
+  end if;
+  select * into v_pro from pros where id = new.pro_id;
+  if new.mode = 'classic' then
+    if new.starts_at < now() then
+      raise exception 'Ce créneau est déjà passé';
+    end if;
+    if new.place = 'client' and not ('À domicile' = any (v_pro.places)) then
+      raise exception 'Ce prestataire ne se déplace pas';
+    end if;
+    if new.place = 'pro' and v_pro.places <@ array['À domicile'] then
+      raise exception 'Ce prestataire se déplace uniquement';
+    end if;
+    new.travel_fee_eur := case when new.place = 'client' then v_pro.travel_fee_eur else 0 end;
+    new.price_eur := v_service.price_eur + new.travel_fee_eur;
+    new.deposit_eur := round(new.price_eur * 0.2);
+    new.ends_at := new.starts_at + make_interval(mins => v_service.duration_min);
+  end if;
+  return new;
+end;
+$$;
+create trigger bookings_fill before insert on bookings for each row execute function bookings_fill();
+revoke execute on function bookings_fill() from public, anon, authenticated;
+
+-- Plages occupées de tous les prestataires sur une période, sans dire qui a réservé.
+create function busy_all(p_from timestamptz, p_to timestamptz)
+returns table (pro_id text, starts_at timestamptz, ends_at timestamptz)
+language sql stable security definer set search_path = public as $$
+  select b.pro_id, b.starts_at, b.ends_at from bookings b
+   where b.status = 'confirmed' and b.starts_at < p_to and b.ends_at > p_from
+  union all
+  select k.pro_id, k.starts_at, k.starts_at + make_interval(mins => s.duration_min) from konyela_slots k
+    join services s on s.id = k.service_id
+   where k.status = 'open' and k.starts_at < p_to and k.starts_at + make_interval(mins => s.duration_min) > p_from;
+$$;
+grant execute on function busy_all(timestamptz, timestamptz) to anon, authenticated;
 
 -- Droits d'accès (RLS) -------------------------------------------------------
 alter table profiles enable row level security;
@@ -193,6 +270,7 @@ alter table favorites enable row level security;
 create policy "profil : le sien" on profiles for all using (id = auth.uid()) with check (id = auth.uid());
 
 create policy "pros : lecture publique" on pros for select using (true);
+create policy "pros : création par son propriétaire" on pros for insert with check (owner_id = auth.uid() and not is_demo);
 create policy "pros : modification par le propriétaire" on pros for update using (owner_id = auth.uid()) with check (owner_id = auth.uid());
 
 create policy "prestations : lecture publique" on services for select using (true);
@@ -215,12 +293,17 @@ create policy "avis : un par rendez-vous terminé" on reviews for insert with ch
 
 create policy "favoris : les siens" on favorites for all using (client_id = auth.uid()) with check (client_id = auth.uid());
 
+-- Supabase donne par défaut tous les droits sur les nouvelles tables : on repart de zéro, puis on accorde le strict nécessaire.
+revoke all on profiles, pros, services, konyela_slots, bookings, reviews, favorites, pro_ratings from anon, authenticated;
 grant usage on schema public to anon, authenticated;
 grant select on pros, services, konyela_slots, reviews, pro_ratings to anon, authenticated;
 grant select, insert, update, delete on profiles, favorites, konyela_slots, services to authenticated;
-grant update on pros to authenticated;
-grant select, insert, update on bookings to authenticated;
+grant insert, update on pros to authenticated;
+grant select, insert on bookings to authenticated;
+-- Une réservation ne se modifie que pour l'annuler ou suivre l'arrivée : ni le prix, ni l'heure, ni le prestataire.
+grant update (status, arrived_at, arrival_confirmed_at, late_minutes, wait_until, no_show, disputed_at) on bookings to authenticated;
 grant insert on reviews to authenticated;
 grant execute on function busy_intervals(text, timestamptz, timestamptz) to anon, authenticated;
-grant execute on function book_konyela_slot(uuid, booking_place, text, numeric) to authenticated;
-revoke execute on function book_konyela_slot(uuid, booking_place, text, numeric) from public, anon;
+grant execute on function book_konyela_slot(uuid, booking_place, text, numeric, text, text, text) to authenticated;
+revoke execute on function book_konyela_slot(uuid, booking_place, text, numeric, text, text, text) from public, anon;
+revoke execute on function handle_new_user() from public, anon, authenticated;

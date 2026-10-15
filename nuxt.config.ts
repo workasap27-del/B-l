@@ -1,4 +1,4 @@
-// VLADI : appli web mobile (SPA). Les données vivent dans le navigateur tant que Supabase n'est pas branché.
+// VLADI : appli web mobile (SPA). Fiches d'exemple dans le navigateur, vrais comptes dans Supabase.
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   ssr: false,
@@ -12,8 +12,7 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
         { name: 'description', content: 'Réserver une prestation beauté en Guadeloupe, à l\'avance ou tout de suite.' },
         // Installée sur l'écran d'accueil, l'appli s'ouvre en plein écran comme une appli native.
-        { name: 'theme-color', content: '#ffffff', media: '(prefers-color-scheme: light)' },
-        { name: 'theme-color', content: '#1c121a', media: '(prefers-color-scheme: dark)' },
+        { name: 'theme-color', content: '#ffffff' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-title', content: 'VLADI' },
@@ -23,16 +22,17 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/svg+xml', href: '/icon.svg' },
         { rel: 'apple-touch-icon', href: '/icon-180.png' },
         { rel: 'manifest', href: '/manifest.webmanifest' },
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Outfit:wght@500;600;700&family=Sora:wght@600;700&display=swap' },
+        { rel: 'preconnect', href: 'https://images.pexels.com' },
       ],
     },
   },
   runtimeConfig: {
     public: {
-      // Vides = mode démo (données locales). Voir README pour brancher Supabase.
-      supabaseUrl: '',
-      supabaseAnonKey: '',
+      // Clé publique Supabase : prévue pour être dans le navigateur, la sécurité repose sur les règles de la base.
+      // Variables d'environnement NUXT_PUBLIC_SUPABASE_URL et NUXT_PUBLIC_SUPABASE_KEY pour changer de projet ;
+      // mettre une valeur vide pour faire tourner l'appli sans base.
+      supabaseUrl: 'https://dkvqloksvlbniztqdywb.supabase.co',
+      supabaseKey: 'sb_publishable_-pjzbL8kdTPiiiB0pq5m7Q_fHgLMLrB',
     },
   },
 })

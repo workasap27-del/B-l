@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ChevronDown, List, Map as MapIcon, MapPin, Search, SearchX, SlidersHorizontal, X } from 'lucide-vue-next'
+import { ChevronDown, House, List, Map as MapIcon, MapPin, Search, SearchX, SlidersHorizontal, X } from 'lucide-vue-next'
 import { CATEGORIES } from '~/data/pros'
-import type { Pro } from '~/data/pros'
+import type { Category, Pro } from '~/data/pros'
 
 const route = useRoute()
 const { pros, km, ratingOf, starts, today, state } = useVladi()
@@ -14,22 +14,25 @@ const maxKm = ref(0)
 const todayOnly = ref(false)
 const sort = ref<'auto' | 'dist' | 'note' | 'prix'>(route.query.tri === 'note' ? 'note' : 'auto')
 const view = ref<'list' | 'map'>('list')
-const shown = ref(20)
+const shown = ref(12)
 const filtersOpen = ref(false)
 const locOpen = ref(false)
 const selected = ref('')
 const input = ref<HTMLInputElement | null>(null)
 
 onMounted(() => { if (route.query.saisie) input.value?.focus() })
-watch([q, cat, place, kind, maxKm, todayOnly, sort], () => { shown.value = 20; selected.value = '' })
+watch([q, cat, place, kind, maxKm, todayOnly, sort], () => { shown.value = 12; selected.value = '' })
 
+const cats = CATEGORIES.filter(c => c[0] !== 'all') as [Category, string][]
 const SUGGESTIONS = ['Pose gel', 'Box braids', 'Extensions de cils', 'Dégradé', 'Massage', 'Brushing', 'Maquillage mariée', 'Épilation']
 const minPrice = (p: Pro) => Math.min(...p.services.map(s => s.p))
 const freeToday = (p: Pro) => p.services.some(s => starts(p, today.value, s.d).length > 0)
+/** Tant que rien n'est cherché ni choisi, on montre d'abord les catégories. */
+const browsing = computed(() => !q.value.trim() && cat.value === 'all' && place.value === 'all')
 
 const list = computed(() => {
-  const hits = searchPros(pros, q.value, km).filter(({ pro: p }) => {
-    if (cat.value !== 'all' && !p.cats.includes(cat.value as never)) return false
+  const hits = searchPros(pros.value, q.value, km).filter(({ pro: p }) => {
+    if (cat.value !== 'all' && !p.cats.includes(cat.value as Category)) return false
     if (place.value === 'client' && !goesToClient(p)) return false
     if (place.value === 'pro' && !proPlace(p)) return false
     if (kind.value === 'salon' && p.kind.startsWith('Indépendant')) return false
@@ -57,76 +60,92 @@ function resetFilters() {
 </script>
 
 <template>
-  <div class="searchbar">
-    <Search :size="18" />
+  <div class="search-field">
+    <Search :size="19" />
     <input id="q" ref="input" v-model="q" type="search" enterkeyhint="search" placeholder="Prestation, prestataire, commune" aria-label="Rechercher une prestation, un prestataire ou une commune">
-    <button v-if="q" class="iconbtn" aria-label="Effacer la recherche" @click="q = ''; input?.focus()"><X :size="18" /></button>
+    <button v-if="q" class="icon-btn" style="width:32px;height:32px" aria-label="Effacer la recherche" @click="q = ''; input?.focus()"><X :size="18" /></button>
   </div>
 
-  <div class="chips">
-    <button class="chip" :class="{ on: activeFilters }" @click="filtersOpen = true"><SlidersHorizontal :size="15" />Filtres{{ activeFilters ? ` · ${activeFilters}` : '' }}</button>
+  <template v-if="browsing">
+    <section class="section mt24">
+      <h2 class="h2">Catégories</h2>
+      <div class="cat-grid">
+        <button v-for="c in cats" :key="c[0]" class="cat" @click="cat = c[0]">
+          <span class="ico"><component :is="CAT_ICON[c[0]]" :size="25" :stroke-width="1.6" /></span>{{ CAT_SHORT[c[0]] }}
+        </button>
+        <button class="cat" @click="place = 'client'">
+          <span class="ico"><House :size="25" :stroke-width="1.6" /></span>À domicile
+        </button>
+      </div>
+    </section>
+    <section class="section">
+      <h2 class="h2">Recherches fréquentes</h2>
+      <div class="row wrap gap8">
+        <button v-for="s in SUGGESTIONS" :key="s" class="chip" @click="q = s">{{ s }}</button>
+      </div>
+    </section>
+  </template>
+
+  <div class="chips mt16">
+    <button class="chip" :class="{ has: activeFilters }" @click="filtersOpen = true"><SlidersHorizontal :size="16" />Filtres{{ activeFilters ? ` (${activeFilters})` : '' }}</button>
     <button v-for="c in CATEGORIES" :key="c[0]" class="chip" :aria-pressed="cat === c[0]" @click="cat = c[0]">{{ c[1] }}</button>
   </div>
 
-  <div v-if="!q" class="chips" aria-label="Recherches fréquentes">
-    <button v-for="s in SUGGESTIONS" :key="s" class="chip" style="background:var(--surface2);border-color:transparent" @click="q = s">{{ s }}</button>
-  </div>
-
-  <div class="row between">
-    <div style="min-width:0">
-      <div class="h3">{{ list.length }} prestataire{{ list.length > 1 ? 's' : '' }}</div>
-      <button class="loc sub" style="font-weight:600" @click="locOpen = true"><MapPin :size="13" /><span class="where">autour de {{ state.pos.label }}</span><ChevronDown :size="13" /></button>
+  <div class="row between mt24" :class="{ section: browsing }">
+    <div class="col gap4" style="min-width:0">
+      <span class="h2">{{ browsing ? 'Près de toi' : `${list.length} résultat${list.length > 1 ? 's' : ''}` }}</span>
+      <button class="place-picker" style="font-weight:500;font-size:13px" @click="locOpen = true"><MapPin :size="13" /><span>Autour de {{ state.pos.label }}</span><ChevronDown :size="13" /></button>
     </div>
-    <button class="btn small line" @click="view = view === 'list' ? 'map' : 'list'">
+    <button class="btn sm soft" @click="view = view === 'list' ? 'map' : 'list'">
       <component :is="view === 'list' ? MapIcon : List" :size="16" />{{ view === 'list' ? 'Carte' : 'Liste' }}
     </button>
   </div>
 
   <div v-if="!list.length" class="empty">
-    <SearchX :size="34" />
-    <p><b>Personne ne propose ça ici.</b><br>Essaie un autre mot, élargis la distance ou enlève un filtre.</p>
-    <button v-if="activeFilters" class="btn small soft" @click="resetFilters">Enlever les filtres</button>
+    <SearchX :size="32" />
+    <b>Personne ne propose ça ici</b>
+    <span>Essaie un autre mot, élargis la distance ou enlève un filtre.</span>
+    <button v-if="activeFilters" class="btn sm soft" @click="resetFilters">Enlever les filtres</button>
   </div>
 
-  <div v-else-if="view === 'list'" class="stack" style="gap:16px">
+  <div v-else-if="view === 'list'" class="col mt16">
     <ProResult v-for="h in list.slice(0, shown)" :key="h.pro.id" :pro="h.pro" :services="h.services" />
-    <button v-if="list.length > shown" class="btn block line" @click="shown += 20">Afficher plus ({{ list.length - shown }} autres)</button>
+    <button v-if="list.length > shown" class="btn block soft" @click="shown += 12">Voir plus de résultats</button>
   </div>
 
-  <div v-else class="mapwrap">
+  <div v-else class="mapwrap mt16">
     <ProMap :items="mapItems" :selected="selected" :user="state.pos" @select="selected = $event" />
     <div v-if="selectedHit" class="mapcard">
       <ProResult :pro="selectedHit.pro" :services="selectedHit.services" />
     </div>
-    <p v-else-if="list.length > 80" class="mapcard tiny" style="text-align:center">Les 80 plus pertinents sont affichés. Affine la recherche pour voir les autres.</p>
   </div>
 
   <BottomSheet v-if="filtersOpen" @close="filtersOpen = false">
-    <div class="row between"><h2 class="h2">Filtres</h2><button class="link" @click="resetFilters">Tout effacer</button></div>
-    <div class="sec">
-      <div class="h3">Où ?</div>
+    <div class="row between"><h2 class="h2">Filtres</h2><button class="textbtn" @click="resetFilters">Tout effacer</button></div>
+    <div class="col gap8">
+      <span class="h3">Où ?</span>
       <div class="seg">
         <button :aria-pressed="place === 'all'" @click="place = 'all'">Peu importe</button>
         <button :aria-pressed="place === 'client'" @click="place = 'client'">Chez moi</button>
         <button :aria-pressed="place === 'pro'" @click="place = 'pro'">Je me déplace</button>
       </div>
     </div>
-    <div class="sec">
-      <div class="h3">Type de prestataire</div>
+    <div class="col gap8">
+      <span class="h3">Prestataire</span>
       <div class="seg">
         <button :aria-pressed="kind === 'all'" @click="kind = 'all'">Tous</button>
         <button :aria-pressed="kind === 'salon'" @click="kind = 'salon'">Salons, instituts</button>
         <button :aria-pressed="kind === 'indep'" @click="kind = 'indep'">Indépendants</button>
       </div>
     </div>
-    <div class="sec">
-      <div class="h3">Distance maximale</div>
+    <div class="col gap8">
+      <span class="h3">Distance maximale</span>
       <div class="seg">
         <button v-for="n in [0, 5, 10, 20, 40]" :key="n" :aria-pressed="maxKm === n" @click="maxKm = n">{{ n ? `${n} km` : 'Toutes' }}</button>
       </div>
     </div>
-    <div class="sec">
-      <div class="h3">Trier par</div>
+    <div class="col gap8">
+      <span class="h3">Trier par</span>
       <div class="seg">
         <button :aria-pressed="sort === 'auto'" @click="sort = 'auto'">Pertinence</button>
         <button :aria-pressed="sort === 'dist'" @click="sort = 'dist'">Distance</button>
@@ -134,7 +153,7 @@ function resetFilters() {
         <button :aria-pressed="sort === 'prix'" @click="sort = 'prix'">Prix</button>
       </div>
     </div>
-    <button class="chip" style="align-self:flex-start" :aria-pressed="todayOnly" @click="todayOnly = !todayOnly">Disponible aujourd'hui</button>
+    <label class="switch"><span>Disponible aujourd'hui</span><input id="today-only" v-model="todayOnly" type="checkbox"></label>
     <button class="btn block" @click="filtersOpen = false">Voir {{ list.length }} résultat{{ list.length > 1 ? 's' : '' }}</button>
   </BottomSheet>
   <LocationSheet v-if="locOpen" @close="locOpen = false" />

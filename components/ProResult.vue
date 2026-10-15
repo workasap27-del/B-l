@@ -1,44 +1,48 @@
 <script setup lang="ts">
-import { House, MapPin, Star } from 'lucide-vue-next'
+import { Heart, Star } from 'lucide-vue-next'
 import type { Pro, Service } from '~/data/pros'
 
-// Résultat de recherche : le prestataire, la prestation concernée et ses prochains créneaux, réservables en un geste.
+// Résultat de recherche : la photo, l'essentiel du prestataire, la prestation trouvée et ses prochains créneaux.
 const props = defineProps<{ pro: Pro, services?: Service[] }>()
-const { openSlots, ratingOf, km, nextSlots, today } = useVladi()
-const hasSlot = computed(() => openSlots(props.pro.id).length > 0)
+const { state, openSlots, ratingOf, km, nextSlots, today, toggleFav, isMine } = useVladi()
+const slot = computed(() => openSlots(props.pro.id)[0])
 const main = computed(() => props.services?.[0] ?? props.pro.services[0])
-const others = computed(() => (props.services ?? []).slice(1, 3))
-const times = computed(() => nextSlots(props.pro, main.value, 3))
-const d = computed(() => km(props.pro))
+const times = computed(() => nextSlots(props.pro, main.value, 4))
+const r = computed(() => ratingOf(props.pro))
 </script>
 
 <template>
   <article class="result">
-    <NuxtLink class="top" :to="`/pro/${pro.id}`">
-      <ProCover :pro="pro" variant="thumb" />
-      <div class="grow info">
+    <NuxtLink :to="`/pro/${pro.id}`" class="col gap12">
+      <ProPhoto :pro="pro" ratio="169" :w="640" :h="360">
+        <span v-if="slot" class="label now">-{{ slot.disc }} % aujourd'hui</span>
+        <span v-else />
+        <button class="icon-btn float" style="width:34px;height:34px" :aria-pressed="!!state.fav[pro.id]" aria-label="Ajouter aux favoris" @click.prevent="toggleFav(pro.id)">
+          <Heart :size="17" :fill="state.fav[pro.id] ? 'currentColor' : 'none'" />
+        </button>
+      </ProPhoto>
+      <div class="info">
         <div class="row between">
-          <span class="name ellip">{{ pro.name }}</span>
-          <span class="rate"><Star :size="14" />{{ String(ratingOf(pro).rating).replace('.', ',') }} <span class="tiny">({{ ratingOf(pro).count }})</span></span>
+          <span class="h3 ellip">{{ pro.name }}</span>
+          <span v-if="r.count" class="rate"><Star :size="13" />{{ fr(r.rating) }} <span class="n">({{ r.count }})</span></span>
+          <span v-else class="tag">Nouveau</span>
         </div>
-        <div class="meta"><span>{{ pro.kind }}</span><span class="sep">{{ pro.commune }}</span></div>
-        <div class="meta"><MapPin :size="13" /><span>{{ formatKm(d) }} · {{ driveMinutes(d) }} min</span></div>
-        <div class="tags">
-          <span v-if="hasSlot" class="badge k">Konyéla</span>
-          <span v-if="goesToClient(pro)" class="badge acc"><House :size="11" />Chez toi</span>
-          <span v-if="proPlace(pro)" class="badge">{{ proPlace(pro) }}</span>
+        <span class="meta">{{ pro.commune }} · {{ formatKm(km(pro)) }} · {{ pro.kind }}</span>
+        <div v-if="isMine(pro) || goesToClient(pro)" class="tags mt8">
+          <span v-if="isMine(pro)" class="tag accent">Votre entreprise</span>
+          <span v-if="goesToClient(pro)" class="tag">Se déplace à domicile</span>
         </div>
       </div>
     </NuxtLink>
-    <div class="svcline">
-      <span class="ellip">{{ main.n }} · {{ main.d }} min</span><b>{{ euro(main.p) }}</b>
+    <div class="service-line">
+      <span class="ellip">{{ main.n }} <span class="muted">· {{ duration(main.d) }}</span></span>
+      <b class="num">{{ euro(main.p) }}</b>
     </div>
     <div class="times">
-      <NuxtLink v-for="t in times" :key="t.date + t.time" class="time" :to="`/reserver/${pro.id}/${main.id}?date=${t.date}&time=${t.time}`">{{ shortDay(t.date, today) }} {{ hm(t.time) }}</NuxtLink>
-      <NuxtLink class="time more" :to="`/reserver/${pro.id}/${main.id}`">{{ times.length ? 'Autres horaires' : 'Voir les disponibilités' }}</NuxtLink>
+      <NuxtLink v-for="t in times" :key="t.date + t.time" class="time" :to="`/reserver/${pro.id}/${main.id}?date=${t.date}&time=${t.time}`">
+        <small>{{ shortDay(t.date, today) }}</small>{{ hm(t.time) }}
+      </NuxtLink>
+      <NuxtLink class="time more" :to="`/reserver/${pro.id}/${main.id}`">{{ times.length ? 'Plus d\'horaires' : 'Voir les disponibilités' }}</NuxtLink>
     </div>
-    <NuxtLink v-for="s in others" :key="s.id" class="svcline" :to="`/reserver/${pro.id}/${s.id}`">
-      <span class="ellip">{{ s.n }} · {{ s.d }} min</span><b>{{ euro(s.p) }} ›</b>
-    </NuxtLink>
   </article>
 </template>

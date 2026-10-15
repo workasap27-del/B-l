@@ -59,7 +59,11 @@ onMounted(async () => {
     fadeAnimation: false,
     markerZoomAnimation: false,
   }).setView([GUADELOUPE_CENTER.lat, GUADELOUPE_CENTER.lng], 10)
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map)
+  // Fond de carte épuré (CARTO, données OpenStreetMap) ; sombre avec la charte Nuit.
+  const dark = document.documentElement.dataset.charte === 'nuit'
+  L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark ? 'dark_all' : 'light_all'}/{z}/{x}/{y}{r}.png`, {
+    maxZoom: 19, subdomains: 'abcd', attribution: '&copy; OpenStreetMap &copy; CARTO',
+  }).addTo(map)
   layer = L.layerGroup().addTo(map)
   draw()
   // La carte peut être créée avant que son conteneur ait sa taille définitive.

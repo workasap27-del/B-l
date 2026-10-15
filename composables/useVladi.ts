@@ -1,10 +1,12 @@
-// État de l'appli en mode démo : tout vit dans le navigateur (localStorage).
-// Pour passer à Supabase, ce fichier est le seul point à remplacer : les pages n'appellent que ses fonctions.
+// État de l'appli. Deux sources :
+// - les fiches de démonstration et leurs réservations, qui vivent dans le navigateur (localStorage) ;
+// - les vrais comptes, fiches et réservations, qui vivent dans Supabase (composables/useBackend.ts).
+// Les pages n'appellent que les fonctions de ce fichier, sans savoir d'où viennent les données.
 import { computed, reactive, ref, watch } from 'vue'
 import { DEMO_CLIENT, DEMO_PRO_ID, PROS, REVIEW_TEXTS, RULES, CLIENT_NAMES } from '~/data/pros'
 import { hash, rng } from '~/data/random'
 import type { Pro, Review, Service } from '~/data/pros'
-import { addDays, ceil30, dateKey, discounted, freeStarts, gaps, isClosed, simulatedAppointments } from '~/utils/schedule'
+import { addDays, ceil30, discounted, freeStarts, gaps, isClosed, simulatedAppointments } from '~/utils/schedule'
 import type { Interval } from '~/utils/schedule'
 import { allowedPlaces, proPlace, travelFee } from '~/utils/places'
 import type { Place } from '~/utils/places'
@@ -12,9 +14,12 @@ import { arrivalState, clampLate, deadline, TOLERANCE } from '~/utils/arrival'
 import type { ArrivalFields } from '~/utils/arrival'
 import { communePoint, inGuadeloupe, roadKm } from '~/utils/geo'
 import type { LatLng } from '~/utils/geo'
+import { gpParts } from '~/utils/time'
+import * as api from '~/composables/useBackend'
+import type { Profile, RemoteBooking, RemoteReview } from '~/composables/useBackend'
 
 export interface Booking extends ArrivalFields {
-  id: number
+  id: string
   proId: string
   sid: string
   date: string
@@ -31,6 +36,13 @@ export interface Booking extends ArrivalFields {
   address?: string
   /** frais de déplacement compris dans le prix */
   fee: number
+  /** ce que la cliente signale au prestataire */
+  note?: string
+  /** réservation enregistrée dans la base (vrai prestataire) */
+  real?: boolean
+  clientId?: string
+  clientName?: string
+  clientPhone?: string
 }
 
 export interface Slot {
@@ -42,6 +54,7 @@ export interface Slot {
   disc: number
   status: 'open' | 'booked'
   by: 'seed' | 'pro'
+  real?: boolean
 }
 
 export interface AgendaItem {
@@ -57,7 +70,9 @@ export interface AgendaItem {
   id?: string
   place?: Place
   address?: string
-  bookingId?: number
+  bookingId?: string
+  phone?: string
+  note?: string
 }
 
 interface State {
@@ -71,41 +86,71 @@ interface State {
   sim: number | null
   /** réservations reçues par le pro de démo et pas encore vues */
   unseen: number
-  /** dernière adresse saisie par la cliente pour une prestation chez elle */
+  /** dernière adresse saisie pour une prestation à domicile */
   address: string
-  /** charte graphique en test ('' = charte d'origine) */
+  /** charte graphique en test */
   charte: string
   /** d'où l'on mesure les distances : la position du téléphone ou le centre d'une commune */
   pos: LatLng & { label: string, gps: boolean }
+  /** afficher les fiches d'exemple à côté des vrais prestataires */
+  showDemo: boolean
 }
 
-const STORAGE_KEY = 'vladi-v2'
+const STORAGE_KEY = 'vladi-v3'
 
 function blank(): State {
-  return { bookings: [], slots: [], fav: { kaz: true, reg: true }, reviews: {}, seq: 100, seededFor: '', sim: null, unseen: 0, address: '', charte: 'lagon', pos: { ...communePoint(DEMO_CLIENT.commune), label: DEMO_CLIENT.commune, gps: false } }
+  return {
+    bookings: [], slots: [], fav: {}, reviews: {}, seq: 100, seededFor: '', sim: null, unseen: 0, address: '',
+    charte: 'noir', pos: { ...communePoint(DEMO_CLIENT.commune), label: DEMO_CLIENT.commune, gps: false }, showDemo: true,
+  }
 }
 
 const state = reactive<State>(blank())
+
+/** Ce qui vient de la base : jamais enregistré dans le navigateur. */
+const remote = reactive({
+  online: false,
+  loading: true,
+  profile: null as Profile | null,
+  pros: [] as Pro[],
+  ratings: {} as Record<string, { rating: number, count: number }>,
+  myPro: null as Pro | null,
+  bookings: [] as Booking[],
+  slots: [] as Slot[],
+  busy: {} as Record<string, Record<string, [number, number][]>>,
+  reviews: {} as Record<string, RemoteReview[]>,
+  reviewed: [] as string[],
+})
+
 const clock = ref(new Date())
 const toastMessage = ref('')
 let toastTimer: ReturnType<typeof setTimeout> | undefined
 let started = false
 
-const today = computed(() => dateKey(clock.value))
-const nowMin = computed(() => state.sim ?? clock.value.getHours() * 60 + clock.value.getMinutes())
+const today = computed(() => gpParts(clock.value).date)
+const nowMin = computed(() => state.sim ?? gpParts(clock.value).min)
+
+/** Tous les prestataires visibles : les vrais d'abord, puis les fiches d'exemple si elles sont affichées. */
+const catalogue = computed<Pro[]>(() => [...remote.pros, ...(state.showDemo ? PROS : [])])
 
 function pro(id: string): Pro | undefined {
-  return PROS.find(p => p.id === id)
+  return remote.pros.find(p => p.id === id) ?? (remote.myPro?.id === id ? remote.myPro : undefined) ?? PROS.find(p => p.id === id)
 }
 
 function service(p: Pro, sid: string): Service | undefined {
   return p.services.find(x => x.id === sid)
 }
 
+function isMine(p: Pro): boolean {
+  return !!remote.profile && p.ownerId === remote.profile.id
+}
+
+// Avis ----------------------------------------------------------------------
+
 function baseReviews(p: Pro): Review[] {
   const r = rng(hash(`rev${p.id}`))
   const pool = [...REVIEW_TEXTS[p.cats[0]]]
-  return [0, 1, 2].map((i) => ({
+  return [0, 1, 2].map(i => ({
     a: CLIENT_NAMES[Math.floor(r() * CLIENT_NAMES.length)],
     s: i === 1 && p.rating < 4.7 ? 4 : 5,
     t: pool.splice(Math.floor(r() * pool.length), 1)[0],
@@ -113,18 +158,28 @@ function baseReviews(p: Pro): Review[] {
 }
 
 function reviewsOf(p: Pro): Review[] {
+  if (p.real) return (remote.reviews[p.id] ?? []).map(r => ({ a: 'Cliente vérifiée', s: r.stars, t: r.body || 'Sans commentaire.' }))
   return [...(state.reviews[p.id] ?? []), ...baseReviews(p)]
 }
 
 function ratingOf(p: Pro): { rating: number, count: number } {
+  if (p.real) return remote.ratings[p.id] ?? { rating: 0, count: 0 }
   const mine = state.reviews[p.id] ?? []
   const sum = p.rating * p.nrev + mine.reduce((a, r) => a + r.s, 0)
   const count = p.nrev + mine.length
   return { rating: Math.round((sum / count) * 10) / 10, count }
 }
 
-/** Intervalles occupés chez un pro un jour donné : agenda simulé, réservations de l'appli, créneaux Konyéla en ligne. */
+async function loadReviewsFor(p: Pro) {
+  if (!p.real || !remote.online) return
+  remote.reviews[p.id] = await api.loadReviews(p.id)
+}
+
+// Disponibilités ------------------------------------------------------------
+
+/** Intervalles occupés chez un pro un jour donné. */
 function taken(p: Pro, date: string): Interval[] {
+  if (p.real) return [...(remote.busy[p.id]?.[date] ?? [])]
   const out: Interval[] = simulatedAppointments(p, date).map(x => [x.a, x.b])
   for (const b of state.bookings) {
     if (b.proId === p.id && b.date === date && b.status === 'confirmed') out.push([b.time, b.time + b.dur])
@@ -141,12 +196,13 @@ function starts(p: Pro, date: string, duration: number): number[] {
 }
 
 function openSlots(proId?: string): Slot[] {
-  return state.slots
-    .filter(s => s.status === 'open' && s.date === today.value && s.time >= nowMin.value + 10 && (!proId || s.proId === proId))
+  const demo = state.showDemo || proId ? state.slots : []
+  return [...remote.slots, ...demo]
+    .filter(s => s.status === 'open' && s.date === today.value && s.time >= nowMin.value + 10 && (!proId || s.proId === proId) && !!pro(s.proId))
     .sort((a, b) => a.time - b.time)
 }
 
-/** Créneaux Konyéla de démonstration du jour, recalculés quand le jour ou l'heure simulée change. */
+/** Créneaux Konyéla des fiches d'exemple, recalculés quand le jour ou l'heure simulée change. */
 function seedSlots(force = false) {
   const key = `${today.value}|${state.sim ?? 'réel'}`
   if (!force && state.seededFor === key) return
@@ -165,23 +221,25 @@ function seedSlots(force = false) {
 }
 
 function seedBookings() {
-  // Un rendez-vous passé (pour tester l'avis) et un à venir.
+  // Un rendez-vous passé (pour tester l'avis) et un à venir, chez des fiches d'exemple.
   const reg = pro('reg')!
   let past = addDays(today.value, -1)
   while (isClosed(reg, past)) past = addDays(past, -1)
   const lift = service(reg, 'd')!
-  state.bookings.push({ id: ++state.seq, proId: 'reg', sid: 'd', date: past, time: 1020, dur: lift.d, price: lift.p, deposit: Math.round(lift.p * RULES.depositRate), mode: 'classic', status: 'confirmed', reviewed: false, place: 'pro', fee: 0 })
+  state.bookings.push({ id: `l${++state.seq}`, proId: 'reg', sid: 'd', date: past, time: 1020, dur: lift.d, price: lift.p, deposit: Math.round(lift.p * RULES.depositRate), mode: 'classic', status: 'confirmed', reviewed: false, place: 'pro', fee: 0 })
   const hib = pro('hib')!
   const brush = service(hib, 'a')!
   for (let n = 3; n < 10; n++) {
     const date = addDays(today.value, n)
     const free = starts(hib, date, brush.d).filter(t => t >= 600)
     if (free.length) {
-      state.bookings.push({ id: ++state.seq, proId: 'hib', sid: 'a', date, time: free[0], dur: brush.d, price: brush.p, deposit: Math.round(brush.p * RULES.depositRate), mode: 'classic', status: 'confirmed', reviewed: false, place: 'pro', fee: 0 })
+      state.bookings.push({ id: `l${++state.seq}`, proId: 'hib', sid: 'a', date, time: free[0], dur: brush.d, price: brush.p, deposit: Math.round(brush.p * RULES.depositRate), mode: 'classic', status: 'confirmed', reviewed: false, place: 'pro', fee: 0 })
       break
     }
   }
 }
+
+// Position et distances -----------------------------------------------------
 
 /** Distance estimée par la route entre l'utilisateur et le prestataire, en km. */
 function km(p: Pro): number {
@@ -203,8 +261,20 @@ function locate(): Promise<string | null> {
         state.pos = { ...here, label: 'Ma position', gps: true }
         resolve(null)
       },
-      () => resolve("Position refusée ou introuvable. Choisis une commune à la place."),
+      () => resolve('Position refusée ou introuvable. Choisis une commune à la place.'),
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
+    )
+  })
+}
+
+/** Position du téléphone pour une fiche (sans la garder comme point de départ des distances). */
+function currentPosition(): Promise<LatLng | null> {
+  return new Promise((resolve) => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) return resolve(null)
+    navigator.geolocation.getCurrentPosition(
+      g => resolve({ lat: g.coords.latitude, lng: g.coords.longitude }),
+      () => resolve(null),
+      { enableHighAccuracy: true, timeout: 10000 },
     )
   })
 }
@@ -226,7 +296,7 @@ function nextSlots(p: Pro, sv: Service, count = 3): { date: string, time: number
 function openStatus(p: Pro): { open: boolean, text: string } {
   if (isClosed(p, today.value)) return { open: false, text: "Fermé aujourd'hui" }
   if (nowMin.value < p.open) return { open: false, text: `Ouvre à ${hmText(p.open)}` }
-  if (nowMin.value < p.close) return { open: true, text: `Ouvert · ferme à ${hmText(p.close)}` }
+  if (nowMin.value < p.close) return { open: true, text: `Ouvert jusqu'à ${hmText(p.close)}` }
   return { open: false, text: 'Fermé pour ce soir' }
 }
 
@@ -234,6 +304,18 @@ function hmText(t: number): string {
   const m = t % 60
   return `${Math.floor(t / 60)}h${m < 10 ? '0' : ''}${m}`
 }
+
+// Réservations --------------------------------------------------------------
+
+function fromRemote(r: RemoteBooking): Booking {
+  return { ...r, reviewed: remote.reviewed.includes(r.id), real: true }
+}
+
+/** Réservations de la personne connectée en tant que cliente (vraies et d'exemple). */
+const myBookings = computed<Booking[]>(() => [
+  ...state.bookings,
+  ...remote.bookings.filter(b => b.clientId === remote.profile?.id),
+])
 
 function isDone(b: Booking): boolean {
   return b.status === 'confirmed' && (!!b.noShow || b.disputed === true || b.date < today.value || (b.date === today.value && b.time + b.dur <= nowMin.value))
@@ -252,36 +334,81 @@ function refundable(b: Booking): boolean {
 /** Où se passera le rendez-vous, en clair. */
 function placeLabel(b: Booking): string {
   const p = pro(b.proId)
-  if (b.place === 'client') return `Chez toi${b.address ? ` · ${b.address}` : ''}`
-  return p ? `${proPlace(p) ?? 'Sur place'} · ${p.quartier}, ${p.commune}` : 'Sur place'
+  if (b.place === 'client') return `À domicile${b.address ? ` · ${b.address}` : ''}`
+  return p ? `${proPlace(p) ?? 'Sur place'} · ${p.quartier ? `${p.quartier}, ` : ''}${p.commune}` : 'Sur place'
 }
 
-function book(input: { proId: string, sid: string, date: string, time: number, slotId?: string, place: Place, address?: string }): Booking | null {
+function findBooking(id: string): Booking | undefined {
+  return state.bookings.find(x => x.id === id) ?? remote.bookings.find(x => x.id === id)
+}
+
+export interface BookInput { proId: string, sid: string, date: string, time: number, slotId?: string, place: Place, address?: string, note?: string }
+
+/** Réserve. Renvoie la réservation, ou un message d'erreur ('connexion' si un compte est nécessaire). */
+async function book(input: BookInput): Promise<{ booking?: Booking, error?: string }> {
   const p = pro(input.proId)
   const sv = p && service(p, input.sid)
-  if (!p || !sv) return null
-  if (!allowedPlaces(p).includes(input.place)) return null
+  if (!p || !sv) return { error: 'Prestation introuvable.' }
+  if (!allowedPlaces(p).includes(input.place)) return { error: 'Ce lieu n\'est pas proposé par ce prestataire.' }
   const address = input.place === 'client' ? (input.address ?? '').trim() : undefined
-  if (input.place === 'client' && (!address || address.length < 5)) return null
+  if (input.place === 'client' && (!address || address.length < 5)) return { error: 'Indique ton adresse.' }
+  if (address) state.address = address
+
+  if (p.real) {
+    const me = remote.profile
+    if (!me) return { error: 'connexion' }
+    try {
+      const r = input.slotId
+        ? await api.bookSlot({ slotId: input.slotId, place: input.place, address, clientName: me.name, clientPhone: me.phone, note: input.note })
+        : await api.createBooking({ clientId: me.id, clientName: me.name, clientPhone: me.phone, note: input.note, proId: p.id, sid: sv.id, date: input.date, time: input.time, dur: sv.d, place: input.place, address })
+      const b = fromRemote(r)
+      remote.bookings.push(b)
+      void refreshAvailability()
+      return { booking: b }
+    }
+    catch (e) {
+      void refreshAvailability()
+      return { error: api.readable(e) }
+    }
+  }
+
+  // Fiche d'exemple : tout reste dans le navigateur.
   const fee = input.place === 'client' ? travelFee(p) : 0
   let price = sv.p
   if (input.slotId) {
     const slot = state.slots.find(s => s.id === input.slotId)
-    if (!slot || slot.status !== 'open' || slot.time < nowMin.value + 10) return null
+    if (!slot || slot.status !== 'open' || slot.time < nowMin.value + 10) return { error: 'Ce créneau vient de partir. Choisis-en un autre.' }
     slot.status = 'booked'
     price = discounted(sv, slot.disc)
-  } else if (!starts(p, input.date, sv.d).includes(input.time)) {
-    return null
+  }
+  else if (!starts(p, input.date, sv.d).includes(input.time)) {
+    return { error: 'Ce créneau vient de partir. Choisis-en un autre.' }
   }
   price += fee
-  const b: Booking = { id: ++state.seq, proId: p.id, sid: sv.id, date: input.date, time: input.time, dur: sv.d, price, deposit: Math.round(price * RULES.depositRate), mode: input.slotId ? 'lm' : 'classic', status: 'confirmed', reviewed: false, place: input.place, address, fee }
+  const b: Booking = { id: `l${++state.seq}`, proId: p.id, sid: sv.id, date: input.date, time: input.time, dur: sv.d, price, deposit: Math.round(price * RULES.depositRate), mode: input.slotId ? 'lm' : 'classic', status: 'confirmed', reviewed: false, place: input.place, address, fee, note: input.note?.trim() || undefined }
   state.bookings.push(b)
-  if (address) state.address = address
   if (p.id === DEMO_PRO_ID) state.unseen++
-  return b
+  return { booking: b }
 }
 
-// Arrivée le jour J -------------------------------------------------------
+/** Applique une modification à une réservation, dans la base si elle y est. */
+async function change(id: string, f: Partial<Pick<Booking, 'status' | 'arrivedAt' | 'confirmedAt' | 'lateBy' | 'waitUntil' | 'noShow' | 'disputed'>>): Promise<boolean> {
+  const b = findBooking(id)
+  if (!b) return false
+  if (b.real) {
+    try {
+      await api.updateBooking(id, b.date, { ...f, status: f.status === 'cancelled' ? 'cancelled' : undefined })
+    }
+    catch (e) {
+      toast(api.readable(e))
+      return false
+    }
+  }
+  Object.assign(b, f)
+  if (b.real && f.status) void refreshAvailability()
+  return true
+}
+
 /** Qui se déplace : la cliente quand ça se passe chez le prestataire, le prestataire quand il vient chez elle. */
 function traveler(b: Booking): 'client' | 'pro' {
   return b.place === 'client' ? 'pro' : 'client'
@@ -289,44 +416,41 @@ function traveler(b: Booking): 'client' | 'pro' {
 function arrival(b: Booking) {
   return arrivalState(b, nowMin.value, b.date === today.value)
 }
-function find(id: number) {
-  return state.bookings.find(x => x.id === id)
+const signalArrival = (id: string) => findBooking(id)?.arrivedAt === undefined && change(id, { arrivedAt: nowMin.value })
+const confirmArrival = (id: string) => findBooking(id)?.arrivedAt !== undefined && change(id, { confirmedAt: nowMin.value })
+const announceLate = (id: string, minutes: number) => change(id, { lateBy: clampLate(minutes) })
+function waitMore(id: string) {
+  const b = findBooking(id)
+  return b && change(id, { waitUntil: deadline(b) + TOLERANCE })
 }
-function signalArrival(id: number) {
-  const b = find(id)
-  if (b && b.arrivedAt === undefined) b.arrivedAt = nowMin.value
+function declareNoShow(id: string) {
+  const b = findBooking(id)
+  return b && change(id, { noShow: traveler(b) })
 }
-function confirmArrival(id: number) {
-  const b = find(id)
-  if (b && b.arrivedAt !== undefined) b.confirmedAt = nowMin.value
-}
-function announceLate(id: number, minutes: number) {
-  const b = find(id)
-  if (b) b.lateBy = clampLate(minutes)
-}
-function waitMore(id: number) {
-  const b = find(id)
-  if (b) b.waitUntil = deadline(b) + TOLERANCE
-}
-function declareNoShow(id: number) {
-  const b = find(id)
-  if (b) b.noShow = traveler(b)
-}
-function dispute(id: number) {
-  const b = find(id)
-  if (b) b.disputed = true
-}
+const dispute = (id: string) => change(id, { disputed: true })
+const cancel = (id: string) => change(id, { status: 'cancelled' })
 
-function cancel(id: number) {
-  const b = state.bookings.find(x => x.id === id)
-  if (b) b.status = 'cancelled'
-}
-
-function addReview(bookingId: number, stars: number, text: string) {
-  const b = state.bookings.find(x => x.id === bookingId)
+async function addReview(bookingId: string, stars: number, text: string) {
+  const b = findBooking(bookingId)
   if (!b || b.reviewed) return
-  const list = state.reviews[b.proId] ?? (state.reviews[b.proId] = [])
-  list.unshift({ a: DEMO_CLIENT.name, s: stars, t: text.trim() || 'Sans commentaire.' })
+  if (b.real) {
+    try {
+      await api.addReview({ bookingId, proId: b.proId, clientId: remote.profile!.id, stars, body: text })
+      remote.reviewed.push(bookingId)
+      const p = pro(b.proId)
+      if (p) await loadReviewsFor(p)
+      const { ratings } = await api.loadPros()
+      remote.ratings = ratings
+    }
+    catch (e) {
+      toast(api.readable(e))
+      return
+    }
+  }
+  else {
+    const list = state.reviews[b.proId] ?? (state.reviews[b.proId] = [])
+    list.unshift({ a: firstName.value, s: stars, t: text.trim() || 'Sans commentaire.' })
+  }
   b.reviewed = true
 }
 
@@ -334,20 +458,40 @@ function toggleFav(id: string) {
   state.fav[id] = !state.fav[id]
 }
 
-/** Agenda du pro de démo : rendez-vous, réservations de l'appli, créneaux Konyéla, trous. */
+// Espace prestataire --------------------------------------------------------
+
+/** Fiche gérée dans l'espace pro : celle du compte connecté, sinon la fiche d'exemple. */
+const workPro = computed<{ pro: Pro, demo: boolean }>(() =>
+  remote.myPro ? { pro: remote.myPro, demo: false } : { pro: PROS.find(p => p.id === DEMO_PRO_ID)!, demo: true },
+)
+
+/** Réservations reçues par la fiche du compte connecté. */
+const proBookings = computed(() => remote.myPro ? remote.bookings.filter(b => b.proId === remote.myPro!.id) : [])
+
 function agenda(date: string): AgendaItem[] {
-  const p = pro(DEMO_PRO_ID)!
+  const { pro: p, demo } = workPro.value
   if (isClosed(p, date)) return []
-  const items: AgendaItem[] = simulatedAppointments(p, date).map(x => ({ a: x.a, b: x.b, kind: 'rdv', who: x.who, what: x.what, price: x.price }))
-  for (const b of state.bookings) {
-    if (b.proId === p.id && b.date === date && b.status === 'confirmed') {
-      items.push({ a: b.time, b: b.time + b.dur, kind: 'app', who: DEMO_CLIENT.name, what: service(p, b.sid)?.n, price: b.price, deposit: b.deposit, mode: b.mode, place: b.place, address: b.address, bookingId: b.id })
+  const items: AgendaItem[] = []
+  if (demo) {
+    for (const x of simulatedAppointments(p, date)) items.push({ a: x.a, b: x.b, kind: 'rdv', who: x.who, what: x.what, price: x.price })
+    for (const b of state.bookings) {
+      if (b.proId === p.id && b.date === date && b.status === 'confirmed') {
+        items.push({ a: b.time, b: b.time + b.dur, kind: 'app', who: firstName.value, what: service(p, b.sid)?.n, price: b.price, deposit: b.deposit, mode: b.mode, place: b.place, address: b.address, bookingId: b.id, note: b.note })
+      }
     }
   }
-  for (const s of state.slots) {
+  else {
+    for (const b of proBookings.value) {
+      if (b.date === date && b.status === 'confirmed') {
+        items.push({ a: b.time, b: b.time + b.dur, kind: 'app', who: b.clientName || 'Cliente', what: service(p, b.sid)?.n ?? 'Prestation', price: b.price, deposit: b.deposit, mode: b.mode, place: b.place, address: b.address, bookingId: b.id, phone: b.clientPhone, note: b.note })
+      }
+    }
+  }
+  const slots = demo ? state.slots : remote.slots
+  for (const s of slots) {
     if (s.proId === p.id && s.date === date && s.status === 'open' && (date !== today.value || s.time >= nowMin.value + 10)) {
-      const sv = service(p, s.sid)!
-      items.push({ a: s.time, b: s.time + sv.d, kind: 'lm', what: sv.n, disc: s.disc, id: s.id })
+      const sv = service(p, s.sid)
+      if (sv) items.push({ a: s.time, b: s.time + sv.d, kind: 'lm', what: sv.n, disc: s.disc, id: s.id })
     }
   }
   for (const [a, b] of gaps(p, items.map(i => [i.a, i.b] as Interval))) items.push({ a, b, kind: 'gap' })
@@ -359,16 +503,156 @@ function earliestIn(gapStart: number): number {
   return ceil30(Math.max(gapStart, nowMin.value + 30))
 }
 
-function publishSlot(sid: string, time: number, disc: number): boolean {
-  const p = pro(DEMO_PRO_ID)!
+async function publishSlot(sid: string, time: number, disc: number): Promise<boolean> {
+  const { pro: p, demo } = workPro.value
   const sv = service(p, sid)
   if (!sv || !starts(p, today.value, sv.d).includes(time)) return false
-  state.slots.push({ id: `p${++state.seq}`, proId: p.id, sid, date: today.value, time, disc, status: 'open', by: 'pro' })
-  return true
+  if (demo) {
+    state.slots.push({ id: `p${++state.seq}`, proId: p.id, sid, date: today.value, time, disc, status: 'open', by: 'pro' })
+    return true
+  }
+  try {
+    await api.publishSlot(p.id, sid, today.value, time, disc)
+    await refreshAvailability()
+    return true
+  }
+  catch (e) {
+    toast(api.readable(e))
+    return false
+  }
 }
 
-function removeSlot(id: string) {
-  state.slots = state.slots.filter(s => s.id !== id)
+async function removeSlot(id: string) {
+  const s = remote.slots.find(x => x.id === id)
+  if (s) {
+    try {
+      await api.removeSlot(id)
+      await refreshAvailability()
+    }
+    catch (e) {
+      toast(api.readable(e))
+    }
+    return
+  }
+  state.slots = state.slots.filter(x => x.id !== id)
+}
+
+/** Mes créneaux Konyéla du jour (fiche gérée dans l'espace pro). */
+const mySlots = computed(() => {
+  const { pro: p, demo } = workPro.value
+  return (demo ? state.slots : remote.slots).filter(s => s.proId === p.id && s.date === today.value).sort((a, b) => a.time - b.time)
+})
+
+// Comptes -------------------------------------------------------------------
+
+const account = computed(() => remote.profile)
+const firstName = computed(() => (remote.profile?.name ?? DEMO_CLIENT.firstName).split(' ')[0])
+
+async function register(input: { email: string, password: string, name: string, role: 'client' | 'pro', phone?: string }): Promise<string | null> {
+  try {
+    await api.signUp(input)
+    await refresh()
+    return null
+  }
+  catch (e) {
+    return api.readable(e)
+  }
+}
+
+async function login(email: string, password: string): Promise<string | null> {
+  try {
+    await api.signIn(email, password)
+    await refresh()
+    return null
+  }
+  catch (e) {
+    return api.readable(e)
+  }
+}
+
+async function logout() {
+  await api.signOut()
+  remote.profile = null
+  remote.myPro = null
+  remote.bookings = []
+  remote.reviewed = []
+}
+
+async function forgotPassword(email: string): Promise<string | null> {
+  try {
+    await api.resetPassword(email)
+    return null
+  }
+  catch (e) {
+    return api.readable(e)
+  }
+}
+
+async function saveProfile(fields: { name?: string, phone?: string }): Promise<string | null> {
+  if (!remote.profile) return 'Connecte-toi d\'abord.'
+  try {
+    await api.updateProfile(remote.profile.id, fields)
+    await refresh()
+    return null
+  }
+  catch (e) {
+    return api.readable(e)
+  }
+}
+
+async function saveMyPro(f: api.ProInput): Promise<string | null> {
+  if (!remote.profile) return 'Connecte-toi d\'abord.'
+  try {
+    await api.saveMyPro(remote.profile.id, f)
+    if (remote.profile.role !== 'pro') await api.updateProfile(remote.profile.id, { role: 'pro' })
+    await refresh()
+    return null
+  }
+  catch (e) {
+    return api.readable(e)
+  }
+}
+
+// Chargement ----------------------------------------------------------------
+
+async function refreshAvailability() {
+  if (!remote.online) return
+  try {
+    const [busy, slots] = await Promise.all([api.loadBusy(today.value), api.loadOpenSlots()])
+    remote.busy = busy
+    remote.slots = slots.map(s => ({ ...s, status: 'open', by: 'pro', real: true }))
+  }
+  catch { /* réseau indisponible : on garde les dernières données */ }
+}
+
+/** Recharge tout ce qui vient de la base. */
+async function refresh() {
+  if (!api.sb()) {
+    remote.loading = false
+    return
+  }
+  remote.online = true
+  try {
+    const [profile, catalogueData] = await Promise.all([api.loadProfile(), api.loadPros()])
+    remote.profile = profile
+    remote.pros = catalogueData.pros
+    remote.ratings = catalogueData.ratings
+    if (profile) {
+      const [myPro, bookings, mine] = await Promise.all([api.loadMyPro(profile.id), api.loadBookings(), api.loadReviews(undefined, profile.id)])
+      remote.myPro = myPro
+      remote.reviewed = mine.map(r => r.bookingId)
+      remote.bookings = bookings.map(fromRemote)
+    }
+    else {
+      remote.myPro = null
+      remote.bookings = []
+    }
+    await refreshAvailability()
+  }
+  catch { /* réseau indisponible : l'appli continue avec les fiches d'exemple */ }
+  finally {
+    remote.loading = false
+  }
 }
 
 function setSim(minutes: number | null) {
@@ -379,11 +663,12 @@ function setSim(minutes: number | null) {
 function toast(message: string) {
   toastMessage.value = message
   clearTimeout(toastTimer)
-  toastTimer = setTimeout(() => { toastMessage.value = '' }, 2800)
+  toastTimer = setTimeout(() => { toastMessage.value = '' }, 3200)
 }
 
 function reset() {
-  Object.assign(state, blank())
+  const keep = { charte: state.charte, pos: state.pos }
+  Object.assign(state, blank(), keep)
   seedBookings()
   seedSlots(true)
 }
@@ -397,30 +682,40 @@ function start() {
       const saved = JSON.parse(raw)
       Object.assign(state, blank(), saved)
       if (!saved.pos || typeof saved.pos.lat !== 'number') state.pos = blank().pos
-      // Une réservation dont le prestataire n'existe plus dans le catalogue est écartée.
+      // Une réservation dont la fiche d'exemple n'existe plus est écartée.
       state.bookings = state.bookings.filter(b => PROS.some(x => x.id === b.proId && x.services.some(v => v.id === b.sid)))
       state.slots = state.slots.filter(k => PROS.some(x => x.id === k.proId && x.services.some(v => v.id === k.sid)))
     }
-  } catch { /* stockage indisponible : on repart de zéro */ }
+  }
+  catch { /* stockage indisponible : on repart de zéro */ }
   if (!state.bookings.length && !state.seededFor) seedBookings()
   seedSlots()
   watch(state, () => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)) } catch { /* ignore */ }
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)) }
+    catch { /* ignore */ }
   }, { deep: true })
   setInterval(() => { clock.value = new Date() }, 30000)
   watch(today, () => seedSlots())
+  void refresh()
+  api.onAuthChange(() => { void refresh() })
+  // Les réservations et les créneaux bougent : on recharge régulièrement.
+  setInterval(() => {
+    if (remote.profile) void api.loadBookings().then((b) => { remote.bookings = b.map(fromRemote) }).catch(() => {})
+    void refreshAvailability()
+  }, 60000)
 }
 
 export function useVladi() {
   start()
   return {
-    state, today, nowMin, toastMessage,
-    pros: PROS, pro, service, reviewsOf, ratingOf,
-    starts, openSlots, isDone, refundable, minutesUntil,
+    state, remote, today, nowMin, toastMessage,
+    pros: catalogue, pro, service, isMine, reviewsOf, ratingOf, loadReviewsFor,
+    starts, openSlots, isDone, refundable, minutesUntil, myBookings, findBooking,
     book, cancel, addReview, toggleFav, placeLabel,
-    km, setCommune, locate, nextSlots, openStatus,
+    km, setCommune, locate, currentPosition, nextSlots, openStatus,
     traveler, arrival, signalArrival, confirmArrival, announceLate, waitMore, declareNoShow, dispute,
-    agenda, earliestIn, publishSlot, removeSlot,
+    workPro, proBookings, agenda, earliestIn, publishSlot, removeSlot, mySlots,
+    account, firstName, register, login, logout, forgotPassword, saveProfile, saveMyPro, refresh,
     setSim, toast, reset,
   }
 }

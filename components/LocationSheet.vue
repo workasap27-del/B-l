@@ -22,11 +22,13 @@ function choose(name: string) {
 
 <template>
   <BottomSheet @close="emit('close')">
-    <h2 class="h2">Où es-tu ?</h2>
-    <p class="sub">Les distances et l'ordre des résultats partent de ce point.</p>
-    <button class="btn soft block" :disabled="busy" @click="useGps"><LocateFixed :size="18" />{{ busy ? 'Recherche de ta position...' : 'Utiliser ma position' }}</button>
+    <div class="col gap4">
+      <h2 class="h2">Où es-tu ?</h2>
+      <p class="meta">Les distances et l'ordre des résultats partent de ce point.</p>
+    </div>
+    <button class="btn soft block" :disabled="busy" @click="useGps"><LocateFixed :size="18" />{{ busy ? 'Recherche de ta position…' : 'Utiliser ma position' }}</button>
     <div class="optlist">
-      <button v-for="c in communes" :key="c" :aria-pressed="!state.pos.gps && state.pos.label === c" @click="choose(c)">
+      <button v-for="c in communes" :key="c" @click="choose(c)">
         {{ c }}<Check v-if="!state.pos.gps && state.pos.label === c" :size="18" />
       </button>
     </div>

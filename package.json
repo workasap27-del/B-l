@@ -13,6 +13,7 @@
     "seed:sql": "jiti scripts/gen-seed.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "leaflet": "^1.9.4",
     "lucide-vue-next": "^1.0.0",
     "nuxt": "^3.13.2",

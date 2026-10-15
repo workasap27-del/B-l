@@ -118,7 +118,7 @@ const TRADES: Trade[] = [
     tags: ['Mariée', 'Soirée', 'Shooting', 'Carnaval', 'Cours', 'Invitée'],
     about: ['Studio maquillage et mise en beauté pour tous les événements.'],
     soloAbout: ['Maquilleuse professionnelle, mariages et événements dans toute l\'île.', 'Teint sur mesure pour toutes les carnations, tenue longue durée.', 'Se déplace avec sa valise et sa lumière, essai possible avant le grand jour.'],
-    menu: [['Maquillage jour', 60, 40], ['Maquillage soirée', 60, 60], ['Maquillage mariée + essai', 120, 150], ["Cours d'auto-maquillage", 90, 70], ['Maquillage shooting', 60, 65], ['Maquillage carnaval', 60, 45], ['Maquillage invitée', 60, 50]],
+    menu: [['Maquillage jour', 60, 40], ['Maquillage soirée', 60, 60], ['Maquillage mariée + essai', 120, 150], ["Cours d'auto-maquillage", 90, 70], ['Maquillage shooting', 60, 65], ['Maquillage carnaval', 60, 45], ['Maquillage invitée de mariage', 60, 50]],
   },
   {
     cat: 'barbier', share: 12, indep: 0.3, shop: 'Salon', male: true,
@@ -213,4 +213,9 @@ export function generatePros(takenNames: string[]): Pro[] {
     }
   }
   return out
+}
+
+/** Prestations courantes d'une catégorie, proposées en suggestion quand un prestataire crée sa fiche. */
+export function suggestedServices(cat: Category): { n: string, d: number, p: number }[] {
+  return TRADES.filter(t => t.cat === cat).flatMap(t => t.menu.map(([n, d, p]) => ({ n, d, p })))
 }

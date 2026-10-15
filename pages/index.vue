@@ -1,84 +1,112 @@
 <script setup lang="ts">
-import { ChevronDown, MapPin, Search } from 'lucide-vue-next'
-import { CATEGORIES, DEMO_CLIENT } from '~/data/pros'
+import { ChevronDown, ChevronRight, House, MapPin, Search, Settings2 } from 'lucide-vue-next'
+import { CATEGORIES } from '~/data/pros'
 import type { Category } from '~/data/pros'
 
-const { state, pros, openSlots, km, ratingOf, pro, service, today, isDone, placeLabel } = useVladi()
+const { pros, openSlots, km, ratingOf, account, myBookings, isDone, pro, service, today, placeLabel, state } = useVladi()
 const locOpen = ref(false)
+const settingsOpen = ref(false)
 const cats = CATEGORIES.filter(c => c[0] !== 'all') as [Category, string][]
 
-const byDistance = computed(() => [...pros].sort((a, b) => km(a) - km(b)))
+const byDistance = computed(() => [...pros.value].sort((a, b) => km(a) - km(b)))
 const near = computed(() => byDistance.value.slice(0, 10))
 const atHome = computed(() => byDistance.value.filter(goesToClient).slice(0, 10))
 const best = computed(() => byDistance.value.slice(0, 60).filter(p => ratingOf(p).count >= 15).sort((a, b) => ratingOf(b).rating - ratingOf(a).rating).slice(0, 10))
-const slots = computed(() => openSlots().slice(0, 10))
-const nextBooking = computed(() => state.bookings
-  .filter(b => b.status === 'confirmed' && !isDone(b))
-  .sort((a, b) => `${a.date}${String(a.time).padStart(4, '0')}`.localeCompare(`${b.date}${String(b.time).padStart(4, '0')}`))[0])
+// Dernière minute : seulement ce qui est raisonnablement proche, du plus tôt au plus tard.
+const slots = computed(() => openSlots().filter(s => km(pro(s.proId)!) <= 30).slice(0, 10))
+const stamp = (b: { date: string, time: number }) => `${b.date}${String(b.time).padStart(4, '0')}`
+const nextBooking = computed(() => myBookings.value.filter(b => b.status === 'confirmed' && !isDone(b)).sort((a, b) => stamp(a).localeCompare(stamp(b)))[0])
+const nextPro = computed(() => (nextBooking.value ? pro(nextBooking.value.proId) : undefined))
 </script>
 
 <template>
-  <header class="homehead">
-    <AppLogo :height="24" />
-    <span class="pill">Démo</span>
+  <div class="home-head">
+  <header class="topbar">
+    <AppLogo />
+    <button class="icon-btn filled" aria-label="Réglages" @click="settingsOpen = true"><Settings2 :size="20" /></button>
   </header>
 
-  <CharteSwitcher />
-
-  <div class="stack" style="gap:6px">
-    <button class="loc" aria-label="Changer de lieu" @click="locOpen = true">
-      <MapPin :size="16" /><span class="where">{{ state.pos.label }}</span><ChevronDown :size="16" />
-    </button>
-    <h1 class="h1">De quoi as-tu envie, {{ DEMO_CLIENT.firstName }} ?</h1>
-  </div>
-
-  <NuxtLink class="searchpill" to="/recherche?saisie=1">
-    <Search :size="20" /><span>Cils, tresses, pose gel, massage...</span>
-  </NuxtLink>
-
-  <div class="rail" aria-label="Catégories">
-    <NuxtLink v-for="c in cats" :key="c[0]" class="cat" :to="`/recherche?cat=${c[0]}`">
-      <span class="ico"><component :is="CAT_ICON[c[0]]" :size="26" /></span>{{ CAT_SHORT[c[0]] }}
+  <section class="section mt16 gap16">
+    <div class="col gap8">
+      <button class="place-picker" aria-label="Changer de lieu" @click="locOpen = true">
+        <MapPin :size="15" /><span>{{ state.pos.label }}</span><ChevronDown :size="15" />
+      </button>
+      <h1 class="title">Trouve ton rendez-vous beauté</h1>
+    </div>
+    <NuxtLink class="search-field" to="/recherche?saisie=1">
+      <Search :size="19" /><span>Ongles, tresses, cils, massage…</span>
     </NuxtLink>
+  </section>
   </div>
 
-  <NuxtLink v-if="nextBooking" class="appt" to="/rdv">
-    <div class="datebox"><small>{{ dateParts(nextBooking.date).month }}</small><b>{{ dateParts(nextBooking.date).day }}</b></div>
-    <div class="grow">
-      <div class="tiny">Ton prochain rendez-vous</div>
-      <div class="name ellip">{{ service(pro(nextBooking.proId)!, nextBooking.sid)?.n }}</div>
-      <div class="meta"><span class="ellip">{{ dayLabel(nextBooking.date, today) }} à {{ hm(nextBooking.time) }} · {{ pro(nextBooking.proId)!.name }}</span></div>
-      <div class="tiny ellip">{{ placeLabel(nextBooking) }}</div>
+  <section class="section">
+    <div class="cat-grid">
+      <NuxtLink v-for="c in cats" :key="c[0]" class="cat" :to="`/recherche?cat=${c[0]}`">
+        <span class="ico"><component :is="CAT_ICON[c[0]]" :size="25" :stroke-width="1.6" /></span>{{ CAT_SHORT[c[0]] }}
+      </NuxtLink>
+      <NuxtLink class="cat" to="/recherche?lieu=client">
+        <span class="ico"><House :size="25" :stroke-width="1.6" /></span>À domicile
+      </NuxtLink>
     </div>
-  </NuxtLink>
+  </section>
 
-  <section v-if="slots.length" class="sec">
-    <div class="sechead">
-      <div><h2 class="h2">Konyéla, tout de suite</h2><p class="sub">Des créneaux qui se libèrent aujourd'hui, à prix réduit</p></div>
-      <NuxtLink class="link" to="/konyela">Tout voir</NuxtLink>
+  <section v-if="nextBooking && nextPro" class="section">
+    <h2 class="h2">Ton prochain rendez-vous</h2>
+    <NuxtLink class="appt" style="padding:0;border:0" to="/rdv">
+      <ProPhoto class="thumb" :pro="nextPro" :w="128" :h="128" ratio="none" :demo-label="false" />
+      <div class="grow col gap4">
+        <span class="name">{{ capitalize(dayLabel(nextBooking.date, today)) }} à {{ hm(nextBooking.time) }}</span>
+        <span class="meta ellip">{{ service(nextPro, nextBooking.sid)?.n }} · {{ nextPro.name }}</span>
+        <span class="meta ellip">{{ placeLabel(nextBooking) }}</span>
+      </div>
+      <ChevronRight :size="18" class="muted" style="align-self:center" />
+    </NuxtLink>
+  </section>
+
+  <section v-if="slots.length" class="section">
+    <div class="section-head">
+      <h2 class="h2">Libre aujourd'hui, prix réduit</h2>
+      <NuxtLink class="see-all" to="/konyela">Tout voir<ChevronRight :size="16" /></NuxtLink>
     </div>
-    <div class="rail"><SlotCard v-for="s in slots" :key="s.id" :item="s" /></div>
+    <div class="carousel wide"><SlotCard v-for="s in slots" :key="s.id" :item="s" /></div>
   </section>
 
-  <section class="sec">
-    <div class="sechead"><h2 class="h2">Près de toi</h2><NuxtLink class="link" to="/recherche">Tout voir</NuxtLink></div>
-    <div class="rail"><ProCardBig v-for="p in near" :key="p.id" :pro="p" /></div>
-  </section>
-
-  <section v-if="atHome.length" class="sec">
-    <div class="sechead">
-      <div><h2 class="h2">Ils viennent chez toi</h2><p class="sub">Sans bouger de la maison</p></div>
-      <NuxtLink class="link" to="/recherche?lieu=client">Tout voir</NuxtLink>
+  <section class="section">
+    <div class="section-head">
+      <h2 class="h2">Près de toi</h2>
+      <NuxtLink class="see-all" to="/recherche">Tout voir<ChevronRight :size="16" /></NuxtLink>
     </div>
-    <div class="rail"><ProCardBig v-for="p in atHome" :key="p.id" :pro="p" /></div>
+    <div class="carousel"><ProCard v-for="p in near" :key="p.id" :pro="p" /></div>
   </section>
 
-  <section v-if="best.length" class="sec">
-    <div class="sechead"><h2 class="h2">Les mieux notés autour de toi</h2><NuxtLink class="link" to="/recherche?tri=note">Tout voir</NuxtLink></div>
-    <div class="rail"><ProCardBig v-for="p in best" :key="p.id" :pro="p" /></div>
+  <section v-if="atHome.length" class="section">
+    <div class="section-head">
+      <h2 class="h2">Ils viennent chez toi</h2>
+      <NuxtLink class="see-all" to="/recherche?lieu=client">Tout voir<ChevronRight :size="16" /></NuxtLink>
+    </div>
+    <div class="carousel"><ProCard v-for="p in atHome" :key="p.id" :pro="p" /></div>
   </section>
 
-  <p class="tiny" style="text-align:center">Version de démonstration : prestataires, prix, avis et positions sont fictifs.</p>
+  <section v-if="best.length" class="section">
+    <div class="section-head">
+      <h2 class="h2">Les mieux notés</h2>
+      <NuxtLink class="see-all" to="/recherche?tri=note">Tout voir<ChevronRight :size="16" /></NuxtLink>
+    </div>
+    <div class="carousel"><ProCard v-for="p in best" :key="p.id" :pro="p" /></div>
+  </section>
+
+  <section v-if="!account" class="section">
+    <NuxtLink class="banner" to="/connexion?mode=inscription&role=pro">
+      <div class="grow col gap4">
+        <span class="name">Tu es professionnelle de la beauté ?</span>
+        <span class="meta">Crée ta fiche gratuitement et reçois tes réservations ici.</span>
+      </div>
+      <ChevronRight :size="18" style="align-self:center" />
+    </NuxtLink>
+  </section>
+
+  <p class="tiny mt24" style="text-align:center">Les fiches marquées « Exemple » sont fictives et servent aux tests.</p>
 
   <LocationSheet v-if="locOpen" @close="locOpen = false" />
+  <SettingsSheet v-if="settingsOpen" @close="settingsOpen = false" />
 </template>

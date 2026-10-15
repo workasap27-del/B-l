@@ -50,6 +50,14 @@ export interface Pro {
   h: number
   about: string
   services: Service[]
+  /** fiche d'un vrai prestataire inscrit (sinon : fiche de démonstration) */
+  real?: boolean
+  /** compte propriétaire de la fiche */
+  ownerId?: string
+  /** photo choisie par le prestataire */
+  photo?: string
+  phone?: string
+  siren?: string
 }
 
 export const CATEGORIES: [Category | 'all', string][] = [

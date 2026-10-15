@@ -1,49 +1,115 @@
 <script setup lang="ts">
-import { ChevronRight, MapPin, Store } from 'lucide-vue-next'
-import { DEMO_CLIENT } from '~/data/pros'
+import { ChevronRight, Heart, LogOut, MapPin, Settings2, Store, UserRound } from 'lucide-vue-next'
 
-const { state, pros, nowMin, setSim, reset, toast, km } = useVladi()
-const favs = computed(() => pros.filter(p => state.fav[p.id]).sort((a, b) => km(a) - km(b)))
+const { state, pros, km, account, remote, logout, saveProfile, toast, workPro } = useVladi()
+const favs = computed(() => pros.value.filter(p => state.fav[p.id]).sort((a, b) => km(a) - km(b)))
 const locOpen = ref(false)
-function doReset() {
-  reset()
-  toast('Données de démonstration remises à zéro')
+const settingsOpen = ref(false)
+const editOpen = ref(false)
+const name = ref('')
+const phone = ref('')
+const error = ref('')
+
+function openEdit() {
+  name.value = account.value?.name ?? ''
+  phone.value = account.value?.phone ?? ''
+  error.value = ''
+  editOpen.value = true
+}
+async function save() {
+  if (name.value.trim().length < 2) {
+    error.value = 'Indique ton prénom.'
+    return
+  }
+  const e = await saveProfile({ name: name.value, phone: phone.value })
+  if (e) error.value = e
+  else {
+    editOpen.value = false
+    toast('Informations enregistrées')
+  }
+}
+async function out() {
+  await logout()
+  toast('Tu es déconnectée')
 }
 </script>
 
 <template>
-  <div class="row">
-    <div class="datebox" style="width:52px;height:52px;border-radius:26px;align-self:center"><b>{{ DEMO_CLIENT.firstName.charAt(0) }}</b></div>
-    <div><h1 class="h1">{{ DEMO_CLIENT.name }}</h1><p class="sub">Compte de démonstration</p></div>
-  </div>
-
-  <div class="optlist panel" style="padding:2px 14px">
-    <button @click="locOpen = true"><span class="inline"><MapPin :size="18" />Ma position : {{ state.pos.label }}</span><ChevronRight :size="18" /></button>
-    <NuxtLink to="/espace-pro" style="display:flex;align-items:center;justify-content:space-between;padding:12px 2px;font-weight:600">
-      <span class="inline"><Store :size="18" />Espace prestataire<span v-if="state.unseen" class="badge acc">{{ state.unseen }} nouvelle{{ state.unseen > 1 ? 's' : '' }}</span></span><ChevronRight :size="18" />
-    </NuxtLink>
-  </div>
-
-  <section class="sec">
-    <h2 class="h2">Mes favoris</h2>
-    <div v-if="favs.length" class="rail"><ProCardBig v-for="p in favs" :key="p.id" :pro="p" /></div>
-    <p v-else class="sub">Touche le cœur sur une fiche pour la retrouver ici.</p>
-  </section>
-
-  <section class="sec">
-    <h2 class="h2">Réglages de démonstration</h2>
-    <div class="box">
-      <div class="kv"><span>Heure utilisée par l'appli</span><span>{{ hm(nowMin) }}{{ state.sim === null ? '' : ' (simulée)' }}</span></div>
-      <div class="row wrap" style="gap:8px">
-        <button class="btn small line" @click="setSim(null)">Heure réelle</button>
-        <button class="btn small line" @click="setSim(10 * 60 + 20)">Simuler 10h20</button>
-        <button class="btn small line" @click="setSim(nowMin + 30)">+30 min</button>
+  <template v-if="account">
+    <div class="row gap16">
+      <div class="avatar">{{ account.name.charAt(0).toUpperCase() }}</div>
+      <div class="col gap4" style="min-width:0">
+        <h1 class="title ellip">{{ account.name }}</h1>
+        <span class="meta ellip">{{ account.email }}</span>
       </div>
-      <p class="tiny">Utile pour tester Konyéla le soir ou le dimanche, quand tout est fermé.</p>
-      <button class="btn small line" style="align-self:flex-start" @click="doReset">Tout remettre à zéro</button>
     </div>
-    <p class="tiny">Prestataires, prix, avis et positions sont fictifs. Le paiement est simulé.</p>
+
+    <section class="section">
+      <h2 class="h2">{{ remote.myPro ? 'Mon activité' : 'Tu es professionnelle ?' }}</h2>
+      <div class="list">
+        <template v-if="remote.myPro">
+          <NuxtLink to="/espace-pro"><Store :size="20" />Mon agenda<span class="sub"><ChevronRight :size="18" /></span></NuxtLink>
+          <NuxtLink :to="`/pro/${remote.myPro.id}`"><UserRound :size="20" />Voir ma fiche<span class="sub ellip" style="max-width:50%">{{ remote.myPro.name }}<ChevronRight :size="18" /></span></NuxtLink>
+          <NuxtLink to="/espace-pro/fiche"><Settings2 :size="20" />Modifier ma fiche<span class="sub"><ChevronRight :size="18" /></span></NuxtLink>
+        </template>
+        <NuxtLink v-else to="/espace-pro/fiche"><Store :size="20" />Créer ma fiche prestataire<span class="sub">Gratuit<ChevronRight :size="18" /></span></NuxtLink>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="h2">Mon compte</h2>
+      <div class="list">
+        <button @click="openEdit"><UserRound :size="20" />Mes informations<span class="sub">{{ account.phone || 'Ajouter un téléphone' }}<ChevronRight :size="18" /></span></button>
+        <button @click="locOpen = true"><MapPin :size="20" />Ma position<span class="sub">{{ state.pos.label }}<ChevronRight :size="18" /></span></button>
+        <button @click="settingsOpen = true"><Settings2 :size="20" />Réglages<span class="sub"><ChevronRight :size="18" /></span></button>
+        <button @click="out"><LogOut :size="20" />Se déconnecter</button>
+      </div>
+    </section>
+  </template>
+
+  <template v-else>
+    <div class="col gap8">
+      <h1 class="title">Ton compte VLADI</h1>
+      <p class="meta">Un compte permet de réserver chez les vrais prestataires et de retrouver tes rendez-vous sur tous tes appareils.</p>
+    </div>
+    <div class="col gap12 mt24">
+      <NuxtLink class="btn block" to="/connexion?mode=inscription">Créer un compte</NuxtLink>
+      <NuxtLink class="btn block line" to="/connexion">J'ai déjà un compte</NuxtLink>
+    </div>
+    <section class="section">
+      <NuxtLink class="banner" to="/connexion?mode=inscription&role=pro">
+        <Store :size="22" />
+        <div class="grow col gap4">
+          <span class="name">Professionnelle de la beauté ?</span>
+          <span class="meta">Crée ta fiche gratuitement, gère ton agenda et remplis tes créneaux vides.</span>
+        </div>
+        <ChevronRight :size="18" style="align-self:center" />
+      </NuxtLink>
+    </section>
+    <section class="section">
+      <div class="list">
+        <button @click="locOpen = true"><MapPin :size="20" />Ma position<span class="sub">{{ state.pos.label }}<ChevronRight :size="18" /></span></button>
+        <button @click="settingsOpen = true"><Settings2 :size="20" />Réglages<span class="sub"><ChevronRight :size="18" /></span></button>
+        <NuxtLink to="/espace-pro"><Store :size="20" />Espace prestataire d'exemple<span class="sub"><span v-if="state.unseen" class="tag warn">{{ state.unseen }}</span><ChevronRight :size="18" /></span></NuxtLink>
+      </div>
+    </section>
+  </template>
+
+  <section class="section">
+    <h2 class="h2"><Heart :size="18" style="vertical-align:-2px" /> Mes favoris</h2>
+    <div v-if="favs.length" class="carousel"><ProCard v-for="p in favs" :key="p.id" :pro="p" /></div>
+    <p v-else class="meta">Touche le cœur sur une fiche pour la retrouver ici.</p>
   </section>
 
+  <p v-if="account && workPro.demo" class="tiny mt24">L'espace prestataire d'exemple reste accessible : <NuxtLink class="link" to="/espace-pro">ouvrir</NuxtLink>.</p>
+
+  <BottomSheet v-if="editOpen" @close="editOpen = false">
+    <h2 class="h2">Mes informations</h2>
+    <label class="field" for="p-name"><span>Prénom</span><input id="p-name" v-model="name" class="input" autocomplete="given-name"></label>
+    <label class="field" for="p-phone"><span>Téléphone <span class="help">(transmis aux prestataires chez qui tu réserves)</span></span><input id="p-phone" v-model="phone" class="input" type="tel" autocomplete="tel" placeholder="0690 00 00 00"></label>
+    <p v-if="error" class="error">{{ error }}</p>
+    <button class="btn block" @click="save">Enregistrer</button>
+  </BottomSheet>
   <LocationSheet v-if="locOpen" @close="locOpen = false" />
+  <SettingsSheet v-if="settingsOpen" @close="settingsOpen = false" />
 </template>

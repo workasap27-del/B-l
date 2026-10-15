@@ -1,6 +1,15 @@
 -- Vérifie les règles essentielles. Chaque bloc lève une erreur si une règle ne tient pas.
 \set ON_ERROR_STOP on
-insert into auth.users (id) values ('00000000-0000-0000-0000-0000000000a1'), ('00000000-0000-0000-0000-0000000000a2'), ('00000000-0000-0000-0000-0000000000b1');
+insert into auth.users (id, email, raw_user_meta_data) values
+  ('00000000-0000-0000-0000-0000000000a1', 'ines@test.gp', '{"display_name":"Inès","role":"client"}'),
+  ('00000000-0000-0000-0000-0000000000a2', 'lea@test.gp', '{}'),
+  ('00000000-0000-0000-0000-0000000000b1', 'maeva@test.gp', '{"display_name":"Maëva","role":"pro"}'),
+  ('00000000-0000-0000-0000-0000000000b2', 'nouvelle@test.gp', '{"display_name":"Nadia","role":"pro"}');
+-- 0. Le profil est créé à l'inscription, avec le bon rôle.
+do $$ begin
+  if (select role from profiles where id = '00000000-0000-0000-0000-0000000000b1') <> 'pro' then raise exception 'rôle pro non enregistré'; end if;
+  if (select display_name from profiles where id = '00000000-0000-0000-0000-0000000000a2') <> 'lea' then raise exception 'nom par défaut absent'; end if;
+end $$;
 update pros set owner_id = '00000000-0000-0000-0000-0000000000b1' where id = 'kaz';
 
 -- 1. Une visiteuse non connectée lit le catalogue mais aucune réservation.
@@ -83,6 +92,46 @@ do $$ begin
   begin
     insert into reviews (booking_id, pro_id, client_id, stars) select id, pro_id, client_id, 5 from bookings;
     raise exception 'avis accepté avant le rendez-vous';
+  exception when insufficient_privilege then null; end;
+end $$;
+-- 9 bis. Le prix est imposé par la base, pas par l'appli.
+do $$ declare v bookings; begin
+  insert into bookings (pro_id, service_id, client_id, starts_at, ends_at, price_eur, deposit_eur)
+    select 'kaz', id, auth.uid(), now() + interval '6 days', now() + interval '6 days 1 minute', 1, 0 from services where pro_id = 'kaz' and code = 'a'
+    returning * into v;
+  if v.price_eur <> 55 or v.deposit_eur <> 11 or v.ends_at - v.starts_at <> interval '90 minutes' then raise exception 'prix non recalculé : %', v.price_eur; end if;
+  if (select count(*) from busy_all(now(), now() + interval '10 days') where pro_id = 'kaz') < 2 then raise exception 'busy_all incomplet'; end if;
+end $$;
+
+-- 10. Une cliente ne peut pas modifier le prix de sa réservation, seulement l'annuler.
+do $$ begin
+  begin
+    update bookings set price_eur = 1 where client_id = auth.uid();
+    raise exception 'prix modifiable par la cliente';
+  exception when insufficient_privilege then null; end;
+  update bookings set status = 'cancelled' where client_id = auth.uid() and mode = 'classic';
+end $$;
+
+-- 11. Une nouvelle prestataire crée sa fiche, avec SIREN obligatoire, et une seule.
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b2', false);
+do $$ begin
+  begin
+    insert into pros (id, owner_id, name, kind, commune, lat, lng, opens_at, closes_at) values ('sans-siren', auth.uid(), 'Test', 'Indépendante', 'Les Abymes', 16.27, -61.5, 540, 1080);
+    raise exception 'fiche acceptée sans SIREN';
+  exception when check_violation then null; end;
+  begin
+    insert into pros (id, owner_id, name, kind, commune, lat, lng, opens_at, closes_at, siren) values ('pour-une-autre', '00000000-0000-0000-0000-0000000000a1', 'Test', 'Indépendante', 'Les Abymes', 16.27, -61.5, 540, 1080, '123456789');
+    raise exception 'fiche créée au nom d''une autre';
+  exception when insufficient_privilege then null; end;
+  insert into pros (id, owner_id, name, kind, places, commune, lat, lng, opens_at, closes_at, siren, categories) values ('nadia-ongles', auth.uid(), 'Nadia Ongles', 'Indépendante', array['Chez elle'], 'Le Gosier', 16.21, -61.49, 540, 1080, '123456789', array['ongles']);
+  insert into services (pro_id, code, name, duration_min, price_eur) values ('nadia-ongles', 'a', 'Pose gel', 90, 50);
+  begin
+    insert into pros (id, owner_id, name, kind, commune, lat, lng, opens_at, closes_at, siren) values ('nadia-2', auth.uid(), 'Doublon', 'Indépendante', 'Le Gosier', 16.21, -61.49, 540, 1080, '123456789');
+    raise exception 'deux fiches pour un compte';
+  exception when unique_violation then null; end;
+  begin
+    insert into services (pro_id, code, name, duration_min, price_eur) values ('kaz', 'zz', 'Intrus', 30, 1);
+    raise exception 'prestation ajoutée chez une autre';
   exception when insufficient_privilege then null; end;
 end $$;
 reset role;

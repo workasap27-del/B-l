@@ -1,66 +1,54 @@
-/* Cinq chartes graphiques à comparer. Chacune redéfinit les jetons de main.css, en clair et en sombre.
-   Pas d'attribut data-charte = charte d'origine (rose et jaune). */
+/* Cinq chartes à comparer. Elles ne changent que les couleurs : même police, mêmes formes partout.
+   Chacune a sa vraie personnalité : en-tête de l'accueil, catégories, boutons et menu prennent sa couleur.
+   "noir" est la charte par défaut (définie dans main.css). */
 
-/* 1. Lagon : turquoise des Caraïbes et corail, net et lumineux */
+/* 2. Lagon : bleu-vert profond, corail pour la dernière minute */
 :root[data-charte="lagon"] {
-  --bg: #f3f7f7; --surface: #ffffff; --surface2: #edf4f4; --ink: #0e1d21; --muted: #5a6a6e; --line: #dce6e7;
-  --accent: #0b8282; --accent-soft: #ddf2f1; --accent-ink: #ffffff;
-  --sun: #ff7a59; --sun-soft: #ffeae3; --sun-ink: #3a1206;
-  --display: "Outfit", "Trebuchet MS", system-ui, sans-serif;
-  --hue: 182; --spread: .22; --cover-sat: 62%;
-}
-/* 2. Onyx : noir, blanc et champagne, sobre et haut de gamme */
-:root[data-charte="onyx"] {
-  --bg: #f6f5f2; --surface: #ffffff; --surface2: #f0eee9; --ink: #141414; --muted: #67625b; --line: #e5e1da;
-  --accent: #141414; --accent-soft: #eceae5; --accent-ink: #ffffff;
-  --sun: #c9a46a; --sun-soft: #f4ecdd; --sun-ink: #2a1f0c;
-  --display: "Fraunces", Georgia, serif;
-  --hue: 38; --spread: .08; --cover-sat: 22%;
-}
-/* 3. Sauge : vert doux et miel, l'esprit spa et bien-être */
-:root[data-charte="sauge"] {
-  --bg: #f4f6f0; --surface: #ffffff; --surface2: #edf1e7; --ink: #1b2820; --muted: #5d6a60; --line: #dfe5d8;
-  --accent: #3d6a50; --accent-soft: #e2ede5; --accent-ink: #ffffff;
-  --sun: #e2ae48; --sun-soft: #f9efd6; --sun-ink: #2e2205;
-  --display: "Fraunces", Georgia, serif;
-  --hue: 128; --spread: .18; --cover-sat: 38%;
-}
-/* 4. Indigo : violet bleuté et menthe, l'appli tech */
-:root[data-charte="indigo"] {
-  --bg: #f4f5fb; --surface: #ffffff; --surface2: #eef0fa; --ink: #121833; --muted: #59617d; --line: #e0e3f1;
-  --accent: #4f46e5; --accent-soft: #e9e8fd; --accent-ink: #ffffff;
-  --sun: #12b886; --sun-soft: #dcf6ec; --sun-ink: #03271b;
-  --display: "Sora", "Trebuchet MS", system-ui, sans-serif;
-  --hue: 238; --spread: .2; --cover-sat: 70%;
-}
-/* 5. Océan : bleu franc et ambre, clair et rassurant */
-:root[data-charte="ocean"] {
-  --bg: #f3f6fa; --surface: #ffffff; --surface2: #ecf2f9; --ink: #0d1b2e; --muted: #56657a; --line: #dde5ef;
-  --accent: #0a5bd8; --accent-soft: #e2edfc; --accent-ink: #ffffff;
-  --sun: #ffb020; --sun-soft: #fff1d3; --sun-ink: #2e1d00;
-  --display: "Outfit", "Trebuchet MS", system-ui, sans-serif;
-  --hue: 212; --spread: .2; --cover-sat: 66%;
+  --bg: #f6faf9; --surface: #ffffff; --surface2: #ebf4f3; --surface3: #d6e7e5; --line: #dcebe9;
+  --accent: #0b5f5c; --accent-ink: #ffffff; --accent-soft: #dcefed;
+  --now: #ff7a45; --now-ink: #2b0d00; --now-soft: #ffeee6;
+  --hero-bg: linear-gradient(160deg, #0b5f5c 0%, #0f7f73 100%); --hero-ink: #ffffff; --hero-muted: #c9ebe6;
+  --hero-field: #ffffff; --hero-field-ink: #5b7472; --hero-btn: rgb(255 255 255 / .16);
+  --cat-bg: #dcefed; --cat-ink: #0b5f5c; --nav-on: #0b5f5c;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root[data-charte="lagon"] {
-    --bg: #0a1315; --surface: #101c1f; --surface2: #172729; --ink: #e6f2f2; --muted: #92a6a9; --line: #22363a;
-    --accent: #3cc6c0; --accent-soft: #0e3432; --accent-ink: #032220; --sun: #ff8d6e; --sun-soft: #3a1d14; --sun-ink: #2a0e05;
-  }
-  :root[data-charte="onyx"] {
-    --bg: #0c0c0c; --surface: #151515; --surface2: #1f1f1f; --ink: #f3f1ec; --muted: #a29d94; --line: #2b2b2b;
-    --accent: #f3f1ec; --accent-soft: #2a2a2a; --accent-ink: #141414; --sun: #d8b980; --sun-soft: #2e2718; --sun-ink: #1d1608;
-  }
-  :root[data-charte="sauge"] {
-    --bg: #0d130f; --surface: #141c17; --surface2: #1c2720; --ink: #e9f0e9; --muted: #9aa99e; --line: #27352c;
-    --accent: #7fc29a; --accent-soft: #183224; --accent-ink: #072013; --sun: #ebbd5f; --sun-soft: #33280f; --sun-ink: #241900;
-  }
-  :root[data-charte="indigo"] {
-    --bg: #0c0e1a; --surface: #131628; --surface2: #1b1f36; --ink: #e9ebfa; --muted: #9aa0c0; --line: #282d4a;
-    --accent: #8b85ff; --accent-soft: #24234d; --accent-ink: #0e0b33; --sun: #3ddc9f; --sun-soft: #0f3326; --sun-ink: #032016;
-  }
-  :root[data-charte="ocean"] {
-    --bg: #09111c; --surface: #0f1a28; --surface2: #172435; --ink: #e7eef8; --muted: #94a3b8; --line: #223247;
-    --accent: #5b9bff; --accent-soft: #13294a; --accent-ink: #04122b; --sun: #ffc04d; --sun-soft: #3a2a08; --sun-ink: #241700;
-  }
+/* 3. Mangue : orange vif et crème, vert pour ce qui est libre tout de suite */
+:root[data-charte="mangue"] {
+  --bg: #fffaf3; --surface: #ffffff; --surface2: #fbefe2; --surface3: #f1dcc6; --line: #f2e3d2;
+  --accent: #e8590c; --accent-ink: #ffffff; --accent-soft: #fde5d4;
+  --now: #0f9d6e; --now-ink: #ffffff; --now-soft: #e1f5ec;
+  --hero-bg: linear-gradient(160deg, #ff7a1a 0%, #e8410c 100%); --hero-ink: #ffffff; --hero-muted: #ffe3cc;
+  --hero-field: #ffffff; --hero-field-ink: #8a6a55; --hero-btn: rgb(255 255 255 / .2);
+  --cat-bg: #fde5d4; --cat-ink: #c2410c; --nav-on: #e8590c;
 }
+
+/* 4. Indigo : bleu électrique vers violet, ambre en rappel. L'esprit des applis bancaires récentes */
+:root[data-charte="indigo"] {
+  --bg: #f7f7fc; --surface: #ffffff; --surface2: #eef0fb; --surface3: #dde1f5; --line: #e3e6f3;
+  --accent: #3b4ef5; --accent-ink: #ffffff; --accent-soft: #e5e8fe;
+  --now: #ffb020; --now-ink: #2a1a00; --now-soft: #fff3da;
+  --hero-bg: linear-gradient(150deg, #2f3fe0 0%, #6a4cf5 100%); --hero-ink: #ffffff; --hero-muted: #d6d9ff;
+  --hero-field: #ffffff; --hero-field-ink: #6a6f8f; --hero-btn: rgb(255 255 255 / .16);
+  --cat-bg: #e5e8fe; --cat-ink: #3b4ef5; --nav-on: #3b4ef5;
+}
+
+/* 5. Nuit : tout en sombre, touches d'or */
+:root[data-charte="nuit"] {
+  --bg: #0c0c0e; --surface: #161618; --surface2: #1e1e21; --surface3: #2c2c30;
+  --ink: #f5f5f7; --ink2: #d0d0d6; --muted: #9a9aa2; --line: #2a2a2e;
+  --accent: #f2c14e; --accent-ink: #1b1300; --accent-soft: #2c2410;
+  --now: #f2c14e; --now-ink: #1b1300; --now-soft: #2c2410;
+  --ok: #4fd384; --ok-soft: #13301f; --warn: #ff6b6b; --warn-soft: #3a1717;
+  --hero-bg: linear-gradient(170deg, #1c1a14 0%, #0c0c0e 100%); --hero-ink: #f5f5f7; --hero-muted: #c9b98f;
+  --hero-field: #232326; --hero-field-ink: #9a9aa2; --hero-btn: #232326;
+  --cat-bg: #232326; --cat-ink: #f2c14e; --nav-on: #f2c14e;
+  color-scheme: dark;
+}
+:root[data-charte="nuit"] .icon-btn.float { background: #1e1e21; color: #f5f5f7; }
+:root[data-charte="nuit"] .photo .label { background: rgb(22 22 24 / .92); color: #f5f5f7; }
+:root[data-charte="nuit"] .toast { background: #f5f5f7; color: #0c0c0e; }
+:root[data-charte="nuit"] .chip[aria-pressed="true"] { background: #f2c14e; color: #1b1300; border-color: #f2c14e; }
+
+/* Sur l'en-tête coloré, le V du logo prend la couleur d'appel et son point passe en blanc. */
+:root[data-charte="lagon"] .home-head, :root[data-charte="mangue"] .home-head, :root[data-charte="indigo"] .home-head { --logo-v: var(--now); --logo-dot: #ffffff; }
+:root[data-charte="mangue"] .home-head { --logo-v: #ffe14d; }

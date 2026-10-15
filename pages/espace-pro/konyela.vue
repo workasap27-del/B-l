@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { DEMO_PRO_ID } from '~/data/pros'
-
-const { state, pro, service, today, nowMin } = useVladi()
-const p = pro(DEMO_PRO_ID)!
-const mine = computed(() => state.slots.filter(s => s.proId === p.id && s.date === today.value).sort((a, b) => a.time - b.time))
+const { workPro, service, nowMin, mySlots, removeSlot } = useVladi()
+const p = computed(() => workPro.value.pro)
 </script>
 
 <template>
-  <h1 class="h1">Mes créneaux Konyéla</h1>
-  <div class="stack">
-    <div v-for="s in mine" :key="s.id" class="box">
-      <div class="row between">
-        <b>{{ hm(s.time) }} · {{ service(p, s.sid)!.n }}</b>
-        <span v-if="s.status === 'booked'" class="ok">Réservé</span>
-        <span v-else-if="s.time < nowMin + 10" class="sub">Expiré</span>
-        <span v-else class="tag k">En ligne</span>
+  <ProTabs><h1 class="title">Mes créneaux Konyéla</h1></ProTabs>
+  <div class="col gap12 mt24">
+    <template v-for="s in mySlots" :key="s.id">
+      <div v-if="service(p, s.sid)" class="box">
+        <div class="row between">
+          <span class="name">{{ hm(s.time) }} · {{ service(p, s.sid)!.n }}</span>
+          <span v-if="s.status === 'booked'" class="tag ok">Réservé</span>
+          <span v-else-if="s.time < nowMin + 10" class="tag">Expiré</span>
+          <span v-else class="tag now">En ligne</span>
+        </div>
+        <span class="meta">{{ euro(service(p, s.sid)!.p) }} ramené à {{ euro(discounted(service(p, s.sid)!, s.disc)) }} (-{{ s.disc }} %)</span>
+        <button v-if="s.status === 'open' && s.time >= nowMin + 10" class="btn sm line" style="align-self:flex-start" @click="removeSlot(s.id)">Retirer</button>
       </div>
-      <div class="sub">{{ euro(service(p, s.sid)!.p) }} ramené à {{ euro(discounted(service(p, s.sid)!, s.disc)) }} (-{{ s.disc }} %)</div>
-    </div>
-    <p v-if="!mine.length" class="empty">Aucun créneau proposé aujourd'hui. Va dans l'agenda et touche « Proposer en Konyéla » sur un créneau libre.</p>
+    </template>
+    <p v-if="!mySlots.length" class="meta">Aucun créneau proposé aujourd'hui. Dans l'agenda, touche « Proposer en Konyéla » sur un créneau libre.</p>
   </div>
 </template>

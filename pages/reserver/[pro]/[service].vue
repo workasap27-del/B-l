@@ -5,18 +5,20 @@ import type { Place } from '~/utils/places'
 
 const route = useRoute()
 const router = useRouter()
-const { pro, service, starts, today, state, nowMin, book, toast, km } = useVladi()
+const { pro, service, starts, today, state, remote, nowMin, book, km, account, firstName } = useVladi()
 
 const p = computed(() => pro(String(route.params.pro)))
 const sv = computed(() => (p.value ? service(p.value, String(route.params.service)) : undefined))
-const slot = computed(() => state.slots.find(s => s.id === route.query.creneau))
+const slot = computed(() => [...remote.slots, ...state.slots].find(s => s.id === route.query.creneau))
 const isSlot = computed(() => !!route.query.creneau)
 const slotGone = computed(() => isSlot.value && (!slot.value || slot.value.status !== 'open' || slot.value.time < nowMin.value + 10))
+const needsAccount = computed(() => !!p.value?.real && !account.value)
 
 // Lieu : chez le prestataire ou chez la cliente, selon ce qu'il propose.
 const places = computed(() => (p.value ? allowedPlaces(p.value) : []))
 const place = ref<Place>('pro')
 const address = ref(state.address)
+const note = ref('')
 watchEffect(() => { if (places.value.length && !places.value.includes(place.value)) place.value = places.value[0] })
 const fee = computed(() => (p.value && place.value === 'client' ? travelFee(p.value) : 0))
 const addressOk = computed(() => place.value !== 'client' || address.value.trim().length >= 5)
@@ -26,6 +28,8 @@ const days = computed(() => Array.from({ length: 14 }, (_, i) => addDays(today.v
 const date = ref(typeof route.query.date === 'string' ? route.query.date : '')
 const time = ref<number | null>(route.query.time ? Number(route.query.time) : null)
 const recap = ref(false)
+const busy = ref(false)
+const error = ref('')
 
 const free = computed(() => (p.value && sv.value && date.value ? starts(p.value, date.value, sv.value.d) : []))
 function hasRoom(d: string) {
@@ -47,111 +51,130 @@ const deposit = computed(() => Math.round(price.value * RULES.depositRate))
 const when = computed(() => (slot.value ? { date: slot.value.date, time: slot.value.time } : { date: date.value, time: time.value ?? 0 }))
 const hasTime = computed(() => (isSlot.value ? !slotGone.value : time.value !== null))
 const ready = computed(() => addressOk.value && hasTime.value)
-const hint = computed(() => (!hasTime.value ? 'Choisis une heure' : !addressOk.value ? 'Indique ton adresse' : `${dayLabel(when.value.date, today.value)} à ${hm(when.value.time)}`))
+const hint = computed(() => (!hasTime.value ? 'Choisis une heure' : !addressOk.value ? 'Indique ton adresse' : `${capitalize(dayLabel(when.value.date, today.value))} à ${hm(when.value.time)}`))
+const loginLink = computed(() => `/connexion?retour=${encodeURIComponent(route.fullPath)}`)
 
-function pay() {
-  if (!p.value || !sv.value) return
-  const b = book({ proId: p.value.id, sid: sv.value.id, date: when.value.date, time: when.value.time, slotId: slot.value?.id, place: place.value, address: address.value })
-  if (!b) {
-    recap.value = false
-    toast('Ce créneau vient de partir. Choisis-en un autre.')
+async function pay() {
+  if (!p.value || !sv.value || busy.value) return
+  busy.value = true
+  error.value = ''
+  const res = await book({ proId: p.value.id, sid: sv.value.id, date: when.value.date, time: when.value.time, slotId: slot.value?.id, place: place.value, address: address.value, note: note.value })
+  busy.value = false
+  if (res.error === 'connexion') return router.push(loginLink.value)
+  if (!res.booking) {
+    error.value = res.error ?? 'La réservation n\'a pas abouti.'
     return
   }
-  router.replace(`/confirmation/${b.id}`)
+  router.replace(`/confirmation/${res.booking.id}`)
+}
+function back() {
+  if (window.history.length > 1) router.back()
+  else router.push(p.value ? `/pro/${p.value.id}` : '/')
 }
 </script>
 
 <template>
   <template v-if="p && sv">
-    <div class="topbar">
-      <button class="iconbtn soft" aria-label="Retour" @click="router.back()"><ChevronLeft :size="22" /></button>
-      <div class="grow">
-        <div class="h2 ellip">{{ sv.n }}</div>
-        <div class="sub ellip">{{ p.name }} · {{ sv.d }} min</div>
+    <div class="head">
+      <button class="icon-btn" aria-label="Retour" @click="back"><ChevronLeft :size="24" /></button>
+      <div class="grow col">
+        <span class="h3 ellip">{{ sv.n }}</span>
+        <span class="meta ellip">{{ p.name }} · {{ duration(sv.d) }}</span>
       </div>
     </div>
 
     <div v-if="isSlot && slotGone" class="empty">
-      <Zap :size="34" />
-      <p><b>Ce créneau Konyéla vient de partir.</b></p>
-      <NuxtLink class="btn small soft" to="/konyela">Voir les autres</NuxtLink>
+      <Zap :size="32" />
+      <b>Ce créneau vient de partir</b>
+      <NuxtLink class="btn sm soft" to="/konyela">Voir les autres</NuxtLink>
     </div>
 
     <template v-else>
-      <section class="sec">
+      <section class="section mt24">
         <h2 class="h3">Où ?</h2>
         <div class="choice">
           <button v-if="places.includes('pro')" :aria-pressed="place === 'pro'" @click="place = 'pro'">
-            <span class="ico"><Store :size="20" /></span>
-            <span class="grow"><b>{{ proPlace(p) }}</b><br><span class="sub">{{ p.quartier }}, {{ p.commune }} · à {{ formatKm(km(p)) }}</span></span>
+            <Store :size="22" />
+            <span class="grow col gap4"><span class="name">{{ proPlace(p) }}</span><span class="meta">{{ p.quartier ? `${p.quartier}, ` : '' }}{{ p.commune }} · {{ formatKm(km(p)) }}</span></span>
             <span class="radio" />
           </button>
           <button v-if="places.includes('client')" :aria-pressed="place === 'client'" @click="place = 'client'">
-            <span class="ico"><House :size="20" /></span>
-            <span class="grow"><b>Chez moi</b><br><span class="sub">{{ travelFee(p) ? `+ ${euro(travelFee(p))} de déplacement` : 'Déplacement offert' }}</span></span>
+            <House :size="22" />
+            <span class="grow col gap4"><span class="name">Chez moi</span><span class="meta">{{ travelFee(p) ? `+ ${euro(travelFee(p))} de déplacement` : 'Déplacement offert' }}</span></span>
             <span class="radio" />
           </button>
         </div>
-        <template v-if="place === 'client'">
-          <input id="adresse" v-model="address" class="field" type="text" autocomplete="street-address" placeholder="Ton adresse : rue, quartier, commune" aria-label="Adresse de la prestation">
-        </template>
+        <input v-if="place === 'client'" id="adresse" v-model="address" class="input" type="text" autocomplete="street-address" placeholder="Ton adresse : rue, quartier, commune" aria-label="Adresse de la prestation">
       </section>
 
-      <section v-if="isSlot && slot" class="sec">
+      <section v-if="isSlot && slot" class="section">
         <h2 class="h3">Quand ?</h2>
-        <div class="kcard wide">
-          <div class="row between"><span class="when">Aujourd'hui à {{ hm(slot.time) }}</span><span class="badge k">-{{ slot.disc }} %</span></div>
-          <div class="tiny">Créneau de dernière minute : l'acompte n'est pas remboursable.</div>
+        <div class="kcard">
+          <div class="when"><b>{{ hm(slot.time) }}</b><span class="tiny">aujourd'hui</span></div>
+          <span class="vr" />
+          <span class="grow meta">Créneau de dernière minute à -{{ slot.disc }} %. L'acompte n'est pas remboursable.</span>
         </div>
       </section>
       <template v-else>
-        <section class="sec">
+        <section class="section">
           <h2 class="h3">Quel jour ?</h2>
           <div class="days">
             <button v-for="d in days" :key="d" class="day" :aria-pressed="date === d" :disabled="!hasRoom(d)" :aria-label="dayLabel(d, today)" @click="date = d; time = null">
-              <small>{{ d === today ? 'auj' : dateParts(d).dow }}</small><b>{{ dateParts(d).day }}</b>
+              <small>{{ d === today ? 'auj.' : dateParts(d).dow }}</small><b>{{ dateParts(d).day }}</b>
             </button>
           </div>
         </section>
-        <section class="sec">
+        <section class="section">
           <h2 class="h3">Quelle heure ?</h2>
-          <template v-for="part in parts" :key="part.label">
-            <div class="part">{{ part.label }}</div>
+          <div v-for="part in parts" :key="part.label" class="col gap8">
+            <span class="meta">{{ part.label }}</span>
             <div class="slots">
               <button v-for="t in part.list" :key="t" class="slot" :aria-pressed="time === t" @click="time = t">{{ hm(t) }}</button>
             </div>
-          </template>
-          <p v-if="!free.length" class="sub">Plus de place ce jour-là. Essaie un autre jour.</p>
+          </div>
+          <p v-if="!free.length" class="meta">Plus de place ce jour-là. Essaie un autre jour.</p>
         </section>
-        <p class="tiny">Annulation gratuite jusqu'à {{ RULES.freeCancelHours }} h avant. Passé ce délai, l'acompte reste au prestataire.</p>
       </template>
 
-      <div class="cta">
+      <section class="section">
+        <label class="field" for="note">
+          <span>Une info pour {{ p.owner?.split(' ')[0] ?? p.name }} ? <span class="help">(facultatif)</span></span>
+          <textarea id="note" v-model="note" class="textarea" maxlength="300" placeholder="Grossesse, allergie, cheveux fragiles, accès difficile…" />
+          <span class="help">Le prestataire lit ce message avant le rendez-vous. VLADI ne vérifie pas les informations de santé.</span>
+        </label>
+      </section>
+
+      <p v-if="!isSlot" class="tiny mt16">Annulation gratuite jusqu'à {{ RULES.freeCancelHours }} h avant. Passé ce délai, l'acompte reste au prestataire.</p>
+
+      <div class="cta mt24">
         <div class="sum grow"><b>{{ euro(price) }}</b><span class="tiny ellip">{{ hint }}</span></div>
-        <button class="btn" :class="{ sun: isSlot }" :disabled="!ready" @click="recap = true">Continuer</button>
+        <NuxtLink v-if="needsAccount" class="btn" :to="loginLink">Se connecter</NuxtLink>
+        <button v-else class="btn" :class="{ now: isSlot }" :disabled="!ready" @click="recap = true">Continuer</button>
       </div>
     </template>
 
     <BottomSheet v-if="recap" @close="recap = false">
       <h2 class="h2">Récapitulatif</h2>
-      <div class="box">
+      <div class="recap">
         <div class="kv"><span>Prestation</span><span>{{ sv.n }}</span></div>
         <div class="kv"><span>Avec</span><span>{{ p.name }}</span></div>
-        <div class="kv"><span>Où</span><span>{{ place === 'client' ? `Chez moi · ${address.trim()}` : `${proPlace(p)} · ${p.quartier}, ${p.commune}` }}</span></div>
-        <div class="kv"><span>Quand</span><span>{{ dayLabel(when.date, today) }} à {{ hm(when.time) }}</span></div>
-        <div class="kv"><span>Prix</span><span><span v-if="slot" class="strike">{{ euro(sv.p) }}</span>{{ euro(servicePrice) }}</span></div>
+        <div class="kv"><span>Où</span><span>{{ place === 'client' ? `Chez moi, ${address.trim()}` : `${proPlace(p)}, ${p.commune}` }}</span></div>
+        <div class="kv"><span>Quand</span><span>{{ capitalize(dayLabel(when.date, today)) }} à {{ hm(when.time) }}</span></div>
+        <div class="kv"><span>Prix</span><span><span v-if="slot" class="strike">{{ euro(sv.p) }}</span> {{ euro(servicePrice) }}</span></div>
         <div v-if="place === 'client'" class="kv"><span>Déplacement</span><span>{{ fee ? euro(fee) : 'offert' }}</span></div>
         <div class="kv total"><span>Total</span><span>{{ euro(price) }}</span></div>
-        <div class="kv"><span>Acompte maintenant ({{ RULES.depositRate * 100 }} %)</span><span>{{ euro(deposit) }}</span></div>
-        <div class="kv"><span>Reste à payer le jour même</span><span>{{ euro(price - deposit) }}</span></div>
+        <div class="kv"><span>Acompte à payer maintenant</span><span>{{ euro(deposit) }}</span></div>
+        <div class="kv"><span>Reste à payer sur place</span><span>{{ euro(price - deposit) }}</span></div>
       </div>
-      <p class="tiny">Paiement simulé dans cette version : aucune carte n'est débitée.</p>
-      <button class="btn block" @click="pay">Payer l'acompte de {{ euro(deposit) }}</button>
+      <p class="notice">{{ p.real ? `Réservation au nom de ${firstName}.` : 'Fiche d\'exemple : rien n\'est envoyé.' }} Paiement simulé pendant les tests, aucune carte n'est débitée.</p>
+      <p v-if="error" class="error">{{ error }}</p>
+      <button class="btn block" :disabled="busy" @click="pay">{{ busy ? 'Réservation…' : `Confirmer et payer ${euro(deposit)}` }}</button>
       <button class="btn block line" @click="recap = false">Modifier</button>
     </BottomSheet>
   </template>
-  <div v-else class="empty" style="padding-top:80px">
-    <p><b>Cette prestation n'existe pas.</b></p>
-    <NuxtLink class="btn small soft" to="/">Retour à l'accueil</NuxtLink>
+  <div v-else-if="remote.loading" class="empty" style="padding-top:96px">Chargement…</div>
+  <div v-else class="empty" style="padding-top:96px">
+    <b>Cette prestation n'existe pas</b>
+    <NuxtLink class="btn sm soft" to="/">Retour à l'accueil</NuxtLink>
   </div>
 </template>

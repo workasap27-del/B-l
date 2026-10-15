@@ -3,8 +3,11 @@
 Appli web mobile de réservation beauté en Guadeloupe : ongles, cils, coiffure, tresses, maquillage, soins, barbier.
 Deux façons de réserver : à l'avance (classique) ou tout de suite sur un créneau qui se libère (Konyéla, avec remise).
 
-**État actuel : version de démonstration.** Tous les salons, noms, prix et avis sont fictifs. Les réservations sont
-enregistrées dans le navigateur de la personne qui teste, pas sur un serveur. Le paiement est simulé.
+**État actuel : comptes réels, catalogue mixte.** Clientes et prestataires peuvent créer un compte (Supabase).
+Une prestataire inscrite publie sa fiche (SIREN obligatoire), ses prestations et ses horaires ; ses réservations
+et ses créneaux Konyéla sont enregistrés en base. À côté, 155 fiches d'exemple (marquées "Exemple") restent
+affichées pour la démonstration : leurs réservations ne quittent pas le navigateur. Un réglage permet de les masquer.
+Le paiement de l'acompte est encore simulé.
 
 ## Lancer en local
 
@@ -44,13 +47,23 @@ Côté cliente
 - Mes rendez-vous : itinéraire, annulation (gratuite plus de 24 h avant), avis, réserver à nouveau.
 - Le jour J : celui qui se déplace signale son arrivée ou un retard (5 à 15 min), l'autre confirme. Passé 15 min, l'attente peut être prolongée ou une absence déclarée. Un désaccord part au service client (pas de géolocalisation).
 
-Côté prestataire (compte de démonstration : Kaz a Zong), depuis Profil puis "Espace prestataire"
-- Agenda du jour et des trois jours suivants, avec les trous et le lieu de chaque rendez-vous.
-- "Proposer en Konyéla" sur un trou : prestation, heure, remise.
-- Activité : remplissage, chiffre du jour, commission.
+Comptes (page Compte, puis Connexion)
+- Inscription par e-mail et mot de passe, en tant que cliente ou professionnelle.
+- Réserver chez une vraie prestataire demande un compte : son prénom, son téléphone et sa note sont transmis.
+- Une professionnelle crée sa fiche dans "Créer ma fiche prestataire" : nom, SIREN, catégories, prestations
+  (suggestions par métier), commune ou position exacte, reçoit ou se déplace, horaires, présentation.
+- Sur sa propre fiche, elle voit "Votre entreprise" au lieu du bouton de réservation.
 
-Dans Profil, les "Réglages de démonstration" permettent de simuler une heure (utile le soir, quand tout est fermé)
-et de tout remettre à zéro.
+Côté prestataire, depuis Compte puis "Mon agenda" (sans fiche : l'espace d'exemple de Kaz a Zong)
+- Agenda sur cinq jours, avec les trous, le lieu, le téléphone et la note de chaque cliente.
+- "Proposer en Konyéla" sur un trou : prestation, heure, remise.
+- Activité : remplissage, chiffre du jour, réservations à venir, prestations.
+
+Le bouton réglages de l'accueil (en haut à droite) regroupe : choix de la charte de couleurs, affichage des fiches
+d'exemple, heure simulée (utile le soir) et remise à zéro des données de démonstration.
+
+Heure : l'appli fonctionne à l'heure de la Guadeloupe (UTC-4), quel que soit le fuseau du téléphone.
+Photos : photos libres de droits de Pexels (licence Pexels), une par fiche selon son métier.
 
 ## Organisation du code
 
@@ -63,38 +76,43 @@ et de tout remettre à zéro.
 | `utils/places.ts` | Lieux de prestation et frais de déplacement |
 | `utils/arrival.ts` | Suivi d'arrivée : tolérance, retard, absence, désaccord |
 | `utils/geo.ts` | Coordonnées des communes, distances, lien d'itinéraire |
-| `composables/useVladi.ts` | État de l'appli et toutes les actions. Seul fichier qui touche au stockage |
+| `composables/useVladi.ts` | État de l'appli et toutes les actions. Mélange fiches réelles (base) et fiches d'exemple (navigateur) |
+| `composables/useBackend.ts` | Tous les appels à Supabase : comptes, fiches, réservations, créneaux, avis |
+| `utils/time.ts` | Heure de la Guadeloupe et conversion vers les dates de la base |
+| `utils/photos.ts` | Photos Pexels par métier |
+| `utils/chartes.ts`, `assets/chartes.css` | Les cinq chartes de couleurs (police et formes identiques) |
 | `pages/` | Un fichier par écran |
 | `components/` | Logo, visuel et cartes de prestataire, résultat de recherche, carte géographique, feuilles |
 | `public/` | Logo (`logo.svg`, `logo.png`) et icône de l'appli (`icon.svg`) |
 | `supabase/` | Schéma de base, données de démo, tests des droits d'accès |
 | `tests/` | Tests de l'agenda, de la recherche, des lieux et des distances |
 
-La carte utilise Leaflet et les tuiles publiques d'OpenStreetMap, correctes pour une démonstration.
-Avant un vrai lancement, passer à un fournisseur de tuiles prévu pour la production.
+La carte utilise Leaflet et les fonds CARTO (données OpenStreetMap). L'usage gratuit de CARTO est limité :
+avant un lancement à grande échelle, prendre une offre adaptée (CARTO, MapTiler ou Stadia).
 
-## Passer à une vraie base (Supabase)
+## Base de données (Supabase)
 
-Le schéma est prêt et testé sur PostgreSQL 16, mais **l'appli ne parle pas encore à Supabase**. Étapes :
+Projet Supabase `dkvqloksvlbniztqdywb` (région Europe). L'adresse et la clé publique sont dans `nuxt.config.ts`
+(la clé publique est faite pour être visible ; les droits sont protégés par les règles RLS du schéma).
 
-1. Créer un projet sur supabase.com (région Europe).
-2. Dans l'éditeur SQL, lancer `supabase/schema.sql` puis `supabase/seed.sql`.
-3. Copier `.env.example` en `.env` et renseigner l'adresse et la clé publique du projet.
-4. Réécrire `composables/useVladi.ts` pour lire et écrire dans Supabase au lieu du navigateur.
-   Les pages n'appellent que les fonctions de ce fichier, elles n'ont pas à changer.
-5. Ajouter la connexion (téléphone ou e-mail) avec Supabase Auth.
+- `supabase/schema.sql` : tables, règles d'accès, fonctions. Déjà appliqué.
+- `supabase/patch-002.sql` : prix recalculé par le serveur, créneaux occupés. Déjà appliqué (inclus dans schema.sql).
+- `supabase/seed.sql` : les fiches d'exemple en base (non utilisées par l'appli, qui les garde côté navigateur).
+- `supabase/tests/smoke.sql` : vérifie les règles (double réservation, prix non modifiable par la cliente,
+  SIREN obligatoire, une fiche par compte...). À lancer sur une base de test après `00_stub_auth.sql`.
 
-Le schéma garantit déjà trois choses : pas de double réservation chez un même prestataire,
-un créneau Konyéla ne peut être pris qu'une fois, et personne ne voit les réservations des autres.
-`supabase/tests/smoke.sql` vérifie ces règles (à lancer sur une base de test, après `00_stub_auth.sql` hors Supabase).
+Garanties côté serveur : pas de double réservation chez un même prestataire, un créneau Konyéla n'est pris
+qu'une fois, le prix et l'acompte sont recalculés par la base, personne ne voit les réservations des autres.
+
+Confirmation par e-mail désactivée : l'envoi d'e-mails intégré à Supabase est réservé à l'équipe du projet.
+Pour l'activer, brancher un service d'envoi (Resend, Brevo) dans Authentication puis SMTP Settings.
 
 ## Reste à faire avant de vrais utilisateurs
 
-- Brancher Supabase et la connexion (voir ci-dessus).
+- Envoi d'e-mails (confirmation, mot de passe oublié) avec un vrai service SMTP.
+- Photo personnelle sur la fiche prestataire (aujourd'hui : photo du métier).
 - Paiement réel de l'acompte (Stripe Connect, à valider pour la Guadeloupe).
-- Inscription des prestataires et gestion de leurs prestations et horaires.
 - Rappels par SMS ou notification.
-- Vraies photos des prestataires : aujourd'hui chaque fiche a un visuel dessiné.
 - Vraies adresses et calcul d'itinéraire : les positions sont fictives et les distances estimées.
 - Mentions légales, CGU, RGPD.
 - Faire valider "Konyéla" et les textes en créole par un créolophone.
