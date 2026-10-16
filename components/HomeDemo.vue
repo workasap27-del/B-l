@@ -68,31 +68,30 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
 </script>
 
 <template>
-  <div class="hd">
+  <div class="hd" :class="{ 'with-rdv': nextBooking && nextPro }">
+    <header class="topbar hd-bar">
+      <AppLogo />
+      <div class="row gap8">
+        <button class="icon-btn filled" aria-label="Réglages" @click="settingsOpen = true"><Settings2 :size="20" /></button>
+        <NuxtLink class="me-chip" to="/profil" :aria-label="`Mon compte, ${who}`">
+          <span class="avatar-xs">{{ initial }}</span><span class="me-name ellip">{{ who }}</span>
+        </NuxtLink>
+      </div>
+    </header>
+
     <section class="hd-hero">
-      <header class="topbar">
-        <AppLogo />
-        <div class="row gap8">
-          <button class="icon-btn filled" aria-label="Réglages" @click="settingsOpen = true"><Settings2 :size="20" /></button>
-          <NuxtLink class="me-chip" to="/profil" :aria-label="`Mon compte, ${who}`">
-            <span class="avatar-xs">{{ initial }}</span><span class="me-name ellip">{{ who }}</span>
-          </NuxtLink>
-        </div>
-      </header>
       <div class="hd-hello">
         <span class="hd-bonjour">Bonjour {{ who }}</span>
         <h1 class="hd-title">Réserve ton moment beauté et bien-être</h1>
       </div>
-    </section>
 
-    <form class="hd-panel" role="search" aria-label="Rechercher" @submit.prevent="router.push(resultsUrl())">
-      <div class="hd-card">
+      <form class="hd-panel" role="search" aria-label="Rechercher" @submit.prevent="router.push(resultsUrl())">
         <div class="hd-field">
           <button type="button" class="hd-row" @click="searchOpen = true">
             <component :is="catOf(what?.cat)" :size="20" class="hd-ico" />
             <span class="hd-txt">
               <span class="hd-k">Prestation</span>
-              <span class="hd-v" :class="{ ph: !what }">{{ what?.label ?? 'Soin ou établissement' }}</span>
+              <span class="hd-v" :class="{ ph: !what }">{{ what?.label ?? 'Tous les soins' }}</span>
             </span>
           </button>
           <button v-if="what" type="button" class="icon-btn hd-clear" aria-label="Retirer la prestation" @click="what = null"><X :size="17" /></button>
@@ -106,9 +105,9 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
           <CalendarDays :size="20" class="hd-ico" />
           <span class="hd-txt"><span class="hd-k">Quand ?</span><span class="hd-v" :class="{ ph: !when }">{{ whenLabel }}</span></span>
         </button>
-      </div>
-      <button type="submit" class="btn block hd-go">Rechercher</button>
-    </form>
+        <button type="submit" class="btn block hd-go">Rechercher</button>
+      </form>
+    </section>
 
     <NuxtLink v-if="nextBooking && nextPro" class="hd-rdv" :to="account ? '/rdv' : `/pro/${nextPro.id}`">
       <ProPhoto class="thumb" :pro="nextPro" :w="128" :h="128" ratio="none" :demo-label="false" />
