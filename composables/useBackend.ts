@@ -78,7 +78,14 @@ export function readable(e: unknown): string {
   if (/Invalid login credentials/i.test(msg)) return 'E-mail ou mot de passe incorrect.'
   if (/already registered|already been registered/i.test(msg)) return 'Un compte existe déjà avec cet e-mail. Connecte-toi.'
   if (/Password should be at least/i.test(msg)) return 'Le mot de passe doit faire au moins 8 caractères.'
+  const wait = msg.match(/after (\d+) seconds?/i)
+  if (wait) return `Pour ta sécurité, patiente ${wait[1]} secondes avant de réessayer.`
   if (/rate limit|too many/i.test(msg)) return 'Trop de tentatives. Réessaie dans quelques minutes.'
+  if (/Email not confirmed/i.test(msg)) return 'Confirme d\'abord ton adresse avec le lien reçu par e-mail.'
+  if (/Unable to validate email|invalid format|is invalid/i.test(msg)) return 'Cette adresse e-mail n\'est pas valide.'
+  if (/same as the old password/i.test(msg)) return 'Choisis un mot de passe différent de l\'ancien.'
+  if (/Error sending|sending (confirmation|recovery)/i.test(msg)) return 'Envoi de l\'e-mail impossible pour le moment. Réessaie plus tard.'
+  if (/session.*missing|not authenticated|JWT/i.test(msg)) return 'Ta session a expiré. Reconnecte-toi.'
   if (/bookings_no_overlap|exclusion/i.test(msg)) return 'Ce créneau vient d\'être pris. Choisis-en un autre.'
   if (/pros_one_per_owner/i.test(msg)) return 'Ton compte a déjà une fiche.'
   if (/siren/i.test(msg)) return 'Le numéro SIREN doit faire 9 chiffres.'
