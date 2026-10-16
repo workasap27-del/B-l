@@ -124,7 +124,7 @@ function back() {
         <div class="kcard">
           <div class="when"><b>{{ hm(slot.time) }}</b><span class="tiny">aujourd'hui</span></div>
           <span class="vr" />
-          <span class="grow meta">Créneau de dernière minute à -{{ slot.disc }} %. L'acompte n'est pas remboursable.</span>
+          <span class="grow meta">Créneau de dernière minute à -{{ slot.disc }} %. {{ RULES.onlinePayment ? 'L\'acompte n\'est pas remboursable.' : 'Réserve seulement si tu es sûr·e de pouvoir venir.' }}</span>
         </div>
       </section>
       <template v-else>
@@ -164,7 +164,7 @@ function back() {
         </label>
       </section>
 
-      <p v-if="!isSlot" class="tiny mt16">Annulation gratuite jusqu'à {{ RULES.freeCancelHours }} h avant. Passé ce délai, l'acompte reste au/à la prestataire.</p>
+      <p v-if="!isSlot" class="tiny mt16">Annulation gratuite jusqu'à {{ RULES.freeCancelHours }} h avant le rendez-vous. {{ RULES.onlinePayment ? 'Passé ce délai, l\'acompte reste au/à la prestataire.' : 'Passé ce délai, préviens directement le/la prestataire.' }} <NuxtLink class="link" to="/cgu#annulation">Conditions</NuxtLink></p>
 
       <div class="cta mt24">
         <div class="sum grow"><b>{{ euro(price) }}</b><span class="tiny ellip">{{ hint }}</span></div>
@@ -183,12 +183,15 @@ function back() {
         <div class="kv"><span>Prix</span><span><span v-if="slot" class="strike">{{ euro(sv.p) }}</span> {{ euro(servicePrice) }}</span></div>
         <div v-if="place === 'client'" class="kv"><span>Déplacement</span><span>{{ fee ? euro(fee) : 'offert' }}</span></div>
         <div class="kv total"><span>Total</span><span>{{ euro(price) }}</span></div>
-        <div class="kv"><span>Acompte à payer maintenant</span><span>{{ euro(deposit) }}</span></div>
-        <div class="kv"><span>Reste à payer sur place</span><span>{{ euro(price - deposit) }}</span></div>
+        <template v-if="RULES.onlinePayment">
+          <div class="kv"><span>Acompte à payer maintenant</span><span>{{ euro(deposit) }}</span></div>
+          <div class="kv"><span>Reste à payer sur place</span><span>{{ euro(price - deposit) }}</span></div>
+        </template>
+        <div v-else class="kv"><span>Paiement</span><span>Sur place</span></div>
       </div>
-      <p class="notice">{{ p.real ? `Réservation au nom de ${firstName}.` : 'Fiche d\'exemple : rien n\'est envoyé.' }} Paiement simulé pendant les tests, aucune carte n'est débitée.</p>
+      <p class="notice">{{ p.real ? `Réservation au nom de ${firstName}. Le règlement se fait directement auprès de ${p.name}.` : 'Établissement de démonstration : aucune réservation n\'est transmise.' }}</p>
       <p v-if="error" class="error">{{ error }}</p>
-      <button class="btn block" :disabled="busy" @click="pay">{{ busy ? 'Réservation…' : `Confirmer et payer ${euro(deposit)}` }}</button>
+      <button class="btn block" :disabled="busy" @click="pay">{{ busy ? 'Réservation…' : RULES.onlinePayment ? `Confirmer et payer ${euro(deposit)}` : 'Confirmer la réservation' }}</button>
       <button class="btn block line" @click="recap = false">Modifier</button>
     </BottomSheet>
   </template>

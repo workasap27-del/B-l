@@ -13,6 +13,9 @@ Appli Nuxt 3 (SPA, `ssr: false`) de réservation beauté en Guadeloupe. Voir REA
 - Les données de `data/pros.ts` sont fictives. Après modification, relancer `npm run seed:sql`.
 - Couleurs uniquement via les jetons CSS de `assets/main.css`. Les cinq chartes (`assets/chartes.css`) ne changent que les couleurs, jamais la police ni les formes. Elles se choisissent dans les réglages de l'accueil (`components/SettingsSheet.vue`).
 - Texte sans accord de genre : « Je réserve », « le/la prestataire », « client·e », « Indépendant·e ». Pas de « cliente », « professionnelle », « chez elle ».
+- L'appli est en production : aucun texte visible ne parle de test, d'exemple ou de données fictives (contrôlé par `tests/textes.test.ts`). Les fiches de démonstration n'existent qu'en mode présentation (`?demo=1`).
+- Paiement : `RULES.onlinePayment` décide de tous les textes d'acompte. Les CGU (`pages/cgu.vue`) reprennent les règles de l'appli : les modifier ensemble.
+- Pilotage (`/pilotage`) : uniquement via les fonctions `admin_*` de la base, jamais de lecture directe des tables depuis l'appli.
 - Mise en page : mobile d'abord, tablette dès 700 px, menu latéral dès 1000 px (voir la fin de `assets/main.css`). Vérifier chaque page à 390, 820 et 1366 px.
 - Style : police du système, pas de majuscules décoratives, sections aérées (36 px), une seule action principale par écran.
 - Les distances partent toujours de `state.pos` (position du téléphone ou commune choisie) via `km()`. Ne jamais remettre de distance fixe dans les données.

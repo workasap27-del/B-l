@@ -1,11 +1,17 @@
 <script setup lang="ts">
-// Réglages : charte graphique en test, fiches d'exemple, heure simulée. Le choix de la charte disparaîtra une fois décidé.
+// Réglages : couleurs de l'appli pour tout le monde. En mode présentation (lien ?demo=1), outils pour faire une démonstration.
 const emit = defineEmits<{ close: [] }>()
 const { state, nowMin, setSim, reset, toast } = useVladi()
 const current = computed(() => CHARTES.find(c => c.id === state.charte) ?? CHARTES[0])
 function doReset() {
   reset()
-  toast('Données d\'exemple remises à zéro')
+  toast('Démonstration remise à zéro')
+}
+function stopDemo() {
+  state.demo = false
+  setSim(null)
+  toast('Mode présentation désactivé')
+  emit('close')
 }
 </script>
 
@@ -14,8 +20,8 @@ function doReset() {
     <h2 class="h2">Réglages</h2>
     <section class="col gap12">
       <div class="col gap4">
-        <span class="h3">Charte graphique</span>
-        <span class="meta">En test : seules les couleurs changent. {{ current.mood }}.</span>
+        <span class="h3">Couleurs de l'appli</span>
+        <span class="meta">{{ current.mood }}.</span>
       </div>
       <div class="swatches">
         <button v-for="c in CHARTES" :key="c.id" class="swatch" :aria-pressed="state.charte === c.id" @click="state.charte = c.id">
@@ -24,24 +30,24 @@ function doReset() {
         </button>
       </div>
     </section>
-    <hr class="hr">
-    <label class="switch">
-      <span class="col gap4"><span>Afficher les fiches d'exemple</span><span class="tiny">Prestataires fictifs, pour tester l'appli.</span></span>
-      <input id="show-demo" v-model="state.showDemo" type="checkbox">
-    </label>
-    <hr class="hr">
-    <section class="col gap12">
-      <div class="col gap4">
-        <span class="h3">Heure utilisée</span>
-        <span class="meta">{{ hm(nowMin) }} en Guadeloupe{{ state.sim === null ? '' : ' (simulée)' }}. Utile pour tester la dernière minute quand tout est fermé.</span>
-      </div>
-      <div class="row wrap gap8">
-        <button class="btn sm soft" @click="setSim(null)">Heure réelle</button>
-        <button class="btn sm soft" @click="setSim(10 * 60 + 20)">Simuler 10h20</button>
-        <button class="btn sm soft" @click="setSim(nowMin + 30)">+30 min</button>
-      </div>
-      <button class="textbtn" style="align-self:flex-start" @click="doReset">Remettre les données d'exemple à zéro</button>
-    </section>
+    <template v-if="state.demo">
+      <hr class="hr">
+      <section class="col gap12">
+        <div class="col gap4">
+          <span class="h3">Mode présentation</span>
+          <span class="meta">Des établissements de démonstration s'affichent à côté des vrais. Il est {{ hm(nowMin) }} en Guadeloupe{{ state.sim === null ? '' : ' (heure de présentation)' }}.</span>
+        </div>
+        <div class="row wrap gap8">
+          <button class="btn sm soft" @click="setSim(null)">Heure réelle</button>
+          <button class="btn sm soft" @click="setSim(10 * 60 + 20)">10h20</button>
+          <button class="btn sm soft" @click="setSim(nowMin + 30)">+30 min</button>
+        </div>
+        <div class="row wrap gap8">
+          <button class="btn sm line" @click="doReset">Remettre à zéro</button>
+          <button class="btn sm line" @click="stopDemo">Quitter le mode présentation</button>
+        </div>
+      </section>
+    </template>
     <button class="btn block" @click="emit('close')">Fermer</button>
   </BottomSheet>
 </template>

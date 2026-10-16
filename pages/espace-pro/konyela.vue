@@ -1,9 +1,11 @@
 <script setup lang="ts">
-const { workPro, service, nowMin, mySlots, removeSlot } = useVladi()
+const { workPro, service, nowMin, mySlots, removeSlot, needsFiche } = useVladi()
 const p = computed(() => workPro.value.pro)
 </script>
 
 <template>
+  <ProGate v-if="needsFiche" />
+  <template v-else>
   <ProTabs><h1 class="title">Mes créneaux Konyéla</h1></ProTabs>
   <div class="col gap12 mt24">
     <template v-for="s in mySlots" :key="s.id">
@@ -20,4 +22,5 @@ const p = computed(() => workPro.value.pro)
     </template>
     <p v-if="!mySlots.length" class="meta">Aucun créneau proposé aujourd'hui. Dans l'agenda, touche « Proposer en Konyéla » sur un créneau libre.</p>
   </div>
+  </template>
 </template>

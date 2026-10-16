@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Category, Pro, Service } from '~/data/pros'
 import { fromIso, toIso } from '~/utils/time'
+import type { AdminEvent, AdminStats } from '~/utils/admin'
 
 let client: SupabaseClient | null = null
 let tried = false
@@ -398,4 +399,36 @@ export async function lookupCompany(siren: string): Promise<Company | null> {
   const r = j.results?.find(x => x.siren === siren)
   if (!r) return null
   return { siren: r.siren, name: r.nom_complet, active: r.etat_administratif !== 'C', city: r.siege?.libelle_commune ?? '', activity: r.siege?.activite_principale ?? '' }
+}
+
+// Pilotage (propriétaires de l'appli) ---------------------------------------------
+
+/** Le compte connecté fait-il partie des propriétaires ? Faux tant que la base ne connaît pas le pilotage. */
+export async function isAdmin(): Promise<boolean> {
+  const c = sb()
+  if (!c) return false
+  const { data, error } = await c.rpc('is_admin')
+  return !error && data === true
+}
+
+export async function adminStats(days: number): Promise<AdminStats> {
+  const { data, error } = await sb()!.rpc('admin_stats', { p_days: days })
+  if (error) throw error
+  return data as AdminStats
+}
+
+export async function adminEvents(limit = 150, kind?: string): Promise<AdminEvent[]> {
+  const { data, error } = await sb()!.rpc('admin_events', { p_limit: limit, p_kind: kind ?? null })
+  if (error) throw error
+  return (data ?? []).map((e: Record<string, unknown>) => ({
+    id: Number(e.id), at: String(e.at), kind: String(e.kind),
+    actor: (e.actor_name as string | null) ?? '', role: (e.actor_role as string | null) ?? '',
+    pro: (e.pro_name as string | null) ?? '', detail: (e.detail as Record<string, unknown>) ?? {},
+  }))
+}
+
+export async function adminBookings(days: number): Promise<Record<string, unknown>[]> {
+  const { data, error } = await sb()!.rpc('admin_bookings', { p_days: days })
+  if (error) throw error
+  return data ?? []
 }

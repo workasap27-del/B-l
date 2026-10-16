@@ -222,5 +222,5 @@ export const DEMO_PRO_ID = 'kaz'
 /** Cliente connectée en mode démo. */
 export const DEMO_CLIENT = { name: 'Inès A.', firstName: 'Inès', commune: 'Les Abymes' }
 
-/** Règles commerciales, données à titre d'hypothèse. */
-export const RULES = { depositRate: 0.2, commissionRate: 0.12, freeCancelHours: 24 }
+/** Règles commerciales. onlinePayment reste faux tant que le paiement en ligne n'est pas branché : tout se règle sur place. */
+export const RULES = { depositRate: 0.2, commissionRate: 0.12, freeCancelHours: 24, onlinePayment: false }

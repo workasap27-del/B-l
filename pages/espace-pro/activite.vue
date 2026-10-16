@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { workPro, today, agenda, proBookings, state } = useVladi()
+const { workPro, today, agenda, proBookings, state, needsFiche } = useVladi()
 const p = computed(() => workPro.value.pro)
 const appts = computed(() => agenda(today.value).filter(e => e.kind === 'rdv' || e.kind === 'app'))
 const minutes = computed(() => appts.value.reduce((a, e) => a + e.b - e.a, 0))
@@ -10,6 +10,8 @@ const upcoming = computed(() => viaApp.value.filter(b => b.date >= today.value).
 </script>
 
 <template>
+  <ProGate v-if="needsFiche" />
+  <template v-else>
   <ProTabs><h1 class="title">Mon activité</h1></ProTabs>
   <div class="stats mt24">
     <div class="stat"><b>{{ appts.length }}</b><span>rendez-vous aujourd'hui</span></div>
@@ -30,4 +32,5 @@ const upcoming = computed(() => viaApp.value.filter(b => b.date >= today.value).
       </div>
     </div>
   </section>
+  </template>
 </template>

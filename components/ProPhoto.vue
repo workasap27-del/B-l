@@ -13,6 +13,6 @@ watch(img, () => { failed.value = false })
   <div class="photo" :class="ratio !== 'none' ? `ratio-${ratio}` : ''">
     <img :src="img.src" :srcset="img.srcset || undefined" :alt="`Photo illustrant ${pro.name}`" loading="lazy" decoding="async" :style="failed ? 'visibility:hidden' : undefined" @error="failed = true">
     <div class="over"><slot /></div>
-    <span v-if="demoLabel && !pro.real" class="demo">Exemple</span>
+    <span v-if="demoLabel && !pro.real" class="demo">Démo</span>
   </div>
 </template>

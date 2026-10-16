@@ -2,6 +2,7 @@
 import { CircleCheck, Clock, Hourglass, MapPinCheck, TriangleAlert } from 'lucide-vue-next'
 import type { Booking } from '~/composables/useVladi'
 import { DISPUTE_HOURS, TOLERANCE } from '~/utils/arrival'
+import { RULES } from '~/data/pros'
 
 // Le jour du rendez-vous : celui qui se déplace signale son arrivée ou son retard, l'autre confirme ou déclare une absence.
 const props = defineProps<{ booking: Booking, side: 'client' | 'pro' }>()
@@ -69,11 +70,11 @@ async function act(fn: (id: string) => unknown, msg: string) {
     <p v-if="st === 'arrive'" class="ok"><CircleCheck :size="15" /> Arrivée confirmée à {{ hm(booking.confirmedAt!) }}.</p>
     <template v-if="st === 'absent'">
       <p class="warn"><TriangleAlert :size="15" />
-        <template v-if="booking.noShow === 'client'">Absence du/de la client·e déclarée. L'acompte revient au/à la prestataire.</template>
-        <template v-else>Absence du/de la prestataire déclarée. L'acompte est remboursé.</template>
+        <template v-if="booking.noShow === 'client'">Absence du/de la client·e déclarée.{{ RULES.onlinePayment ? ' L\'acompte revient au/à la prestataire.' : '' }}</template>
+        <template v-else>Absence du/de la prestataire déclarée.{{ RULES.onlinePayment ? ' L\'acompte est remboursé.' : '' }}</template>
       </p>
       <button v-if="(booking.noShow === 'client') === (side === 'client')" class="btn sm line" @click="act(dispute, 'Contestation transmise au service client')">Contester</button>
     </template>
-    <p v-if="st === 'litige'" class="warn"><TriangleAlert :size="15" /> Désaccord signalé. Le service client contacte les deux parties sous {{ DISPUTE_HOURS }} h ; l'acompte est bloqué d'ici là.</p>
+    <p v-if="st === 'litige'" class="warn"><TriangleAlert :size="15" /> Désaccord signalé. Le service client contacte les deux parties sous {{ DISPUTE_HOURS }} h{{ RULES.onlinePayment ? ' ; l\'acompte est bloqué d\'ici là' : '' }}.</p>
   </div>
 </template>

@@ -25,7 +25,7 @@ function back() {
   if (window.history.length > 1) router.back()
   else router.push('/')
 }
-// Répartition des notes des fiches d'exemple, déduite de la moyenne.
+// Répartition des notes des fiches de démonstration, déduite de la moyenne.
 const bars = computed(() => {
   const five = Math.max(35, Math.min(94, Math.round((r.value.rating - 4) * 62 + 36)))
   const rest = 100 - five
@@ -48,7 +48,7 @@ const bars = computed(() => {
     <div class="sheet-top">
       <div class="tags">
         <span v-if="isMine(p)" class="tag accent">Votre entreprise</span>
-        <span v-if="!p.real" class="tag">Fiche d'exemple</span>
+        <span v-if="!p.real" class="tag">Démonstration</span>
       </div>
       <h1 class="title">{{ p.name }}</h1>
       <div class="row wrap" style="gap:6px">
@@ -123,8 +123,11 @@ const bars = computed(() => {
           </template>
         </div>
       </div>
-      <p v-if="!p.real" class="tiny">Fiche fictive, créée pour tester l'appli. Photo d'illustration (Pexels), position approximative.</p>
-      <p v-else-if="p.siren" class="tiny">Entreprise déclarée, SIREN {{ p.siren.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3') }}.</p>
+      <p v-if="!p.real" class="tiny">Établissement de démonstration, présenté à titre d'illustration.</p>
+      <p v-else class="tiny">
+        <template v-if="p.siren">Entreprise immatriculée, SIREN {{ p.siren.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3') }}.</template>
+        <template v-if="!p.photo"> Photo d'illustration.</template>
+      </p>
     </div>
   </template>
   <div v-else-if="remote.loading" class="empty" style="padding-top:96px">Chargement…</div>

@@ -7,7 +7,7 @@ Deux façons de réserver : à l'avance (classique) ou tout de suite sur un cré
 Une prestataire inscrite publie sa fiche (SIREN obligatoire), ses prestations et ses horaires ; ses réservations
 et ses créneaux Konyéla sont enregistrés en base. À côté, 155 fiches d'exemple (marquées "Exemple") restent
 affichées pour la démonstration : leurs réservations ne quittent pas le navigateur. Un réglage permet de les masquer.
-Le paiement de l'acompte est encore simulé.
+Pas de paiement en ligne pour l'instant : la prestation se règle sur place.
 
 ## Lancer en local
 
@@ -70,6 +70,31 @@ Photos : photos libres de droits de Pexels (licence Pexels), une par fiche selon
 Langage : l'appli évite les accords de genre (« Je réserve », « Je propose mes services », « Indépendant·e », « Chez le/la pro »).
 
 Limites connues : un hôtel ne vend pas encore de nuitées (réservation par dates). L'appli propose des créneaux dans la journée : chambre en day use, piscine, brunch, séminaire. Pour le tatouage et le piercing, la formation à l'hygiène et à la salubrité et la déclaration à l'ARS sont obligatoires : l'appli le rappelle mais ne le vérifie pas.
+
+## Mode présentation
+
+Par défaut, l'appli n'affiche que les vrais prestataires. Les établissements de démonstration (`data/pros.ts`)
+n'apparaissent qu'avec le lien `?demo=1` (par exemple https://bel-manzel.vercel.app/?demo=1), signalés « Démo ».
+`?demo=0` ou « Quitter le mode présentation » dans les réglages les masque à nouveau.
+
+## Paiement
+
+`RULES.onlinePayment` (dans `data/pros.ts`) vaut `false` : aucun paiement en ligne, tout se règle sur place.
+Les textes de réservation, de confirmation, d'annulation et les CGU s'adaptent à ce réglage.
+
+## Pages légales
+
+`/cgu`, `/confidentialite`, `/mentions-legales`. L'identité de l'éditeur, le contact et le médiateur se règlent dans
+`data/legal.ts` (un champ vide n'est pas affiché). Les CGU reprennent les règles réelles de l'appli (24 h, retard
+toléré, avis liés à une réservation) : les mettre à jour si une règle change.
+
+## Pilotage
+
+`/pilotage`, réservé aux comptes listés dans la table `admins` : indicateurs (réservations, volume d'affaires,
+panier moyen, annulations, absences, fidélité, activation des prestataires, catégories, communes, jours et heures),
+journal d'activité (table `app_events`, alimentée par des déclencheurs) et exports CSV pour Excel.
+Ajouter un compte propriétaire : `insert into admins (user_id) select id from auth.users where email = '...';`
+dans l'éditeur SQL de Supabase. Schéma : `supabase/patch-003-pilotage.sql` (déjà appliqué, inclus dans schema.sql).
 
 ## Organisation du code
 

@@ -25,6 +25,8 @@ const f = reactive({
 })
 const error = ref('')
 const busy = ref(false)
+// Engagement demandé à la première publication.
+const certify = ref(false)
 const locating = ref(false)
 
 // Vérification du SIREN dans le registre officiel, dès que les 9 chiffres sont saisis.
@@ -103,6 +105,7 @@ function check(): string {
   const list = f.services.filter(s => s.n.trim())
   if (!list.length) return 'Ajoute au moins une prestation.'
   if (list.some(s => !(s.p > 0))) return 'Chaque prestation doit avoir un prix.'
+  if (!f.id && !certify.value) return 'Coche la case d\'engagement pour publier ta fiche.'
   return ''
 }
 
@@ -167,8 +170,8 @@ async function save() {
       <div class="chips" style="flex-wrap:wrap;margin:0;padding:0">
         <button v-for="c in CATS" :key="c" type="button" class="chip" :aria-pressed="f.cats.includes(c)" @click="toggleCat(c)">{{ CAT_SHORT[c] }}</button>
       </div>
-      <p v-if="f.cats.includes('tatouage') || f.cats.includes('piercing')" class="notice">Tatouage et piercing : la formation à l'hygiène et à la salubrité est obligatoire, et l'activité doit être déclarée auprès de l'ARS (préfecture). Pour les mineurs, l'autorisation d'un parent est exigée. VLADI ne vérifie pas ces points : tu en restes responsable.</p>
-      <p v-if="f.cats.includes('hotel')" class="notice">Pour les hôtels, VLADI réserve pour l'instant des créneaux dans la journée (chambre en day use, piscine, brunch, soins). Les nuitées ne sont pas encore gérées.</p>
+      <p v-if="f.cats.includes('tatouage') || f.cats.includes('piercing')" class="notice">Tatouage et piercing : la formation à l'hygiène et à la salubrité est obligatoire, et l'activité doit être déclarée auprès de l'ARS (préfecture). Pour les mineurs, l'autorisation d'un parent est exigée. Tu restes seul·e responsable du respect de ces obligations.</p>
+      <p v-if="f.cats.includes('hotel')" class="notice">Les hôtels proposent sur VLADI des prestations à la journée : chambre en day use, accès piscine, brunch, soins. La réservation de nuitées n'est pas proposée.</p>
       <div v-for="(s, i) in f.services" :key="i" class="svc-edit">
         <input v-model="s.n" class="input" :aria-label="`Prestation ${i + 1}`" placeholder="Nom de la prestation">
         <select v-model.number="s.d" class="select" :aria-label="`Durée ${i + 1}`"><option v-for="d in DURATIONS" :key="d" :value="d">{{ duration(d) }}</option></select>
@@ -211,6 +214,10 @@ async function save() {
       <label class="field" for="f-about"><span class="h3">Présentation <span class="help">(facultatif)</span></span><textarea id="f-about" v-model="f.about" class="textarea" rows="4" maxlength="600" placeholder="Ton style, ton expérience, ce qui te rend unique." /></label>
     </div>
 
+    <label v-if="!f.id" class="check mt16" for="f-certify">
+      <input id="f-certify" v-model="certify" type="checkbox">
+      <span>Je certifie exercer sous ce SIREN, disposer des qualifications et de l'assurance exigées pour mes prestations, et j'accepte les <NuxtLink class="link" to="/cgu#prestataires" target="_blank">engagements des prestataires</NuxtLink>.</span>
+    </label>
     <p v-if="error" class="error">{{ error }}</p>
     <div class="cta">
       <button class="btn block" type="submit" :disabled="busy">{{ busy ? 'Enregistrement…' : f.id ? 'Enregistrer les modifications' : 'Publier ma fiche' }}</button>

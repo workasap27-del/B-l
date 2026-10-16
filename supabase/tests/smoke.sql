@@ -139,4 +139,47 @@ do $$ begin
   exception when insufficient_privilege then null; end;
 end $$;
 reset role;
+
+-- 12. Pilotage : une cliente ne voit ni le journal ni les indicateurs, et ne peut pas se déclarer propriétaire.
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false);
+do $$ begin
+  if is_admin() then raise exception 'cliente vue comme propriétaire'; end if;
+  begin
+    perform admin_stats(30);
+    raise exception 'indicateurs lisibles par une cliente';
+  exception when raise_exception then
+    if sqlerrm not like 'Accès réservé%' then raise; end if;
+  end;
+  begin
+    perform count(*) from app_events;
+    raise exception 'journal lisible par une cliente';
+  exception when insufficient_privilege then null; end;
+  begin
+    insert into admins (user_id) values (auth.uid());
+    raise exception 'une cliente s''est déclarée propriétaire';
+  exception when insufficient_privilege then null; end;
+end $$;
+reset role;
+
+-- 13. Un compte propriétaire lit le journal et les indicateurs, sans les fiches de démonstration.
+insert into admins (user_id) values ('00000000-0000-0000-0000-0000000000a2');
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a2', false);
+do $$
+declare s jsonb;
+begin
+  if not is_admin() then raise exception 'propriétaire non reconnu'; end if;
+  s := admin_stats(30);
+  if (s -> 'accounts' ->> 'total')::int < 4 then raise exception 'comptes mal comptés : %', s -> 'accounts'; end if;
+  if (s -> 'fiches' ->> 'total')::int <> 1 then raise exception 'les fiches de démonstration sont comptées : %', s -> 'fiches'; end if;
+  if jsonb_array_length(s -> 'daily') < 30 then raise exception 'série journalière incomplète'; end if;
+  if (select count(*) from admin_events(500, 'inscription')) < 4 then raise exception 'inscriptions absentes du journal'; end if;
+  if (select count(*) from admin_events(500, 'reservation')) < 1 then raise exception 'réservations absentes du journal'; end if;
+  if (select count(*) from admin_events(500, 'annulation')) < 1 then raise exception 'annulation absente du journal'; end if;
+  if (select count(*) from admin_events(500, 'fiche_creee')) < 1 then raise exception 'création de fiche absente du journal'; end if;
+  perform admin_stats(0);
+  perform * from admin_bookings(0);
+end $$;
+reset role;
 select 'tous les contrôles passent' as resultat;

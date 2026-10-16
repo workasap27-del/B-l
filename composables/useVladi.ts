@@ -93,8 +93,8 @@ interface State {
   charte: string
   /** d'où l'on mesure les distances : la position du téléphone ou le centre d'une commune */
   pos: LatLng & { label: string, gps: boolean }
-  /** afficher les fiches d'exemple à côté des vrais prestataires */
-  showDemo: boolean
+  /** mode démonstration : fiches fictives visibles (ouvert par le lien ?demo=1, fermé par ?demo=0) */
+  demo: boolean
 }
 
 const STORAGE_KEY = 'vladi-v3'
@@ -102,7 +102,7 @@ const STORAGE_KEY = 'vladi-v3'
 function blank(): State {
   return {
     bookings: [], slots: [], fav: {}, reviews: {}, seq: 100, seededFor: '', sim: null, unseen: 0, address: '',
-    charte: 'noir', pos: { ...communePoint(DEMO_CLIENT.commune), label: DEMO_CLIENT.commune, gps: false }, showDemo: true,
+    charte: 'noir', pos: { ...communePoint(DEMO_CLIENT.commune), label: DEMO_CLIENT.commune, gps: false }, demo: false,
   }
 }
 
@@ -123,6 +123,8 @@ const remote = reactive({
   reviewed: [] as string[],
   /** vrai quand la personne arrive depuis le lien de réinitialisation du mot de passe */
   recovery: false,
+  /** compte propriétaire de l'appli : accès au pilotage */
+  admin: false,
 })
 
 const clock = ref(new Date())
@@ -133,8 +135,8 @@ let started = false
 const today = computed(() => gpParts(clock.value).date)
 const nowMin = computed(() => state.sim ?? gpParts(clock.value).min)
 
-/** Tous les prestataires visibles : les vrais d'abord, puis les fiches d'exemple si elles sont affichées. */
-const catalogue = computed<Pro[]>(() => [...remote.pros, ...(state.showDemo ? PROS : [])])
+/** Tous les prestataires visibles : les vrais, plus les fiches fictives en mode démonstration. */
+const catalogue = computed<Pro[]>(() => [...remote.pros, ...(state.demo ? PROS : [])])
 
 function pro(id: string): Pro | undefined {
   return remote.pros.find(p => p.id === id) ?? (remote.myPro?.id === id ? remote.myPro : undefined) ?? PROS.find(p => p.id === id)
@@ -199,7 +201,7 @@ function starts(p: Pro, date: string, duration: number): number[] {
 }
 
 function openSlots(proId?: string): Slot[] {
-  const demo = state.showDemo || proId ? state.slots : []
+  const demo = state.demo ? state.slots : []
   return [...remote.slots, ...demo]
     .filter(s => s.status === 'open' && s.date === today.value && s.time >= nowMin.value + 10 && (!proId || s.proId === proId) && !!pro(s.proId))
     .sort((a, b) => a.time - b.time)
@@ -314,11 +316,10 @@ function fromRemote(r: RemoteBooking): Booking {
   return { ...r, reviewed: remote.reviewed.includes(r.id), real: true }
 }
 
-/** Réservations de la personne connectée en tant que cliente (vraies et d'exemple). */
-const myBookings = computed<Booking[]>(() => [
-  ...state.bookings,
-  ...remote.bookings.filter(b => b.clientId === remote.profile?.id),
-])
+/** Réservations de la personne connectée. Rien sans compte, et les réservations fictives seulement en démonstration. */
+const myBookings = computed<Booking[]>(() => (remote.profile
+  ? [...(state.demo ? state.bookings : []), ...remote.bookings.filter(b => b.clientId === remote.profile?.id)]
+  : []))
 
 function isDone(b: Booking): boolean {
   return b.status === 'confirmed' && (!!b.noShow || b.disputed === true || b.date < today.value || (b.date === today.value && b.time + b.dur <= nowMin.value))
@@ -356,11 +357,11 @@ async function book(input: BookInput): Promise<{ booking?: Booking, error?: stri
   if (!allowedPlaces(p).includes(input.place)) return { error: 'Ce lieu n\'est pas proposé par ce prestataire.' }
   const address = input.place === 'client' ? (input.address ?? '').trim() : undefined
   if (input.place === 'client' && (!address || address.length < 5)) return { error: 'Indique ton adresse.' }
+  if (!remote.profile) return { error: 'connexion' }
   if (address) state.address = address
 
   if (p.real) {
     const me = remote.profile
-    if (!me) return { error: 'connexion' }
     try {
       const r = input.slotId
         ? await api.bookSlot({ slotId: input.slotId, place: input.place, address, clientName: me.name, clientPhone: me.phone, note: input.note })
@@ -464,7 +465,7 @@ function toggleFav(id: string) {
 
 // Espace prestataire --------------------------------------------------------
 
-/** Fiche gérée dans l'espace pro : celle du compte connecté, sinon la fiche d'exemple. */
+/** Fiche gérée dans l'espace pro : celle du compte connecté, sinon (en démonstration) la fiche fictive. */
 const workPro = computed<{ pro: Pro, demo: boolean }>(() =>
   remote.myPro ? { pro: remote.myPro, demo: false } : { pro: PROS.find(p => p.id === DEMO_PRO_ID)!, demo: true },
 )
@@ -550,6 +551,8 @@ const mySlots = computed(() => {
 // Comptes -------------------------------------------------------------------
 
 const account = computed(() => remote.profile)
+/** L'espace prestataire n'a rien à montrer : pas de fiche, et pas de démonstration en cours. */
+const needsFiche = computed(() => !remote.myPro && !state.demo)
 const firstName = computed(() => (remote.profile?.name ?? DEMO_CLIENT.firstName).split(' ')[0])
 
 async function register(input: { email: string, password: string, name: string, role: 'client' | 'pro', phone?: string }): Promise<string | null> {
@@ -580,6 +583,7 @@ async function logout() {
   remote.myPro = null
   remote.bookings = []
   remote.reviewed = []
+  remote.admin = false
 }
 
 async function newPassword(password: string): Promise<string | null> {
@@ -668,7 +672,8 @@ async function refresh() {
     remote.pros = catalogueData.pros
     remote.ratings = catalogueData.ratings
     if (profile) {
-      const [myPro, bookings, mine] = await Promise.all([api.loadMyPro(profile.id), api.loadBookings(), api.loadReviews(undefined, profile.id)])
+      const [myPro, bookings, mine, admin] = await Promise.all([api.loadMyPro(profile.id), api.loadBookings(), api.loadReviews(undefined, profile.id), api.isAdmin()])
+      remote.admin = admin
       remote.myPro = myPro
       remote.reviewed = mine.map(r => r.bookingId)
       remote.bookings = bookings.map(fromRemote)
@@ -676,10 +681,11 @@ async function refresh() {
     else {
       remote.myPro = null
       remote.bookings = []
+      remote.admin = false
     }
     await refreshAvailability()
   }
-  catch { /* réseau indisponible : l'appli continue avec les fiches d'exemple */ }
+  catch { /* réseau indisponible : on garde ce qui est déjà affiché */ }
   finally {
     remote.loading = false
   }
@@ -718,7 +724,12 @@ function start() {
     }
   }
   catch { /* stockage indisponible : on repart de zéro */ }
-  if (!state.bookings.length && !state.seededFor) seedBookings()
+  // Lien de présentation : ?demo=1 ouvre le mode démonstration, ?demo=0 le ferme.
+  const flag = new URLSearchParams(window.location.search).get('demo')
+  if (flag === '1') state.demo = true
+  if (flag === '0') state.demo = false
+  if (state.demo && !state.bookings.length) seedBookings()
+  watch(() => state.demo, (on) => { if (on && !state.bookings.length) seedBookings() })
   seedSlots()
   watch(state, () => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)) }
@@ -748,7 +759,7 @@ export function useVladi() {
     km, setCommune, locate, currentPosition, nextSlots, openStatus,
     traveler, arrival, signalArrival, confirmArrival, announceLate, waitMore, declareNoShow, dispute,
     workPro, proBookings, agenda, earliestIn, publishSlot, removeSlot, mySlots,
-    account, firstName, register, login, logout, forgotPassword, newPassword, saveProfile, saveMyPro, checkSiren, refresh,
+    account, needsFiche, firstName, register, login, logout, forgotPassword, newPassword, saveProfile, saveMyPro, checkSiren, refresh,
     setSim, toast, reset,
   }
 }

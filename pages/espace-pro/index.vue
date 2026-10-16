@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Phone } from 'lucide-vue-next'
 import type { AgendaItem } from '~/composables/useVladi'
+import { RULES } from '~/data/pros'
 
-const { today, nowMin, agenda, earliestIn, publishSlot, removeSlot, toast, findBooking, workPro } = useVladi()
+const { today, nowMin, agenda, earliestIn, publishSlot, removeSlot, toast, findBooking, workPro, needsFiche } = useVladi()
 const p = computed(() => workPro.value.pro)
 const days = computed(() => Array.from({ length: 5 }, (_, i) => addDays(today.value, i)))
 const date = ref(today.value)
@@ -50,6 +51,8 @@ async function publish() {
 </script>
 
 <template>
+  <ProGate v-if="needsFiche" />
+  <template v-else>
   <ProTabs><h1 class="title">Mon agenda</h1></ProTabs>
 
   <div class="chips mt24">
@@ -78,7 +81,7 @@ async function publish() {
             <span v-if="e.kind === 'app'" class="tag accent">via VLADI</span>
             <span v-if="e.mode === 'lm'" class="tag now">Konyéla</span>
           </div>
-          <span class="meta">{{ e.what }} · {{ euro(e.price ?? 0) }}<template v-if="e.kind === 'app'"> · acompte {{ euro(e.deposit ?? 0) }}</template></span>
+          <span class="meta">{{ e.what }} · {{ euro(e.price ?? 0) }}<template v-if="e.kind === 'app' && RULES.onlinePayment"> · acompte {{ euro(e.deposit ?? 0) }}</template></span>
           <span v-if="e.kind === 'app'" class="meta">{{ e.place === 'client' ? `À domicile : ${e.address}` : 'Chez toi' }}</span>
           <span v-if="e.note" class="meta">« {{ e.note }} »</span>
           <a v-if="e.phone" class="link meta" :href="`tel:${e.phone.replace(/\s/g, '')}`"><Phone :size="13" style="vertical-align:-2px" /> {{ e.phone }}</a>
@@ -111,4 +114,5 @@ async function publish() {
     <p v-else class="meta">Ce créneau est trop court pour une de tes prestations.</p>
     <button class="btn block line" @click="gap = null">Annuler</button>
   </BottomSheet>
+  </template>
 </template>

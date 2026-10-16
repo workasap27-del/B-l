@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { CalendarDays, Navigation, Star } from 'lucide-vue-next'
 import type { Booking } from '~/composables/useVladi'
+import { RULES } from '~/data/pros'
 
 const { myBookings, pro, service, today, isDone, refundable, cancel, addReview, toast, placeLabel, account, remote } = useVladi()
 const stamp = (b: Booking) => `${b.date} ${String(b.time).padStart(4, '0')}`
@@ -37,6 +38,17 @@ async function sendReview() {
 
 <template>
   <h1 class="title">Rendez-vous</h1>
+  <div v-if="!account" class="empty mt24">
+    <CalendarDays :size="32" />
+    <template v-if="remote.loading">Chargement…</template>
+    <template v-else>
+      <b>Connecte-toi pour voir tes rendez-vous</b>
+      <span>Tes réservations sont liées à ton compte et te suivent sur tous tes appareils.</span>
+      <NuxtLink class="btn sm" to="/connexion?retour=/rdv">Se connecter</NuxtLink>
+      <NuxtLink class="textbtn" to="/connexion?mode=inscription&retour=/rdv">Créer un compte</NuxtLink>
+    </template>
+  </div>
+  <template v-else>
   <div class="seg mt16">
     <button :aria-pressed="tab === 'next'" @click="tab = 'next'">À venir{{ upcoming.length ? ` (${upcoming.length})` : '' }}</button>
     <button :aria-pressed="tab === 'past'" @click="tab = 'past'">Passés{{ past.length ? ` (${past.length})` : '' }}</button>
@@ -80,16 +92,20 @@ async function sendReview() {
       </template>
       <b v-else>Aucun rendez-vous passé</b>
     </div>
-    <p v-if="!account && !remote.loading" class="notice mt16">
-      Tu vois ici tes réservations d'exemple. <NuxtLink class="link" to="/connexion">Connecte-toi</NuxtLink> pour réserver chez les vrais prestataires.
-    </p>
   </div>
+  </template>
 
   <BottomSheet v-if="toCancel" @close="toCancel = null">
     <h2 class="h2">Annuler ce rendez-vous ?</h2>
     <p>{{ label(toCancel) }} avec {{ pro(toCancel.proId)!.name }}, {{ dayLabel(toCancel.date, today) }} à {{ hm(toCancel.time) }}.</p>
-    <p v-if="refundable(toCancel)" class="notice">Ton acompte de {{ euro(toCancel.deposit) }} sera remboursé.</p>
-    <p v-else class="error">{{ toCancel.mode === 'lm' ? 'Créneau de dernière minute' : 'Moins de 24 h avant' }} : l'acompte de {{ euro(toCancel.deposit) }} reste au prestataire.</p>
+    <template v-if="RULES.onlinePayment">
+      <p v-if="refundable(toCancel)" class="notice">Ton acompte de {{ euro(toCancel.deposit) }} sera remboursé.</p>
+      <p v-else class="error">{{ toCancel.mode === 'lm' ? 'Créneau de dernière minute' : 'Moins de 24 h avant' }} : l'acompte de {{ euro(toCancel.deposit) }} reste au/à la prestataire.</p>
+    </template>
+    <template v-else>
+      <p v-if="refundable(toCancel)" class="notice">Annulation sans frais.</p>
+      <p v-else class="error">{{ toCancel.mode === 'lm' ? 'Créneau de dernière minute' : `Moins de ${RULES.freeCancelHours} h avant le rendez-vous` }} : préviens {{ pro(toCancel.proId)!.name }} si possible. Les annulations tardives répétées peuvent entraîner la suspension du compte.</p>
+    </template>
     <button class="btn block danger" @click="confirmCancel">Annuler le rendez-vous</button>
     <button class="btn block" @click="toCancel = null">Garder le rendez-vous</button>
   </BottomSheet>

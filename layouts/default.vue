@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { CalendarDays, House, Search, User, Zap } from 'lucide-vue-next'
 
-const { state, toastMessage, account, remote } = useVladi()
+const { state, toastMessage, account, remote, firstName } = useVladi()
 const route = useRoute()
 const router = useRouter()
 // Lien « mot de passe oublié » ouvert : on propose de choisir un nouveau mot de passe.
@@ -12,16 +12,17 @@ const tabsLive = computed(() => [
   { to: '/recherche', label: 'Rechercher', icon: Search },
   { to: '/konyela', label: 'Konyéla', icon: Zap },
   { to: '/rdv', label: 'Rendez-vous', icon: CalendarDays },
-  { to: '/profil', label: account.value ? 'Compte' : 'Connexion', icon: User },
+  { to: '/profil', label: account.value ? firstName.value : 'Connexion', icon: User },
 ])
-const active = (to: string) => (to === '/' ? route.path === '/' : route.path.startsWith(to) || (to === '/profil' && (route.path.startsWith('/espace-pro') || route.path.startsWith('/connexion'))))
-// Pastille sur Compte : réservations reçues par la fiche d'exemple et pas encore vues.
-const badge = computed(() => state.unseen)
+const active = (to: string) => (to === '/' ? route.path === '/' : route.path.startsWith(to) || (to === '/profil' && ['/espace-pro', '/connexion', '/pilotage', '/cgu', '/confidentialite', '/mentions-legales'].some(x => route.path.startsWith(x))))
+// Pastille sur Compte : réservations reçues par la fiche de démonstration et pas encore vues.
+const badge = computed(() => (state.demo ? state.unseen : 0))
+const initial = computed(() => (account.value?.name ?? '').trim().charAt(0).toUpperCase())
 const flush = computed(() => route.path.startsWith('/pro/'))
 // Largeur du contenu sur tablette et ordinateur : large (listes), moyenne (fiche) ou étroite (formulaires).
 const width = computed(() => {
   const p = route.path
-  if (p === '/' || p.startsWith('/recherche') || p.startsWith('/konyela')) return 'wide'
+  if (p === '/' || p.startsWith('/recherche') || p.startsWith('/konyela') || p.startsWith('/pilotage')) return 'wide'
   if (p.startsWith('/pro/')) return 'mid'
   return 'narrow'
 })
@@ -47,8 +48,9 @@ watchEffect(() => {
     <nav class="nav" aria-label="Navigation principale">
       <NuxtLink to="/" class="nav-logo" aria-label="VLADI, accueil"><AppLogo :height="26" /></NuxtLink>
       <NuxtLink v-for="t in tabsLive" :key="t.to" :to="t.to" :class="{ on: active(t.to) }">
-        <component :is="t.icon" :size="23" :stroke-width="1.8" />
-        {{ t.label }}
+        <span v-if="t.to === '/profil' && account" class="avatar-xs" aria-hidden="true">{{ initial }}</span>
+        <component :is="t.icon" v-else :size="23" :stroke-width="1.8" />
+        <span class="nav-label">{{ t.label }}</span>
         <span v-if="t.to === '/profil' && badge" class="count">{{ badge }}</span>
       </NuxtLink>
     </nav>

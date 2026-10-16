@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Check, Navigation } from 'lucide-vue-next'
-import { DEMO_PRO_ID } from '~/data/pros'
+import { DEMO_PRO_ID, RULES } from '~/data/pros'
 
 const route = useRoute()
 const { findBooking, pro, service, today, placeLabel, remote } = useVladi()
@@ -15,7 +15,7 @@ const sv = computed(() => (p.value && b.value ? service(p.value, b.value.sid) : 
       <div class="tick"><Check :size="34" :stroke-width="3" /></div>
       <div class="col gap4">
         <h1 class="title">C'est réservé</h1>
-        <p class="meta">{{ p.real ? `${p.name} a reçu ta réservation.` : 'Réservation d\'exemple, enregistrée sur ce téléphone.' }}</p>
+        <p class="meta">{{ p.real ? `${p.name} a reçu ta réservation.` : 'Réservation de démonstration.' }}</p>
       </div>
     </div>
     <div class="appt" style="border:0">
@@ -28,14 +28,17 @@ const sv = computed(() => (p.value && b.value ? service(p.value, b.value.sid) : 
     <div class="recap">
       <div class="kv"><span>Lieu</span><span>{{ placeLabel(b) }}</span></div>
       <div v-if="b.fee" class="kv"><span>Dont déplacement</span><span>{{ euro(b.fee) }}</span></div>
-      <div class="kv"><span>Acompte payé</span><span>{{ euro(b.deposit) }}</span></div>
-      <div class="kv"><span>Reste à payer sur place</span><span>{{ euro(b.price - b.deposit) }}</span></div>
+      <template v-if="RULES.onlinePayment">
+        <div class="kv"><span>Acompte payé</span><span>{{ euro(b.deposit) }}</span></div>
+        <div class="kv"><span>Reste à payer sur place</span><span>{{ euro(b.price - b.deposit) }}</span></div>
+      </template>
+      <div v-else class="kv"><span>À régler sur place</span><span>{{ euro(b.price) }}</span></div>
     </div>
     <div class="col gap12">
       <NuxtLink class="btn block" to="/rdv">Voir mes rendez-vous</NuxtLink>
       <a v-if="b.place === 'pro'" class="btn block line" :href="directionsUrl(p)" target="_blank" rel="noopener"><Navigation :size="18" />Itinéraire</a>
     </div>
-    <p v-if="p.id === DEMO_PRO_ID" class="tiny" style="text-align:center">Ce rendez-vous apparaît aussi dans l'espace prestataire d'exemple (Compte, puis Espace prestataire).</p>
+    <p v-if="p.id === DEMO_PRO_ID" class="tiny" style="text-align:center">Ce rendez-vous apparaît aussi dans l'espace prestataire de démonstration.</p>
   </div>
   <div v-else-if="remote.loading" class="empty" style="padding-top:96px">Chargement…</div>
   <div v-else class="empty" style="padding-top:96px">

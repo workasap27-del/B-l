@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// En-tête commun de l'espace prestataire : nom de la fiche, bandeau d'exemple et onglets.
+// En-tête commun de l'espace prestataire : nom de la fiche, bandeau de présentation et onglets.
 const route = useRoute()
 const { workPro, account } = useVladi()
 const tabs = [
@@ -16,8 +16,8 @@ const tabs = [
   </div>
   <div v-if="workPro.demo" class="banner mt16">
     <div class="grow col gap4">
-      <span class="name">Espace d'exemple</span>
-      <span class="meta">Tu vois l'agenda fictif de {{ workPro.pro.name }}. Crée ta fiche pour gérer tes vrais rendez-vous.</span>
+      <span class="name">Espace de démonstration</span>
+      <span class="meta">Agenda de démonstration de {{ workPro.pro.name }}. Crée ta fiche pour recevoir tes propres réservations.</span>
       <NuxtLink class="link mt8" :to="account ? '/espace-pro/fiche' : '/connexion?mode=inscription&role=pro'">Créer ma fiche</NuxtLink>
     </div>
   </div>

@@ -86,7 +86,7 @@ function back() {
       <label class="field" for="a-name"><span>Prénom</span><input id="a-name" v-model="name" class="input" autocomplete="given-name" placeholder="Ton prénom"></label>
       <label class="field" for="a-phone"><span>Téléphone <span class="help">(facultatif)</span></span><input id="a-phone" v-model="phone" class="input" type="tel" autocomplete="tel" placeholder="0690 00 00 00"></label>
     </template>
-    <label class="field" for="a-email"><span>E-mail</span><input id="a-email" v-model="email" class="input" type="email" autocomplete="email" inputmode="email" placeholder="toi@exemple.fr"></label>
+    <label class="field" for="a-email"><span>E-mail</span><input id="a-email" v-model="email" class="input" type="email" autocomplete="email" inputmode="email" placeholder="prenom@mail.com"></label>
     <label class="field" for="a-pass">
       <span>Mot de passe</span>
       <div style="position:relative">
@@ -102,5 +102,12 @@ function back() {
     <button v-if="mode === 'connexion'" type="button" class="textbtn" style="align-self:center" @click="forgot">Mot de passe oublié ?</button>
   </form>
 
-  <p v-if="mode === 'inscription'" class="tiny mt24">En créant un compte, tu acceptes que tes nom et téléphone soient transmis aux prestataires chez qui tu réserves. Version de test : conditions d'utilisation à venir.</p>
+  <p v-if="mode === 'inscription' && role === 'client'" class="tiny mt24">
+    En créant ton compte, tu acceptes les <NuxtLink class="link" to="/cgu">conditions générales d'utilisation</NuxtLink> et la <NuxtLink class="link" to="/confidentialite">politique de confidentialité</NuxtLink>.
+    Ton prénom et ton téléphone sont transmis uniquement aux prestataires chez qui tu réserves.
+  </p>
+  <p v-else-if="mode === 'inscription'" class="tiny mt24">
+    En créant ton compte, tu acceptes les <NuxtLink class="link" to="/cgu">conditions générales d'utilisation</NuxtLink>, dont les <NuxtLink class="link" to="/cgu#prestataires">engagements des prestataires</NuxtLink>, et la <NuxtLink class="link" to="/confidentialite">politique de confidentialité</NuxtLink>.
+    Les informations de ta fiche (nom commercial, commune, prestations, tarifs, horaires) seront publiques.
+  </p>
 </template>
