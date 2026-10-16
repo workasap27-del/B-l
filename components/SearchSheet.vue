@@ -56,7 +56,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
         <form class="srch-top" @submit.prevent="submit">
           <label class="search-field srch-field" for="srch-input">
             <Search :size="19" />
-            <input id="srch-input" ref="input" v-model="q" type="search" enterkeyhint="search" autocomplete="off" placeholder="Soin, établissement ou catégorie">
+            <input id="srch-input" ref="input" v-model="q" type="search" enterkeyhint="search" autocomplete="off" placeholder="Soin ou établissement">
             <button v-if="q" type="button" class="icon-btn" aria-label="Effacer" @click="q = ''; input?.focus()"><X :size="17" /></button>
           </label>
           <button type="button" class="textbtn" @click="emit('close')">Annuler</button>
@@ -109,7 +109,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
             <p v-if="!cats.length && !soinHits.length && !proHits.length" class="meta srch-none">Aucune suggestion. Lance la recherche pour voir tous les résultats.</p>
             <button type="button" class="srch-row srch-all" @click="submit">
               <span class="srch-ico sm"><Search :size="17" /></span>
-              <span class="grow">Voir tous les résultats pour « {{ typed }} »</span>
+              <span class="grow ellip">Voir tous les résultats pour « {{ typed }} »</span>
               <ChevronRight :size="18" class="muted" />
             </button>
           </template>
