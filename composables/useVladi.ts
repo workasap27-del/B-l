@@ -95,6 +95,8 @@ interface State {
   pos: LatLng & { label: string, gps: boolean }
   /** mode démonstration : fiches fictives visibles (ouvert par le lien ?demo=1, fermé par ?demo=0) */
   demo: boolean
+  /** présentation : masquer le prochain rendez-vous sur l'accueil */
+  demoNoRdv: boolean
 }
 
 const STORAGE_KEY = 'vladi-v3'
@@ -102,7 +104,7 @@ const STORAGE_KEY = 'vladi-v3'
 function blank(): State {
   return {
     bookings: [], slots: [], fav: {}, reviews: {}, seq: 100, seededFor: '', sim: null, unseen: 0, address: '',
-    charte: 'noir', pos: { ...communePoint(DEMO_CLIENT.commune), label: DEMO_CLIENT.commune, gps: false }, demo: false,
+    charte: 'noir', pos: { ...communePoint(DEMO_CLIENT.commune), label: DEMO_CLIENT.commune, gps: false }, demo: false, demoNoRdv: false,
   }
 }
 

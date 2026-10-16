@@ -22,6 +22,9 @@ const initial = computed(() => (account.value?.name ?? '').trim().charAt(0).toUp
 </script>
 
 <template>
+  <!-- Préversion du nouvel accueil, uniquement en mode présentation (?demo=1). -->
+  <HomeDemo v-if="state.demo" />
+  <template v-else>
   <div class="home-head">
   <header class="topbar">
     <AppLogo />
@@ -152,4 +155,5 @@ const initial = computed(() => (account.value?.name ?? '').trim().charAt(0).toUp
 
   <LocationSheet v-if="locOpen" @close="locOpen = false" />
   <SettingsSheet v-if="settingsOpen" @close="settingsOpen = false" />
+  </template>
 </template>

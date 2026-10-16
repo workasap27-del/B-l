@@ -42,6 +42,7 @@ function stopDemo() {
           <button class="btn sm soft" @click="setSim(10 * 60 + 20)">10h20</button>
           <button class="btn sm soft" @click="setSim(nowMin + 30)">+30 min</button>
         </div>
+        <label class="switch"><span>Afficher un prochain rendez-vous</span><input id="demo-rdv" :checked="!state.demoNoRdv" type="checkbox" @change="state.demoNoRdv = !($event.target as HTMLInputElement).checked"></label>
         <div class="row wrap gap8">
           <button class="btn sm line" @click="doReset">Remettre à zéro</button>
           <button class="btn sm line" @click="stopDemo">Quitter le mode présentation</button>

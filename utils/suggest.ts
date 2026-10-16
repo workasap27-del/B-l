@@ -4,6 +4,9 @@ import { normalize } from './search'
 
 export interface SoinSuggestion { name: string, cat: Category }
 
+/** Ce que la recherche renvoie au formulaire : un texte, une catégorie ou « à domicile ». */
+export interface SearchPick { label: string, q?: string, cat?: Category | 'domicile' }
+
 /** Vrai si chaque mot tapé commence un mot du texte ("pose ge" trouve "Pose gel"). */
 function matches(text: string, query: string): boolean {
   const words = normalize(text).split(' ')

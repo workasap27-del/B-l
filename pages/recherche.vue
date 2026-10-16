@@ -12,6 +12,8 @@ const place = ref<'all' | 'client' | 'pro'>(route.query.lieu === 'client' ? 'cli
 const kind = ref<'all' | 'salon' | 'indep'>('all')
 const maxKm = ref(0)
 const todayOnly = ref(false)
+// Jour souhaité, passé par le formulaire de l'accueil (?date=AAAA-MM-JJ). Vide : peu importe.
+const day = ref(typeof route.query.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(route.query.date) ? route.query.date : '')
 const sort = ref<'auto' | 'dist' | 'note' | 'prix'>(route.query.tri === 'note' ? 'note' : 'auto')
 const view = ref<'list' | 'map'>('list')
 const shown = ref(12)
@@ -21,7 +23,7 @@ const selected = ref('')
 const input = ref<HTMLInputElement | null>(null)
 
 onMounted(() => { if (route.query.saisie) input.value?.focus() })
-watch([q, cat, place, kind, maxKm, todayOnly, sort], () => { shown.value = 12; selected.value = '' })
+watch([q, cat, place, kind, maxKm, todayOnly, sort, day], () => { shown.value = 12; selected.value = '' })
 
 const SUGGESTIONS = ['Pose gel', 'Box braids', 'Extensions de cils', 'Dégradé', 'Massage', 'Tatouage', 'Piercing', 'Spa', 'Hôtel piscine', 'Brushing', 'Maquillage mariée', 'Épilation']
 const minPrice = (p: Pro) => Math.min(...p.services.map(s => s.p))
@@ -38,6 +40,7 @@ const list = computed(() => {
     if (kind.value === 'indep' && !p.kind.startsWith('Indépendant')) return false
     if (maxKm.value && km(p) > maxKm.value) return false
     if (todayOnly.value && !freeToday(p)) return false
+    if (day.value && !p.services.some(s => starts(p, day.value, s.d).length > 0)) return false
     return true
   })
   if (sort.value === 'dist') hits.sort((a, b) => km(a.pro) - km(b.pro))
@@ -79,6 +82,7 @@ function resetFilters() {
   </template>
 
   <div class="chips mt16">
+    <button v-if="day" class="chip" aria-pressed="true" :aria-label="`Retirer le filtre : disponible ${dayLabel(day, today)}`" @click="day = ''">Dispo {{ dayLabel(day, today) }}<X :size="14" /></button>
     <button class="chip" :class="{ has: activeFilters }" @click="filtersOpen = true"><SlidersHorizontal :size="16" />Filtres{{ activeFilters ? ` (${activeFilters})` : '' }}</button>
     <button v-for="c in CATEGORIES" :key="c[0]" class="chip" :aria-pressed="cat === c[0]" @click="cat = c[0]">{{ c[1] }}</button>
   </div>
