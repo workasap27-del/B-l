@@ -15,6 +15,7 @@ import type { ArrivalFields } from '~/utils/arrival'
 import { communePoint, inGuadeloupe, roadKm } from '~/utils/geo'
 import type { LatLng } from '~/utils/geo'
 import { gpParts } from '~/utils/time'
+import { cleanSiren, validSiren } from '~/utils/siren'
 import * as api from '~/composables/useBackend'
 import type { Profile, RemoteBooking, RemoteReview } from '~/composables/useBackend'
 
@@ -349,6 +350,7 @@ async function book(input: BookInput): Promise<{ booking?: Booking, error?: stri
   const p = pro(input.proId)
   const sv = p && service(p, input.sid)
   if (!p || !sv) return { error: 'Prestation introuvable.' }
+  if (isMine(p)) return { error: 'C\'est ta propre fiche : tu ne peux pas réserver chez toi.' }
   if (!allowedPlaces(p).includes(input.place)) return { error: 'Ce lieu n\'est pas proposé par ce prestataire.' }
   const address = input.place === 'client' ? (input.address ?? '').trim() : undefined
   if (input.place === 'client' && (!address || address.length < 5)) return { error: 'Indique ton adresse.' }
@@ -600,6 +602,21 @@ async function saveProfile(fields: { name?: string, phone?: string }): Promise<s
   }
 }
 
+/** Vérifie un SIREN dans le registre officiel. Renvoie l'entreprise, ou un message d'erreur lisible. */
+async function checkSiren(raw: string): Promise<{ company?: api.Company, error?: string }> {
+  const siren = cleanSiren(raw)
+  if (!validSiren(siren)) return { error: 'Ce SIREN n\'est pas valide : vérifie les 9 chiffres.' }
+  try {
+    const company = await api.lookupCompany(siren)
+    if (!company) return { error: 'Aucune entreprise immatriculée avec ce SIREN.' }
+    if (!company.active) return { error: `${company.name} est cessée d'activité au registre : on ne peut pas publier cette fiche.` }
+    return { company }
+  }
+  catch {
+    return { error: 'Le registre des entreprises ne répond pas. Réessaie dans un instant.' }
+  }
+}
+
 async function saveMyPro(f: api.ProInput): Promise<string | null> {
   if (!remote.profile) return 'Connecte-toi d\'abord.'
   try {
@@ -715,7 +732,7 @@ export function useVladi() {
     km, setCommune, locate, currentPosition, nextSlots, openStatus,
     traveler, arrival, signalArrival, confirmArrival, announceLate, waitMore, declareNoShow, dispute,
     workPro, proBookings, agenda, earliestIn, publishSlot, removeSlot, mySlots,
-    account, firstName, register, login, logout, forgotPassword, saveProfile, saveMyPro, refresh,
+    account, firstName, register, login, logout, forgotPassword, saveProfile, saveMyPro, checkSiren, refresh,
     setSim, toast, reset,
   }
 }

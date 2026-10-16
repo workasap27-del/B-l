@@ -2,9 +2,10 @@
 import { ChevronLeft, LocateFixed, Plus, X } from 'lucide-vue-next'
 import type { Category, Pro } from '~/data/pros'
 import { suggestedServices } from '~/data/generate'
+import { cleanSiren, validSiren } from '~/utils/siren'
 
 const router = useRouter()
-const { account, remote, saveMyPro, currentPosition, toast } = useVladi()
+const { account, remote, saveMyPro, checkSiren, currentPosition, toast } = useVladi()
 
 const KINDS: Pro['kind'][] = ['Indépendante', 'Indépendant', 'Salon', 'Institut']
 const AT_HOME: Record<Pro['kind'], string> = { 'Salon': 'Au salon', 'Institut': 'À l\'institut', 'Indépendante': 'Chez elle', 'Indépendant': 'Chez lui' }
@@ -25,6 +26,25 @@ const f = reactive({
 const error = ref('')
 const busy = ref(false)
 const locating = ref(false)
+
+// Vérification du SIREN dans le registre officiel, dès que les 9 chiffres sont saisis.
+const company = ref<{ name: string, city: string, activity: string } | null>(null)
+const sirenError = ref('')
+const sirenChecking = ref(false)
+let sirenSeq = 0
+watch(() => f.siren, async (v) => {
+  company.value = null
+  sirenError.value = ''
+  const digits = cleanSiren(v)
+  if (digits.length !== 9) return
+  const seq = ++sirenSeq
+  sirenChecking.value = true
+  const r = await checkSiren(digits)
+  if (seq !== sirenSeq) return
+  sirenChecking.value = false
+  if (r.error) sirenError.value = r.error
+  else company.value = r.company ?? null
+}, { immediate: true })
 
 // Pré-remplissage avec la fiche existante ou le compte.
 watchEffect(() => {
@@ -72,7 +92,10 @@ watch(() => f.commune, () => { if (!remote.myPro || f.commune !== remote.myPro.c
 
 function check(): string {
   if (f.name.trim().length < 2) return 'Indique le nom de ton activité.'
-  if (!/^\d{9}$/.test(f.siren.replace(/\s/g, ''))) return 'Le SIREN doit contenir 9 chiffres.'
+  if (!validSiren(f.siren)) return 'Le SIREN doit être un vrai numéro à 9 chiffres.'
+  if (sirenChecking.value) return 'Vérification du SIREN en cours, un instant.'
+  if (sirenError.value) return sirenError.value
+  if (!company.value) return 'Le SIREN n\'a pas pu être vérifié. Réessaie.'
   if (!f.cats.length) return 'Choisis au moins une catégorie.'
   if (!f.receives && !f.travels) return 'Indique si tu reçois, si tu te déplaces, ou les deux.'
   if (f.close <= f.open) return 'L\'heure de fermeture doit être après l\'ouverture.'
@@ -131,7 +154,10 @@ async function save() {
       </div>
       <label class="field" for="f-siren">
         <span>SIREN <span class="help">(9 chiffres, sur ton certificat d'inscription ou sur <a class="link" href="https://annuaire-entreprises.data.gouv.fr" target="_blank" rel="noopener">annuaire-entreprises.data.gouv.fr</a>)</span></span>
-        <input id="f-siren" v-model="f.siren" class="input" inputmode="numeric" maxlength="11" placeholder="123 456 789">
+        <input id="f-siren" v-model="f.siren" class="input" inputmode="numeric" maxlength="11" placeholder="9 chiffres">
+        <span v-if="sirenChecking" class="meta">Vérification dans le registre officiel…</span>
+        <span v-else-if="company" class="meta" style="color:var(--ok)">Entreprise trouvée : {{ company.name }}{{ company.city ? `, ${company.city}` : '' }}</span>
+        <span v-else-if="sirenError" class="meta" style="color:var(--warn)">{{ sirenError }}</span>
       </label>
       <label class="field" for="f-phone"><span>Téléphone pro <span class="help">(affiché sur ta fiche)</span></span><input id="f-phone" v-model="f.phone" class="input" type="tel" placeholder="0690 00 00 00"></label>
     </div>

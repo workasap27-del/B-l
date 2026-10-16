@@ -39,6 +39,19 @@ $$;
 create trigger on_auth_user_created after insert on auth.users for each row execute function handle_new_user();
 
 -- Prestataires et prestations --------------------------------------------
+-- Contrôle d'un SIREN : 9 chiffres dont la clé de Luhn est correcte (même règle que l'appli).
+create or replace function siren_ok(s text) returns boolean language plpgsql immutable as $$
+declare total int := 0; d int; i int;
+begin
+  if s is null or s !~ '^[0-9]{9}$' then return false; end if;
+  for i in 0..8 loop
+    d := substr(s, 9 - i, 1)::int;
+    if i % 2 = 1 then d := d * 2; if d > 9 then d := d - 9; end if; end if;
+    total := total + d;
+  end loop;
+  return total % 10 = 0;
+end $$;
+
 create table pros (
   id text primary key,
   owner_id uuid references auth.users on delete set null,
@@ -46,7 +59,7 @@ create table pros (
   owner_name text,
   kind pro_kind not null,
   -- Seuls les prestataires déclarés sont acceptés (SIREN à 9 chiffres). Les fiches de test en sont dispensées.
-  siren text check (siren ~ '^[0-9]{9}$'),
+  siren text check (siren is null or siren_ok(siren)),
   phone text,
   photo_url text,
   -- 'Au salon', 'À l''institut', 'Chez elle', 'Chez lui' (chez le prestataire) et 'À domicile' (chez la cliente)

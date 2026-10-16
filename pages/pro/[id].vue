@@ -85,7 +85,7 @@ const bars = computed(() => {
           <span class="name">{{ s.n }}</span>
           <span class="meta">{{ duration(s.d) }} · {{ euro(s.p) }}</span>
         </div>
-        <NuxtLink class="btn sm" :to="`/reserver/${p.id}/${s.id}`">Réserver</NuxtLink>
+        <NuxtLink v-if="!isMine(p)" class="btn sm" :to="`/reserver/${p.id}/${s.id}`">Réserver</NuxtLink>
       </div>
     </div>
 

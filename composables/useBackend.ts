@@ -372,3 +372,17 @@ export async function addReview(input: { bookingId: string, proId: string, clien
 export function onAuthChange(fn: () => void) {
   sb()?.auth.onAuthStateChange(() => fn())
 }
+
+// Registre officiel des entreprises ------------------------------------------
+
+export interface Company { siren: string, name: string, active: boolean, city: string, activity: string }
+
+/** Cherche une entreprise dans l'annuaire officiel (data.gouv.fr). Renvoie null si le SIREN n'existe pas, lève une erreur si le service est injoignable. */
+export async function lookupCompany(siren: string): Promise<Company | null> {
+  const res = await fetch(`https://recherche-entreprises.api.gouv.fr/search?q=${encodeURIComponent(siren)}&page=1&per_page=1`)
+  if (!res.ok) throw new Error('registre')
+  const j = await res.json() as { results?: { siren: string, nom_complet: string, etat_administratif?: string, siege?: { libelle_commune?: string, activite_principale?: string } }[] }
+  const r = j.results?.find(x => x.siren === siren)
+  if (!r) return null
+  return { siren: r.siren, name: r.nom_complet, active: r.etat_administratif !== 'C', city: r.siege?.libelle_commune ?? '', activity: r.siege?.activite_principale ?? '' }
+}

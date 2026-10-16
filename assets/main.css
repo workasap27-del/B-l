@@ -30,7 +30,7 @@ svg.lucide { flex: 0 0 auto; }
 
 /* Structure ------------------------------------------------------------- */
 .app { height: 100%; max-width: 480px; margin: 0 auto; background: var(--bg); display: flex; flex-direction: column; position: relative; overflow: hidden; }
-@media (min-width: 520px) { .app { border-inline: 1px solid var(--line); } }
+@media (min-width: 520px) { .app { border-inline: 1px solid var(--line); box-shadow: 0 0 60px rgb(0 0 0 / .07); } body { background: var(--surface2); } }
 .screen { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: calc(12px + env(safe-area-inset-top, 0px)) var(--gutter) 40px; display: flex; flex-direction: column; }
 .screen.flush { padding-top: 0; }
 .bleed { margin-inline: calc(-1 * var(--gutter)); }

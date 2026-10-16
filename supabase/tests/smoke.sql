@@ -120,13 +120,17 @@ do $$ begin
     raise exception 'fiche acceptée sans SIREN';
   exception when check_violation then null; end;
   begin
-    insert into pros (id, owner_id, name, kind, commune, lat, lng, opens_at, closes_at, siren) values ('pour-une-autre', '00000000-0000-0000-0000-0000000000a1', 'Test', 'Indépendante', 'Les Abymes', 16.27, -61.5, 540, 1080, '123456789');
+    insert into pros (id, owner_id, name, kind, commune, lat, lng, opens_at, closes_at, siren) values ('pour-une-autre', '00000000-0000-0000-0000-0000000000a1', 'Test', 'Indépendante', 'Les Abymes', 16.27, -61.5, 540, 1080, '552032534');
     raise exception 'fiche créée au nom d''une autre';
   exception when insufficient_privilege then null; end;
-  insert into pros (id, owner_id, name, kind, places, commune, lat, lng, opens_at, closes_at, siren, categories) values ('nadia-ongles', auth.uid(), 'Nadia Ongles', 'Indépendante', array['Chez elle'], 'Le Gosier', 16.21, -61.49, 540, 1080, '123456789', array['ongles']);
+  begin
+    insert into pros (id, owner_id, name, kind, commune, lat, lng, opens_at, closes_at, siren) values ('faux-siren', auth.uid(), 'Test', 'Indépendante', 'Les Abymes', 16.27, -61.5, 540, 1080, '123456789');
+    raise exception 'fiche acceptée avec un SIREN inventé';
+  exception when check_violation then null; end;
+  insert into pros (id, owner_id, name, kind, places, commune, lat, lng, opens_at, closes_at, siren, categories) values ('nadia-ongles', auth.uid(), 'Nadia Ongles', 'Indépendante', array['Chez elle'], 'Le Gosier', 16.21, -61.49, 540, 1080, '552032534', array['ongles']);
   insert into services (pro_id, code, name, duration_min, price_eur) values ('nadia-ongles', 'a', 'Pose gel', 90, 50);
   begin
-    insert into pros (id, owner_id, name, kind, commune, lat, lng, opens_at, closes_at, siren) values ('nadia-2', auth.uid(), 'Doublon', 'Indépendante', 'Le Gosier', 16.21, -61.49, 540, 1080, '123456789');
+    insert into pros (id, owner_id, name, kind, commune, lat, lng, opens_at, closes_at, siren) values ('nadia-2', auth.uid(), 'Doublon', 'Indépendante', 'Le Gosier', 16.21, -61.49, 540, 1080, '552032534');
     raise exception 'deux fiches pour un compte';
   exception when unique_violation then null; end;
   begin
