@@ -10,6 +10,11 @@ const KEYWORDS: Record<Category, string> = {
   maquillage: 'maquillage make-up makeup maquilleuse mariée teint',
   soins: 'soins visage épilation cire massage gommage esthétique esthéticienne spa',
   barbier: 'barbier barbe barber homme dégradé rasage',
+  tatouage: 'tatouage tatouages tatoo tattoo tatoueur tatoueuse encre ink flash lettrage cover-up fine-line',
+  piercing: 'piercing percing perçage perceur bijou oreille nez septum nombril cartilage hélix',
+  massage: 'massage masseur masseuse relaxation détente réflexologie pierres chaudes californien prénatal dos',
+  spa: 'spa hammam sauna jacuzzi balnéo bain bien-être détente soin duo',
+  hotel: 'hôtel hotel chambre séjour piscine resort villa gîte brunch day-use séminaire',
 }
 
 export interface SearchHit {

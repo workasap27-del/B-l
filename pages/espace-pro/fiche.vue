@@ -7,8 +7,8 @@ import { cleanSiren, validSiren } from '~/utils/siren'
 const router = useRouter()
 const { account, remote, saveMyPro, checkSiren, currentPosition, toast } = useVladi()
 
-const KINDS: Pro['kind'][] = ['Indépendante', 'Indépendant', 'Salon', 'Institut']
-const AT_HOME: Record<Pro['kind'], string> = { 'Salon': 'Au salon', 'Institut': 'À l\'institut', 'Indépendante': 'Chez elle', 'Indépendant': 'Chez lui' }
+const KINDS: Pro['kind'][] = ['Indépendante', 'Salon', 'Institut', 'Studio', 'Spa', 'Hôtel']
+const AT_HOME: Record<Pro['kind'], string> = { 'Salon': 'Au salon', 'Institut': 'À l\'institut', 'Studio': 'Au studio', 'Spa': 'Au spa', 'Hôtel': 'À l\'hôtel', 'Indépendante': 'Chez le/la pro', 'Indépendant': 'Chez le/la pro' }
 const CATS = Object.keys(CAT_SHORT) as Category[]
 const COMMUNES = Object.keys(COMMUNE_COORDS).sort((a, b) => a.localeCompare(b, 'fr'))
 const DURATIONS = [15, 30, 45, 60, 75, 90, 120, 150, 180, 210, 240, 300, 360]
@@ -142,15 +142,15 @@ async function save() {
   <form v-else class="col" novalidate @submit.prevent="save">
     <div class="col gap8 mt16">
       <h1 class="title">{{ f.id ? 'Ma fiche' : 'Crée ta fiche' }}</h1>
-      <p class="meta">Les clientes te trouvent par ce que tu fais et où tu es. Tu peux tout modifier ensuite.</p>
+      <p class="meta">On te trouve par ce que tu fais et par l'endroit où tu es. Tu peux tout modifier ensuite.</p>
     </div>
 
     <div class="fieldset mt24">
       <span class="h3">Ton activité</span>
       <label class="field" for="f-name"><span>Nom affiché</span><input id="f-name" v-model="f.name" class="input" placeholder="Ex. Ongles by Kelly"></label>
       <label class="field" for="f-owner"><span>Ton prénom <span class="help">(facultatif)</span></span><input id="f-owner" v-model="f.ownerName" class="input" autocomplete="given-name"></label>
-      <div class="field"><span>Tu es</span>
-        <div class="chips"><button v-for="k in KINDS" :key="k" type="button" class="chip" :aria-pressed="f.kind === k" @click="f.kind = k">{{ k === 'Indépendante' || k === 'Indépendant' ? `${k} à mon compte` : k }}</button></div>
+      <div class="field"><span>Ton statut</span>
+        <div class="chips" style="flex-wrap:wrap;margin:0;padding:0"><button v-for="k in KINDS" :key="k" type="button" class="chip" :aria-pressed="f.kind === k" @click="f.kind = k">{{ k === 'Indépendante' ? 'Indépendant·e' : k }}</button></div>
       </div>
       <label class="field" for="f-siren">
         <span>SIREN <span class="help">(9 chiffres, sur ton certificat d'inscription ou sur <a class="link" href="https://annuaire-entreprises.data.gouv.fr" target="_blank" rel="noopener">annuaire-entreprises.data.gouv.fr</a>)</span></span>
@@ -167,6 +167,8 @@ async function save() {
       <div class="chips" style="flex-wrap:wrap;margin:0;padding:0">
         <button v-for="c in CATS" :key="c" type="button" class="chip" :aria-pressed="f.cats.includes(c)" @click="toggleCat(c)">{{ CAT_SHORT[c] }}</button>
       </div>
+      <p v-if="f.cats.includes('tatouage') || f.cats.includes('piercing')" class="notice">Tatouage et piercing : la formation à l'hygiène et à la salubrité est obligatoire, et l'activité doit être déclarée auprès de l'ARS (préfecture). Pour les mineurs, l'autorisation d'un parent est exigée. VLADI ne vérifie pas ces points : tu en restes responsable.</p>
+      <p v-if="f.cats.includes('hotel')" class="notice">Pour les hôtels, VLADI réserve pour l'instant des créneaux dans la journée (chambre en day use, piscine, brunch, soins). Les nuitées ne sont pas encore gérées.</p>
       <div v-for="(s, i) in f.services" :key="i" class="svc-edit">
         <input v-model="s.n" class="input" :aria-label="`Prestation ${i + 1}`" placeholder="Nom de la prestation">
         <select v-model.number="s.d" class="select" :aria-label="`Durée ${i + 1}`"><option v-for="d in DURATIONS" :key="d" :value="d">{{ duration(d) }}</option></select>
@@ -188,7 +190,7 @@ async function save() {
       <label class="field" for="f-quartier"><span>Quartier <span class="help">(facultatif)</span></span><input id="f-quartier" v-model="f.quartier" class="input" placeholder="Ex. Raizet"></label>
       <button type="button" class="btn sm line" style="align-self:flex-start" :disabled="locating" @click="locate"><LocateFixed :size="16" />{{ f.gps ? 'Position précise enregistrée' : 'Utiliser ma position exacte' }}</button>
       <label class="switch"><span>Je reçois ({{ AT_HOME[f.kind].toLowerCase() }})</span><input v-model="f.receives" type="checkbox"></label>
-      <label class="switch"><span>Je me déplace chez la cliente</span><input v-model="f.travels" type="checkbox"></label>
+      <label class="switch"><span>Je me déplace à domicile</span><input v-model="f.travels" type="checkbox"></label>
       <label v-if="f.travels" class="field" for="f-travel"><span>Frais de déplacement (€)</span><input id="f-travel" v-model.number="f.travel" class="input" type="number" min="0" step="1" inputmode="decimal"></label>
     </div>
 

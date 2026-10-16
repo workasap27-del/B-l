@@ -30,7 +30,7 @@ svg.lucide { flex: 0 0 auto; }
 
 /* Structure ------------------------------------------------------------- */
 .app { height: 100%; max-width: 480px; margin: 0 auto; background: var(--bg); display: flex; flex-direction: column; position: relative; overflow: hidden; }
-@media (min-width: 520px) { .app { border-inline: 1px solid var(--line); box-shadow: 0 0 60px rgb(0 0 0 / .07); } body { background: var(--surface2); } }
+@media (min-width: 520px) and (max-width: 699px) { .app { border-inline: 1px solid var(--line); } }
 .screen { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: calc(12px + env(safe-area-inset-top, 0px)) var(--gutter) 40px; display: flex; flex-direction: column; }
 .screen.flush { padding-top: 0; }
 .bleed { margin-inline: calc(-1 * var(--gutter)); }
@@ -330,3 +330,70 @@ svg.lucide { flex: 0 0 auto; }
   .btn, .chip, .slot, .day, .seg button, .swatch { transition: background-color .15s, color .15s, box-shadow .15s; }
   body, .app, .nav { transition: background-color .3s, color .3s; }
 }
+.cat.more .ico { background: transparent; border: 1.5px dashed var(--surface3); }
+.cat .dots { font-size: 26px; font-weight: 300; line-height: 1; }
+
+
+/* Tablette et ordinateur ----------------------------------------------- */
+:root { --rail: 0px; --content: 720px; }
+.screen { --gutter: max(20px, calc((100vw - var(--rail) - var(--content)) / 2)); }
+.screen.w-narrow { --content: 600px; }
+.screen.w-mid { --content: 760px; }
+.nav a.nav-logo { display: none; }
+
+@media (min-width: 700px) {
+  :root { --content: 760px; }
+  .screen.w-narrow { --content: 600px; }
+  .screen.w-mid { --content: 800px; }
+  .app { max-width: none; border-inline: 0; box-shadow: none; }
+  body { background: var(--bg); }
+  .nav { justify-content: center; gap: 12px; }
+  .nav a { flex: 0 1 132px; }
+  /* Listes en colonnes */
+  .carousel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px 20px; overflow: visible; margin-inline: 0; padding: 0; scroll-snap-type: none; }
+  .carousel > * { flex: none; }
+  .carousel > :nth-child(n+7) { display: none; }
+  .carousel.wide { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .carousel.wide > :nth-child(n+5) { display: none; }
+  .cat-grid { grid-template-columns: repeat(8, 1fr); }
+  .results { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px 24px; align-items: start; }
+  .results > .btn, .results > .empty { grid-column: 1 / -1; }
+  .results > .result + .result { padding-top: 0; }
+  .hero { height: 380px; }
+  /* Fenêtres au centre de l'écran */
+  .scrim { align-items: center; justify-content: center; padding: 24px; }
+  .sheet { --gutter: 24px; width: min(520px, 100%); max-height: 88%; border-radius: 20px; padding-top: 24px; box-shadow: 0 20px 60px rgb(0 0 0 / .25); }
+  .sheet::before { display: none; }
+  .toast { left: 50%; right: auto; transform: translateX(-50%); width: max-content; max-width: min(420px, calc(100% - 32px)); }
+}
+
+@media (min-width: 1000px) {
+  :root { --rail: 232px; --content: 1040px; }
+  .screen.w-narrow { --content: 620px; }
+  .screen.w-mid { --content: 860px; }
+  .app { flex-direction: row-reverse; }
+  .screen { flex: 1; min-width: 0; padding-top: 28px; }
+  .screen.flush { padding-top: 0; }
+  .nav { flex-direction: column; justify-content: flex-start; align-items: stretch; gap: 4px; width: var(--rail); flex: 0 0 var(--rail); padding: 24px 14px; border-top: 0; border-right: 1px solid var(--line); }
+  .nav a.nav-logo { display: block; padding: 4px 14px 24px; color: var(--ink); }
+  .nav a.nav-logo:hover { background: none; }
+  .nav a { flex: 0 0 auto; flex-direction: row; justify-content: flex-start; gap: 14px; padding: 12px 14px; font-size: 15px; border-radius: 12px; }
+  .nav a:hover { background: var(--surface2); }
+  .nav a.on { background: var(--surface2); }
+  .nav .count { position: static; margin: 0 0 0 auto; }
+  .carousel { grid-template-columns: repeat(4, 1fr); }
+  .carousel > :nth-child(n+7) { display: flex; }
+  .carousel > :nth-child(n+9) { display: none; }
+  .carousel.wide { grid-template-columns: repeat(3, 1fr); }
+  .carousel.wide > :nth-child(n+5) { display: flex; }
+  .carousel.wide > :nth-child(n+7) { display: none; }
+  .results { grid-template-columns: repeat(3, 1fr); }
+  .topbar .logo { display: none; }
+  .topbar { justify-content: flex-end; }
+  .home-head { margin-top: -28px; padding-top: 28px; border-radius: 0 0 28px 28px; }
+  .toast { bottom: 28px; }
+}
+
+/* Les blocs de l'écran ne se compriment jamais, la page défile à la place. */
+.screen > * { flex-shrink: 0; }
+.results > * { min-width: 0; }

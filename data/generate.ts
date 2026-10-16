@@ -50,8 +50,10 @@ interface Trade {
   share: number
   /** probabilité d'être un indépendant plutôt qu'un établissement */
   indep: number
-  shop: 'Salon' | 'Institut'
+  shop: 'Salon' | 'Institut' | 'Studio' | 'Spa' | 'Hôtel'
   male?: boolean
+  /** prénoms féminins et masculins mélangés, textes sans accord de genre */
+  mixed?: boolean
   shopNames: string[]
   soloNames: string[]
   tags: string[]
@@ -131,8 +133,69 @@ const TRADES: Trade[] = [
   },
 ]
 
+const NEW_TRADES: Trade[] = [
+  {
+    cat: 'tatouage', share: 30, indep: 0.35, shop: 'Studio', mixed: true,
+    shopNames: ['Studio {m} Ink', '{m} Tattoo', 'Ink {m}', 'Atelier {m} Tattoo'],
+    soloNames: ['{p} Tattoo', 'Ink by {p}', '{p} Ink', 'Les Encres de {p}'],
+    tags: ['Fine line', 'Réalisme', 'Blackwork', 'Flash', 'Cover-up', 'Lettrage', 'Old school'],
+    about: ['Studio de tatouage : hygiène stricte, matériel à usage unique, projets sur mesure.', 'Plusieurs artistes, dessin personnalisé et devis avant chaque séance.'],
+    soloAbout: ['Tatoueur indépendant ou tatoueuse indépendante, dessin sur mesure et devis avant la séance.', 'Spécialité fine line et lettrage, matériel à usage unique ouvert devant le client.'],
+    menu: [['Flash tattoo petit', 60, 70], ['Tatouage petite pièce', 90, 110], ['Tatouage pièce moyenne', 180, 220], ['Séance journée (grande pièce)', 360, 450], ['Retouche', 60, 60], ['Cover-up (étude incluse)', 240, 300], ['Tatouage fine line', 60, 90], ['Lettrage ou prénom', 60, 80]],
+    extra: 'piercing',
+  },
+  {
+    cat: 'piercing', share: 18, indep: 0.3, shop: 'Studio', mixed: true,
+    shopNames: ['Studio {m} Piercing', '{m} Piercing', 'Percing {m}', 'Atelier {m} Bijoux'],
+    soloNames: ['{p} Piercing', 'Piercing by {p}', '{p} Perçage'],
+    tags: ['Oreille', 'Cartilage', 'Nez', 'Septum', 'Nombril', 'Titane', 'Bijoux'],
+    about: ['Studio de piercing : matériel stérile, bijoux en titane et conseils de cicatrisation.', 'Perçage à l\'aiguille, choix de bijoux sur place.'],
+    soloAbout: ['Perceur ou perceuse professionnel, matériel stérile à usage unique.', 'Perçages oreille et nez, bijoux en titane fournis.'],
+    menu: [['Piercing lobe', 30, 35], ['Piercing cartilage (hélix)', 30, 45], ['Piercing nez (narine)', 30, 45], ['Piercing septum', 30, 50], ['Piercing nombril', 30, 50], ['Piercing langue', 30, 55], ['Changement de bijou', 30, 15], ['Bijou en titane (pose)', 30, 25]],
+  },
+  {
+    cat: 'massage', share: 28, indep: 0.55, shop: 'Institut', mixed: true,
+    shopNames: ['Massages {m}', '{m} Bien-être', 'Institut {m} Massage', 'La Pause {m}'],
+    soloNames: ['{p} Massage', 'Les Mains de {p}', '{p} Bien-être', 'Massage by {p}'],
+    tags: ['Relaxant', 'Californien', 'Pierres chaudes', 'Prénatal', 'Sportif', 'Réflexologie', 'À domicile'],
+    about: ['Cabines calmes et climatisées, huiles chaudes et massages sur mesure.', 'Massages bien-être et sportifs, sur rendez-vous.'],
+    soloAbout: ['Praticien ou praticienne en massage bien-être, table et huiles apportées à domicile.', 'Massages relaxants et sportifs, à l\'écoute de ce qui fait du bien.'],
+    menu: [['Massage relaxant 1 h', 60, 60], ['Massage relaxant 30 min', 30, 38], ['Massage californien', 60, 65], ['Massage aux pierres chaudes', 90, 90], ['Massage dos et nuque', 30, 35], ['Massage prénatal', 60, 65], ['Massage sportif', 60, 70], ['Réflexologie plantaire', 45, 45], ['Massage à quatre mains', 60, 140]],
+    extra: 'spa',
+  },
+  {
+    cat: 'spa', share: 14, indep: 0, shop: 'Spa', mixed: true,
+    shopNames: ['Spa {m}', '{m} Spa', 'Escale {m} Spa', 'Maison de Bien-être {m}'],
+    soloNames: ['{p} Spa'],
+    tags: ['Hammam', 'Jacuzzi', 'Sauna', 'Soin duo', 'Gommage', 'Détente'],
+    about: ['Spa avec hammam, sauna et bain à remous, accès en demi-journée.', 'Un lieu calme pour une parenthèse : hammam, soins du corps et du visage.'],
+    soloAbout: [''],
+    menu: [['Accès spa 2 h (hammam, sauna)', 120, 35], ['Hammam et gommage', 90, 60], ['Bain à remous privatif', 60, 45], ['Rituel visage et corps', 120, 110], ['Soin duo (2 personnes)', 90, 160], ['Journée spa avec déjeuner', 360, 120], ['Enveloppement aux algues', 60, 55], ['Sauna et hammam', 90, 30]],
+    extra: 'massage',
+  },
+  {
+    cat: 'hotel', share: 10, indep: 0, shop: 'Hôtel', mixed: true,
+    shopNames: ['Hôtel {m}', '{m} Resort', 'Villa {m}', 'Habitation {m}', 'Hôtel Le {m}'],
+    soloNames: ['Villa {p}'],
+    tags: ['Piscine', 'Vue mer', 'Day use', 'Brunch', 'Séminaire', 'Détente'],
+    about: ['Hôtel avec piscine : chambre à la journée, brunch et soins sur place.', 'Établissement de charme, accès piscine et plage ouvert aux non-résidents.'],
+    soloAbout: [''],
+    menu: [['Chambre à la demi-journée (4 h)', 240, 70], ['Chambre à la journée (day use, 8 h)', 480, 110], ['Accès piscine et plage (journée)', 360, 35], ['Brunch en bord de piscine', 120, 38], ['Pack détente : chambre et massage', 300, 160], ['Salle de séminaire (demi-journée)', 240, 220], ['Dîner au restaurant', 120, 45]],
+    extra: 'spa',
+  },
+]
+
+const SHOP_PLACE: Record<Trade['shop'], string> = { Salon: 'Au salon', Institut: "À l'institut", Studio: 'Au studio', Spa: 'Au spa', Hôtel: "À l'hôtel" }
+
+/** Catalogue d'origine d'abord (inchangé), puis les métiers ajoutés ensuite : tatouage, piercing, massage, spa, hôtel. */
 export function generatePros(takenNames: string[]): Pro[] {
-  const r = rng(20261010)
+  const base = generate(20261010, TRADES, 'g', 1, takenNames)
+  const more = generate(20261016, NEW_TRADES, 'h', 0.4, [...takenNames, ...base.map(p => p.name)])
+  return [...base, ...more]
+}
+
+function generate(seed: number, TRADES: Trade[], prefix: string, scale: number, takenNames: string[]): Pro[] {
+  const r = rng(seed)
   const pick = <T>(list: T[]): T => list[Math.floor(r() * list.length)]
   const sample = <T>(list: T[], n: number): T[] => {
     const pool = [...list]
@@ -153,12 +216,13 @@ export function generatePros(takenNames: string[]): Pro[] {
   const out: Pro[] = []
   let n = 0
 
-  for (const [commune, , quartiers, count] of COMMUNES) {
+  for (const [commune, , quartiers, baseCount] of COMMUNES) {
     const [cLat, cLng] = COMMUNE_COORDS[commune]
+    const count = scale === 1 ? baseCount : Math.round(baseCount * scale)
     for (let i = 0; i < count; i++) {
       const t = pickTrade()
       const solo = r() < t.indep
-      const prenom = pick(t.male ? PRENOMS_M : PRENOMS_F)
+      const prenom = pick(t.mixed ? [...PRENOMS_F, ...PRENOMS_M] : t.male ? PRENOMS_M : PRENOMS_F)
       const mot = pick(MOTS)
       let name = pick(solo ? t.soloNames : t.shopNames).replace('{p}', prenom).replace('{m}', mot)
       if (names.has(name)) name = `${name} ${commune}`
@@ -179,16 +243,16 @@ export function generatePros(takenNames: string[]): Pro[] {
 
       const open = 480 + 30 * Math.floor(r() * 4)
       const close = 1050 + 30 * Math.floor(r() * 5)
-      const kind: Pro['kind'] = solo ? (t.male ? 'Indépendant' : 'Indépendante') : t.shop
-      const home = t.male ? 'Chez lui' : 'Chez elle'
+      const kind: Pro['kind'] = solo ? (t.male || (t.mixed && r() < 0.5) ? 'Indépendant' : 'Indépendante') : t.shop
+      const home = 'Chez le/la pro'
       // Un tiers des établissements se déplace aussi ; la moitié des indépendants propose les deux lieux.
       const where = !solo
-        ? [t.shop === 'Institut' ? "À l'institut" : 'Au salon', ...(r() < 0.33 ? ['À domicile'] : [])]
+        ? [SHOP_PLACE[t.shop], ...(t.shop === 'Salon' || t.shop === 'Institut' ? (r() < 0.33 ? ['À domicile'] : []) : [])]
         : pick([['À domicile'], [home], [home, 'À domicile'], [home, 'À domicile']])
       const travel = where.includes('À domicile') ? pick([0, 5, 5, 8, 10, 15]) : undefined
 
       out.push({
-        id: `g${String(++n).padStart(3, '0')}`,
+        id: `${prefix}${String(++n).padStart(3, '0')}`,
         name,
         owner: solo ? `${prenom} ${pick([...INITIALES])}.` : undefined,
         kind,

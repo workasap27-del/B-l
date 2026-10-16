@@ -1,6 +1,6 @@
 // Une icône par métier, pour les catégories et les visuels des prestataires.
 import type { Component } from 'vue'
-import { Armchair, Brush, Eye, Flower2, Hand, Scissors, Waves } from 'lucide-vue-next'
+import { Armchair, Bath, BedDouble, Brush, Eye, Flower2, Gem, Hand, HandHeart, PenLine, Scissors, Waves } from 'lucide-vue-next'
 import type { Category } from '~/data/pros'
 
 export const CAT_ICON: Record<Category, Component> = {
@@ -11,6 +11,11 @@ export const CAT_ICON: Record<Category, Component> = {
   maquillage: Brush,
   soins: Flower2,
   barbier: Armchair,
+  tatouage: PenLine,
+  piercing: Gem,
+  massage: HandHeart,
+  spa: Bath,
+  hotel: BedDouble,
 }
 
 export const CAT_SHORT: Record<Category, string> = {
@@ -21,4 +26,9 @@ export const CAT_SHORT: Record<Category, string> = {
   maquillage: 'Maquillage',
   soins: 'Soins',
   barbier: 'Barbier',
+  tatouage: 'Tatouage',
+  piercing: 'Piercing',
+  massage: 'Massage',
+  spa: 'Spa',
+  hotel: 'Hôtels',
 }

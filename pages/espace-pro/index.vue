@@ -79,7 +79,7 @@ async function publish() {
             <span v-if="e.mode === 'lm'" class="tag now">Konyéla</span>
           </div>
           <span class="meta">{{ e.what }} · {{ euro(e.price ?? 0) }}<template v-if="e.kind === 'app'"> · acompte {{ euro(e.deposit ?? 0) }}</template></span>
-          <span v-if="e.kind === 'app'" class="meta">{{ e.place === 'client' ? `Chez la cliente : ${e.address}` : 'Chez toi' }}</span>
+          <span v-if="e.kind === 'app'" class="meta">{{ e.place === 'client' ? `À domicile : ${e.address}` : 'Chez toi' }}</span>
           <span v-if="e.note" class="meta">« {{ e.note }} »</span>
           <a v-if="e.phone" class="link meta" :href="`tel:${e.phone.replace(/\s/g, '')}`"><Phone :size="13" style="vertical-align:-2px" /> {{ e.phone }}</a>
         </div>
@@ -87,7 +87,7 @@ async function publish() {
       </div>
     </template>
   </div>
-  <p v-if="isToday && !closed" class="tiny mt24">Un trou dans la journée ? Propose-le en Konyéla avec une remise : les clientes autour de toi le voient tout de suite.</p>
+  <p v-if="isToday && !closed" class="tiny mt24">Un trou dans la journée ? Propose-le en Konyéla avec une remise : les personnes autour de toi le voient tout de suite.</p>
 
   <BottomSheet v-if="gap" @close="gap = null">
     <h2 class="h2">Proposer en Konyéla</h2>

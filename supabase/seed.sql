@@ -1,6 +1,6 @@
 -- Données de démonstration (fictives). Fichier généré par scripts/gen-seed.mjs, ne pas modifier à la main.
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('kaz', 'Kaz a Zong', 'Maëva L.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 5, 'Les Abymes', 'Raizet', 16.26908, -61.50743, array['ongles']::text[], array['Pose gel', 'Nail art', 'Semi-permanent']::text[], 'Prothésiste ongulaire depuis 6 ans. Reçoit dans son atelier au Raizet ou se déplace dans l''agglomération pointoise.', 540, 1140, array[0]::smallint[], 330, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('kaz', 'Kaz a Zong', 'Maëva L.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 5, 'Les Abymes', 'Raizet', 16.26908, -61.50743, array['ongles']::text[], array['Pose gel', 'Nail art', 'Semi-permanent']::text[], 'Prothésiste ongulaire depuis 6 ans. Reçoit dans son atelier au Raizet ou se déplace dans l''agglomération pointoise.', 540, 1140, array[0]::smallint[], 330, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('kaz', 'a', 'Pose gel + couleur', 90, 55);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('kaz', 'b', 'Remplissage gel', 60, 40);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('kaz', 'c', 'Semi-permanent mains', 45, 28);
@@ -68,7 +68,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('mad'
 insert into services (pro_id, code, name, duration_min, price_eur) values ('mad', 'd', 'Maquillage jour', 60, 40);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('mad', 'e', 'Massage relaxant', 60, 60);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('oce', 'Cils by Océane', 'Océane V.', 'Indépendante', array['Chez elle']::text[], 0, 'Le Moule', 'Sergent', 16.33084, -61.35156, array['cils']::text[], array['Cil à cil', 'Volume mixte']::text[], 'Technicienne cils certifiée, reçoit dans une pièce dédiée de sa maison.', 540, 1080, array[0, 1]::smallint[], 245, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('oce', 'Cils by Océane', 'Océane V.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Le Moule', 'Sergent', 16.33084, -61.35156, array['cils']::text[], array['Cil à cil', 'Volume mixte']::text[], 'Technicienne cils certifiée, reçoit dans une pièce dédiée de sa maison.', 540, 1080, array[0, 1]::smallint[], 245, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('oce', 'a', 'Cil à cil', 120, 65);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('oce', 'b', 'Volume mixte', 150, 80);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('oce', 'c', 'Remplissage', 60, 40);
@@ -93,14 +93,14 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('loc'
 insert into services (pro_id, code, name, duration_min, price_eur) values ('loc', 'c', 'Départ de locks', 180, 85);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('loc', 'd', 'Coiffage locks', 60, 35);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('zom', 'Zombi', 'Yolène R.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 6, 'Les Abymes', 'Dothémare', 16.27801, -61.49675, array['cils']::text[], array['Cil à cil', 'Volume russe', 'Rehaussement']::text[], 'Un nom qui ne dit rien de son métier : Yolène pose des extensions de cils et travaille les sourcils, chez elle ou chez toi.', 540, 1110, array[0]::smallint[], 280, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('zom', 'Zombi', 'Yolène R.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 6, 'Les Abymes', 'Dothémare', 16.27801, -61.49675, array['cils']::text[], array['Cil à cil', 'Volume russe', 'Rehaussement']::text[], 'Un nom qui ne dit rien de son métier : Yolène pose des extensions de cils et travaille les sourcils, sur place ou chez toi.', 540, 1110, array[0]::smallint[], 280, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('zom', 'a', 'Extensions cil à cil', 120, 68);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('zom', 'b', 'Volume russe', 150, 90);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('zom', 'c', 'Remplissage cils', 60, 40);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('zom', 'd', 'Rehaussement + teinture', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('zom', 'e', 'Sourcils au fil', 30, 12);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g001', 'Ti Très a Joanie', 'Joanie V.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 10, 'Les Abymes', 'Raizet', 16.27740, -61.49804, array['tresses']::text[], array['Knotless', 'Crochet braids', 'Nattes collées']::text[], 'Tresseuse rapide et soignée, tresses régulières et pas trop serrées.', 510, 1050, array[0]::smallint[], 275, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g001', 'Ti Très a Joanie', 'Joanie V.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 10, 'Les Abymes', 'Raizet', 16.27740, -61.49804, array['tresses']::text[], array['Knotless', 'Crochet braids', 'Nattes collées']::text[], 'Tresseuse rapide et soignée, tresses régulières et pas trop serrées.', 510, 1050, array[0]::smallint[], 275, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g001', 'a', 'Tresses enfant', 90, 40);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g001', 'b', 'Pose de perruque', 60, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g001', 'c', 'Box braids mi-longues', 240, 125);
@@ -164,13 +164,13 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g008
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g008', 'e', 'Pose gel + couleur', 90, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g008', 'f', 'Remplissage gel', 60, 40);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g009', 'Rébecca Lash', 'Rébecca T.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 15, 'Les Abymes', 'Petit-Pérou', 16.26425, -61.50526, array['cils']::text[], array['Sourcils au fil', 'Cil à cil', 'Rehaussement']::text[], 'Spécialiste du regard, conseils d''entretien à chaque pose.', 540, 1170, array[0]::smallint[], 247, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g009', 'Rébecca Lash', 'Rébecca T.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 15, 'Les Abymes', 'Petit-Pérou', 16.26425, -61.50526, array['cils']::text[], array['Sourcils au fil', 'Cil à cil', 'Rehaussement']::text[], 'Spécialiste du regard, conseils d''entretien à chaque pose.', 540, 1170, array[0]::smallint[], 247, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g009', 'a', 'Sourcils au fil', 30, 12);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g009', 'b', 'Restructuration sourcils', 30, 18);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g009', 'c', 'Brow lift', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g009', 'd', 'Teinture sourcils', 30, 15);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g010', 'Johanna Onglerie', 'Johanna P.', 'Indépendante', array['Chez elle']::text[], 0, 'Les Abymes', 'Petit-Pérou', 16.26189, -61.50027, array['ongles', 'cils']::text[], array['Nail art', 'Capsules', 'Beauté des pieds']::text[], 'Prothésiste ongulaire diplômée, travail soigné et pose qui tient.', 570, 1140, array[0]::smallint[], 306, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g010', 'Johanna Onglerie', 'Johanna P.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Les Abymes', 'Petit-Pérou', 16.26189, -61.50027, array['ongles', 'cils']::text[], array['Nail art', 'Capsules', 'Beauté des pieds']::text[], 'Prothésiste ongulaire diplômée, travail soigné et pose qui tient.', 570, 1140, array[0]::smallint[], 306, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g010', 'a', 'Nail art 10 doigts', 30, 15);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g010', 'b', 'Baby boomer', 120, 60);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g010', 'c', 'Pose capsules + gel', 120, 55);
@@ -187,7 +187,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g011
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g011', 'f', 'Nattes collées', 90, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g011', 'g', 'Box braids mi-longues', 240, 110);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g012', 'Ti Zong a Vanessa', 'Vanessa C.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 15, 'Les Abymes', 'Chauvel', 16.27158, -61.49881, array['ongles']::text[], array['Capsules', 'Semi-permanent', 'Nail art']::text[], 'Reçoit dans un espace dédié, au calme, une cliente à la fois.', 510, 1170, array[0]::smallint[], 170, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g012', 'Ti Zong a Vanessa', 'Vanessa C.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 15, 'Les Abymes', 'Chauvel', 16.27158, -61.49881, array['ongles']::text[], array['Capsules', 'Semi-permanent', 'Nail art']::text[], 'Reçoit dans un espace dédié, au calme, une cliente à la fois.', 510, 1170, array[0]::smallint[], 170, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g012', 'a', 'Pose gel + couleur', 90, 60);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g012', 'b', 'Nail art 10 doigts', 30, 16);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g012', 'c', 'Baby boomer', 120, 65);
@@ -212,11 +212,11 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g014
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g014', 'f', 'Sourcils au fil', 30, 11);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g014', 'g', 'Volume mixte', 150, 75);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g015', 'Make-up by Samantha', 'Samantha M.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 10, 'Les Abymes', 'Chauvel', 16.26747, -61.49592, array['maquillage']::text[], array['Mariée', 'Carnaval', 'Shooting']::text[], 'Teint sur mesure pour toutes les carnations, tenue longue durée.', 480, 1110, array[0]::smallint[], 31, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g015', 'Make-up by Samantha', 'Samantha M.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 10, 'Les Abymes', 'Chauvel', 16.26747, -61.49592, array['maquillage']::text[], array['Mariée', 'Carnaval', 'Shooting']::text[], 'Teint sur mesure pour toutes les carnations, tenue longue durée.', 480, 1110, array[0]::smallint[], 31, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g015', 'a', 'Maquillage carnaval', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g015', 'b', 'Cours d''auto-maquillage', 90, 70);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g015', 'c', 'Maquillage shooting', 60, 65);
-insert into services (pro_id, code, name, duration_min, price_eur) values ('g015', 'd', 'Maquillage invitée', 60, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('g015', 'd', 'Maquillage invitée de mariage', 60, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g015', 'e', 'Maquillage mariée + essai', 120, 150);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g015', 'f', 'Maquillage soirée', 60, 60);
 
@@ -255,13 +255,13 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g020
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g020', 'e', 'Nattes collées', 90, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g020', 'f', 'Knotless braids', 300, 135);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g021', 'Teddy Barber', 'Teddy G.', 'Indépendant', array['Chez lui', 'À domicile']::text[], 0, 'Pointe-à-Pitre', 'Massabielle', 16.24176, -61.52446, array['barbier']::text[], array['Contours', 'Barbe', 'Dégradé']::text[], 'Coupe à la maison pour toute la famille, matériel désinfecté.', 480, 1140, array[]::smallint[], 3, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g021', 'Teddy Barber', 'Teddy G.', 'Indépendant', array['Chez le/la pro', 'À domicile']::text[], 0, 'Pointe-à-Pitre', 'Massabielle', 16.24176, -61.52446, array['barbier']::text[], array['Contours', 'Barbe', 'Dégradé']::text[], 'Coupe à la maison pour toute la famille, matériel désinfecté.', 480, 1140, array[]::smallint[], 3, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g021', 'a', 'Taille de barbe', 30, 13);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g021', 'b', 'Dégradé + contours', 30, 21);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g021', 'c', 'Coupe enfant', 30, 13);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g021', 'd', 'Coupe + soin', 60, 32);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g022', 'Cils by Audrey', 'Audrey R.', 'Indépendante', array['Chez elle']::text[], 0, 'Pointe-à-Pitre', 'Carénage', 16.24780, -61.53543, array['cils']::text[], array['Sourcils au fil', 'Volume russe', 'Volume mixte']::text[], 'Reçoit dans une pièce dédiée, climatisée et au calme.', 570, 1050, array[0]::smallint[], 10, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g022', 'Cils by Audrey', 'Audrey R.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Pointe-à-Pitre', 'Carénage', 16.24780, -61.53543, array['cils']::text[], array['Sourcils au fil', 'Volume russe', 'Volume mixte']::text[], 'Reçoit dans une pièce dédiée, climatisée et au calme.', 570, 1050, array[0]::smallint[], 10, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g022', 'a', 'Brow lift', 60, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g022', 'b', 'Sourcils au fil', 30, 13);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g022', 'c', 'Rehaussement + teinture', 60, 55);
@@ -276,22 +276,22 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g023
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g023', 'd', 'Coupe homme', 30, 16);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g023', 'e', 'Coupe + barbe', 60, 23);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g024', 'Ti Très a Esther', 'Esther V.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 10, 'Pointe-à-Pitre', 'Lauricisque', 16.25088, -61.52559, array['tresses']::text[], array['Locks', 'Knotless', 'Enfants']::text[], 'Se déplace à domicile, mèches fournies sur demande en supplément.', 570, 1080, array[0]::smallint[], 259, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g024', 'Ti Très a Esther', 'Esther V.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 10, 'Pointe-à-Pitre', 'Lauricisque', 16.25088, -61.52559, array['tresses']::text[], array['Locks', 'Knotless', 'Enfants']::text[], 'Se déplace à domicile, mèches fournies sur demande en supplément.', 570, 1080, array[0]::smallint[], 259, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g024', 'a', 'Pose de perruque', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g024', 'b', 'Retwist locks', 90, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g024', 'c', 'Box braids mi-longues', 240, 105);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g024', 'd', 'Départ de locks', 180, 90);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g024', 'e', 'Vanilles', 120, 60);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g025', 'Make-up by Fabiola', 'Fabiola T.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 0, 'Pointe-à-Pitre', 'Lauricisque', 16.24074, -61.53110, array['maquillage']::text[], array['Invitée', 'Shooting', 'Soirée']::text[], 'Se déplace avec sa valise et sa lumière, essai possible avant le grand jour.', 570, 1110, array[]::smallint[], 79, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g025', 'Make-up by Fabiola', 'Fabiola T.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 0, 'Pointe-à-Pitre', 'Lauricisque', 16.24074, -61.53110, array['maquillage']::text[], array['Invitée', 'Shooting', 'Soirée']::text[], 'Se déplace avec sa valise et sa lumière, essai possible avant le grand jour.', 570, 1110, array[]::smallint[], 79, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g025', 'a', 'Maquillage mariée + essai', 120, 165);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g025', 'b', 'Maquillage shooting', 60, 75);
-insert into services (pro_id, code, name, duration_min, price_eur) values ('g025', 'c', 'Maquillage invitée', 60, 55);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('g025', 'c', 'Maquillage invitée de mariage', 60, 55);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g025', 'd', 'Maquillage soirée', 60, 65);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g025', 'e', 'Maquillage carnaval', 60, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g025', 'f', 'Maquillage jour', 60, 45);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g026', 'Solène Hair', 'Solène K.', 'Indépendante', array['Chez elle']::text[], 0, 'Pointe-à-Pitre', 'Centre-ville', 16.24422, -61.54141, array['coiffure', 'tresses']::text[], array['Coloration', 'Balayage', 'Brushing']::text[], 'Coiffe à la maison pour les familles, enfants compris.', 570, 1050, array[]::smallint[], 137, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g026', 'Solène Hair', 'Solène K.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Pointe-à-Pitre', 'Centre-ville', 16.24422, -61.54141, array['coiffure', 'tresses']::text[], array['Coloration', 'Balayage', 'Brushing']::text[], 'Coiffe à la maison pour les familles, enfants compris.', 570, 1050, array[]::smallint[], 137, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g026', 'a', 'Mèches et balayage', 150, 85);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g026', 'b', 'Coupe + brushing', 60, 40);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g026', 'c', 'Défrisage + soin', 120, 65);
@@ -332,7 +332,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g030
 insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g031', 'Make-up by Priscilla', 'Priscilla J.', 'Indépendante', array['À domicile']::text[], 10, 'Baie-Mahault', 'Jarry', 16.26767, -61.58116, array['maquillage']::text[], array['Mariée', 'Shooting', 'Cours']::text[], 'Maquilleuse professionnelle, mariages et événements dans toute l''île.', 480, 1110, array[0]::smallint[], 268, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g031', 'a', 'Maquillage soirée', 60, 60);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g031', 'b', 'Maquillage carnaval', 60, 45);
-insert into services (pro_id, code, name, duration_min, price_eur) values ('g031', 'c', 'Maquillage invitée', 60, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('g031', 'c', 'Maquillage invitée de mariage', 60, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g031', 'd', 'Maquillage shooting', 60, 65);
 
 insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g032', 'Regard Lalin', null, 'Institut', array['À l''institut']::text[], 0, 'Baie-Mahault', 'La Jaille', 16.26860, -61.58727, array['cils']::text[], array['Cil à cil', 'Brow lift', 'Sourcils au fil']::text[], 'Institut dédié au regard : extensions, rehaussement et sourcils.', 570, 1080, array[0]::smallint[], 44, true);
@@ -365,7 +365,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g035
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g035', 'e', 'Coupe + soin', 60, 32);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g035', 'f', 'Coupe homme', 30, 19);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g036', 'Ti Très a Émeline', 'Émeline T.', 'Indépendante', array['Chez elle']::text[], 0, 'Baie-Mahault', 'La Jaille', 16.26906, -61.58936, array['tresses']::text[], array['Enfants', 'Nattes collées', 'Vanilles']::text[], 'Spécialiste des locks, du départ à l''entretien.', 480, 1140, array[]::smallint[], 7, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g036', 'Ti Très a Émeline', 'Émeline T.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Baie-Mahault', 'La Jaille', 16.26906, -61.58936, array['tresses']::text[], array['Enfants', 'Nattes collées', 'Vanilles']::text[], 'Spécialiste des locks, du départ à l''entretien.', 480, 1140, array[]::smallint[], 7, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g036', 'a', 'Pose de perruque', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g036', 'b', 'Tresses enfant', 90, 36);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g036', 'c', 'Fulani braids', 180, 85);
@@ -401,13 +401,13 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g040
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g040', 'd', 'Défrisage + soin', 120, 65);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g040', 'e', 'Wash and go', 60, 32);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g041', 'Ludmila Locks', 'Ludmila T.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 8, 'Le Gosier', 'Bas-du-Fort', 16.21075, -61.50038, array['tresses']::text[], array['Vanilles', 'Crochet braids', 'Box braids']::text[], 'Se déplace à domicile, mèches fournies sur demande en supplément.', 480, 1050, array[]::smallint[], 321, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g041', 'Ludmila Locks', 'Ludmila T.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 8, 'Le Gosier', 'Bas-du-Fort', 16.21075, -61.50038, array['tresses']::text[], array['Vanilles', 'Crochet braids', 'Box braids']::text[], 'Se déplace à domicile, mèches fournies sur demande en supplément.', 480, 1050, array[]::smallint[], 321, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g041', 'a', 'Box braids mi-longues', 240, 115);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g041', 'b', 'Pose de perruque', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g041', 'c', 'Vanilles', 120, 60);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g041', 'd', 'Crochet braids', 150, 80);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g042', 'Priscilla Locks', 'Priscilla G.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 8, 'Le Gosier', 'Pliane', 16.20784, -61.49742, array['tresses']::text[], array['Nattes collées', 'Crochet braids', 'Vanilles']::text[], 'Tresseuse rapide et soignée, tresses régulières et pas trop serrées.', 570, 1050, array[0]::smallint[], 122, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g042', 'Priscilla Locks', 'Priscilla G.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 8, 'Le Gosier', 'Pliane', 16.20784, -61.49742, array['tresses']::text[], array['Nattes collées', 'Crochet braids', 'Vanilles']::text[], 'Tresseuse rapide et soignée, tresses régulières et pas trop serrées.', 570, 1050, array[0]::smallint[], 122, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g042', 'a', 'Box braids mi-longues', 240, 120);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g042', 'b', 'Fulani braids', 180, 95);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g042', 'c', 'Tresses enfant', 90, 39);
@@ -422,13 +422,13 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g043
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g043', 'e', 'Manucure express', 30, 16);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g043', 'f', 'Semi-permanent pieds', 45, 27);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g044', 'Shaïna Onglerie', 'Shaïna G.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 0, 'Le Gosier', 'Pliane', 16.19834, -61.50012, array['ongles']::text[], array['French', 'Beauté des pieds', 'Pose gel']::text[], 'Reçoit dans un espace dédié, au calme, une cliente à la fois.', 510, 1110, array[0, 1]::smallint[], 121, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g044', 'Shaïna Onglerie', 'Shaïna G.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 0, 'Le Gosier', 'Pliane', 16.19834, -61.50012, array['ongles']::text[], array['French', 'Beauté des pieds', 'Pose gel']::text[], 'Reçoit dans un espace dédié, au calme, une cliente à la fois.', 510, 1110, array[0, 1]::smallint[], 121, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g044', 'a', 'Baby boomer', 120, 60);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g044', 'b', 'Manucure express', 30, 17);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g044', 'c', 'Pose gel + couleur', 90, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g044', 'd', 'Pose capsules + gel', 120, 55);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g045', 'Jonathan Barber', 'Jonathan C.', 'Indépendant', array['Chez lui', 'À domicile']::text[], 0, 'Le Gosier', 'Bas-du-Fort', 16.20567, -61.50008, array['barbier']::text[], array['Dégradé', 'Barbe', 'Enfants']::text[], 'Coupe à la maison pour toute la famille, matériel désinfecté.', 570, 1080, array[0, 1]::smallint[], 247, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g045', 'Jonathan Barber', 'Jonathan C.', 'Indépendant', array['Chez le/la pro', 'À domicile']::text[], 0, 'Le Gosier', 'Bas-du-Fort', 16.20567, -61.50008, array['barbier']::text[], array['Dégradé', 'Barbe', 'Enfants']::text[], 'Coupe à la maison pour toute la famille, matériel désinfecté.', 570, 1080, array[0, 1]::smallint[], 247, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g045', 'a', 'Rasage traditionnel', 30, 23);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g045', 'b', 'Dégradé + contours', 30, 23);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g045', 'c', 'Taille de barbe', 30, 14);
@@ -436,7 +436,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g045
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g045', 'e', 'Coupe enfant', 30, 14);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g045', 'f', 'Coupe + barbe', 60, 28);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g046', 'Nails by Christelle', 'Christelle F.', 'Indépendante', array['Chez elle']::text[], 0, 'Le Gosier', 'Pliane', 16.20675, -61.49596, array['ongles']::text[], array['Baby boomer', 'Pose gel', 'Capsules']::text[], 'Passionnée de nail art, elle reproduit le modèle que tu lui montres.', 540, 1050, array[]::smallint[], 280, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g046', 'Nails by Christelle', 'Christelle F.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Le Gosier', 'Pliane', 16.20675, -61.49596, array['ongles']::text[], array['Baby boomer', 'Pose gel', 'Capsules']::text[], 'Passionnée de nail art, elle reproduit le modèle que tu lui montres.', 540, 1050, array[]::smallint[], 280, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g046', 'a', 'Dépose', 30, 16);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g046', 'b', 'Semi-permanent mains', 45, 29);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g046', 'c', 'Manucure express', 30, 19);
@@ -459,7 +459,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g048
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g048', 'e', 'Crochet braids', 150, 80);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g048', 'f', 'Retwist locks', 90, 55);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g049', 'Samantha Coiffure', 'Samantha L.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 5, 'Petit-Bourg', 'Colin', 16.18439, -61.59016, array['coiffure']::text[], array['Boucles', 'Lissage', 'Mixte']::text[], 'Spécialiste des cheveux naturels et des boucles, soins sur mesure.', 570, 1170, array[]::smallint[], 4, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g049', 'Samantha Coiffure', 'Samantha L.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 5, 'Petit-Bourg', 'Colin', 16.18439, -61.59016, array['coiffure']::text[], array['Boucles', 'Lissage', 'Mixte']::text[], 'Spécialiste des cheveux naturels et des boucles, soins sur mesure.', 570, 1170, array[]::smallint[], 4, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g049', 'a', 'Coloration', 90, 75);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g049', 'b', 'Lissage brésilien', 180, 185);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g049', 'c', 'Mèches et balayage', 150, 110);
@@ -481,14 +481,14 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g051
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g051', 'e', 'Épilation maillot', 30, 17);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g051', 'f', 'Soin visage éclat', 60, 50);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g052', 'Karine Onglerie', 'Karine R.', 'Indépendante', array['Chez elle']::text[], 0, 'Petit-Bourg', 'Vernou', 16.18351, -61.58601, array['ongles']::text[], array['Pose gel', 'Semi-permanent', 'Nail art']::text[], 'Passionnée de nail art, elle reproduit le modèle que tu lui montres.', 510, 1080, array[0, 1]::smallint[], 331, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g052', 'Karine Onglerie', 'Karine R.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Petit-Bourg', 'Vernou', 16.18351, -61.58601, array['ongles']::text[], array['Pose gel', 'Semi-permanent', 'Nail art']::text[], 'Passionnée de nail art, elle reproduit le modèle que tu lui montres.', 510, 1080, array[0, 1]::smallint[], 331, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g052', 'a', 'Pose capsules + gel', 120, 65);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g052', 'b', 'Pose gel + couleur', 90, 60);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g052', 'c', 'Baby boomer', 120, 70);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g052', 'd', 'Nail art 10 doigts', 30, 17);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g052', 'e', 'Dépose', 30, 17);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g053', 'Rachelle Nails', 'Rachelle F.', 'Indépendante', array['Chez elle']::text[], 0, 'Petit-Bourg', 'Vernou', 16.18249, -61.59034, array['ongles']::text[], array['Beauté des pieds', 'Nail art', 'Semi-permanent']::text[], 'Passionnée de nail art, elle reproduit le modèle que tu lui montres.', 510, 1080, array[]::smallint[], 183, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g053', 'Rachelle Nails', 'Rachelle F.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Petit-Bourg', 'Vernou', 16.18249, -61.59034, array['ongles']::text[], array['Beauté des pieds', 'Nail art', 'Semi-permanent']::text[], 'Passionnée de nail art, elle reproduit le modèle que tu lui montres.', 510, 1080, array[]::smallint[], 183, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g053', 'a', 'Pose gel + couleur', 90, 60);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g053', 'b', 'Pose capsules + gel', 120, 65);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g053', 'c', 'Remplissage gel', 60, 45);
@@ -510,7 +510,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g055
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g055', 'c', 'Dépose', 30, 16);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g055', 'd', 'Manucure express', 30, 19);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g056', 'Cils by Émeline', 'Émeline R.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 10, 'Sainte-Anne', 'Douville', 16.23205, -61.37687, array['cils']::text[], array['Volume russe', 'Rehaussement', 'Cil à cil']::text[], 'Technicienne cils certifiée, pose naturelle ou sophistiquée selon l''envie.', 540, 1050, array[0]::smallint[], 64, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g056', 'Cils by Émeline', 'Émeline R.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 10, 'Sainte-Anne', 'Douville', 16.23205, -61.37687, array['cils']::text[], array['Volume russe', 'Rehaussement', 'Cil à cil']::text[], 'Technicienne cils certifiée, pose naturelle ou sophistiquée selon l''envie.', 540, 1050, array[0]::smallint[], 64, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g056', 'a', 'Sourcils au fil', 30, 13);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g056', 'b', 'Remplissage cils', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g056', 'c', 'Volume mixte', 150, 85);
@@ -518,7 +518,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g056
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g056', 'e', 'Volume russe', 150, 95);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g056', 'f', 'Teinture sourcils', 30, 16);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g057', 'Les Ongles de Solène', 'Solène M.', 'Indépendante', array['Chez elle']::text[], 0, 'Sainte-Anne', 'Durivage', 16.22316, -61.38845, array['ongles']::text[], array['Pose gel', 'Semi-permanent', 'Capsules']::text[], 'Reçoit dans un espace dédié, au calme, une cliente à la fois.', 480, 1110, array[0, 1]::smallint[], 165, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g057', 'Les Ongles de Solène', 'Solène M.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Sainte-Anne', 'Durivage', 16.22316, -61.38845, array['ongles']::text[], array['Pose gel', 'Semi-permanent', 'Capsules']::text[], 'Reçoit dans un espace dédié, au calme, une cliente à la fois.', 480, 1110, array[0, 1]::smallint[], 165, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g057', 'a', 'Dépose', 30, 15);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g057', 'b', 'Baby boomer', 120, 60);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g057', 'c', 'Semi-permanent mains', 45, 28);
@@ -538,9 +538,9 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g059
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g059', 'c', 'Épilation jambes complètes', 60, 29);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g059', 'd', 'Soin visage éclat', 60, 55);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g059', 'e', 'Maquillage carnaval', 60, 45);
-insert into services (pro_id, code, name, duration_min, price_eur) values ('g059', 'f', 'Maquillage invitée', 60, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('g059', 'f', 'Maquillage invitée de mariage', 60, 50);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g060', 'Tresses by Chloé', 'Chloé S.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 15, 'Sainte-Anne', 'Bourg', 16.21836, -61.38250, array['tresses']::text[], array['Knotless', 'Locks', 'Box braids']::text[], 'Se déplace à domicile, mèches fournies sur demande en supplément.', 570, 1110, array[]::smallint[], 89, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g060', 'Tresses by Chloé', 'Chloé S.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 15, 'Sainte-Anne', 'Bourg', 16.21836, -61.38250, array['tresses']::text[], array['Knotless', 'Locks', 'Box braids']::text[], 'Se déplace à domicile, mèches fournies sur demande en supplément.', 570, 1110, array[]::smallint[], 89, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g060', 'a', 'Tresses enfant', 90, 40);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g060', 'b', 'Retwist locks', 90, 55);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g060', 'c', 'Crochet braids', 150, 85);
@@ -589,7 +589,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g066
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g066', 'd', 'Knotless braids', 300, 155);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g066', 'e', 'Retwist locks', 90, 55);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g067', 'Gwladys Brows', 'Gwladys F.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 0, 'Le Moule', 'Sergent', 16.33600, -61.34989, array['cils']::text[], array['Rehaussement', 'Cil à cil', 'Brow lift']::text[], 'Reçoit dans une pièce dédiée, climatisée et au calme.', 540, 1050, array[]::smallint[], 294, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g067', 'Gwladys Brows', 'Gwladys F.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 0, 'Le Moule', 'Sergent', 16.33600, -61.34989, array['cils']::text[], array['Rehaussement', 'Cil à cil', 'Brow lift']::text[], 'Reçoit dans une pièce dédiée, climatisée et au calme.', 540, 1050, array[]::smallint[], 294, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g067', 'a', 'Brow lift', 60, 40);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g067', 'b', 'Remplissage cils', 60, 40);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g067', 'c', 'Rehaussement + teinture', 60, 45);
@@ -618,18 +618,18 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g070
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g070', 'f', 'Coupe + soin', 60, 33);
 
 insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g071', 'Soufrière Beauty Studio', null, 'Salon', array['Au salon']::text[], 0, 'Sainte-Rose', 'Viard', 16.33725, -61.70592, array['maquillage']::text[], array['Cours', 'Carnaval', 'Mariée']::text[], 'Studio maquillage et mise en beauté pour tous les événements.', 540, 1140, array[0, 1]::smallint[], 239, true);
-insert into services (pro_id, code, name, duration_min, price_eur) values ('g071', 'a', 'Maquillage invitée', 60, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('g071', 'a', 'Maquillage invitée de mariage', 60, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g071', 'b', 'Maquillage jour', 60, 40);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g071', 'c', 'Maquillage carnaval', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g071', 'd', 'Maquillage mariée + essai', 120, 155);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g072', 'Ti Zong a Érika', 'Érika F.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 8, 'Sainte-Rose', 'Viard', 16.33439, -61.69108, array['ongles']::text[], array['Beauté des pieds', 'French', 'Nail art']::text[], 'Prothésiste ongulaire diplômée, travail soigné et pose qui tient.', 480, 1080, array[]::smallint[], 108, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g072', 'Ti Zong a Érika', 'Érika F.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 8, 'Sainte-Rose', 'Viard', 16.33439, -61.69108, array['ongles']::text[], array['Beauté des pieds', 'French', 'Nail art']::text[], 'Prothésiste ongulaire diplômée, travail soigné et pose qui tient.', 480, 1080, array[]::smallint[], 108, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g072', 'a', 'Remplissage gel', 60, 35);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g072', 'b', 'Manucure express', 30, 17);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g072', 'c', 'Semi-permanent mains', 45, 26);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g072', 'd', 'Semi-permanent pieds', 45, 28);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g073', 'Les Boucles de Rachelle', 'Rachelle T.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 5, 'Sainte-Rose', 'La Boucan', 16.33416, -61.69258, array['coiffure', 'tresses']::text[], array['Cheveux texturés', 'Défrisage', 'Mixte']::text[], 'Coiffeuse diplômée, elle se déplace avec tout son matériel.', 540, 1110, array[0]::smallint[], 102, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g073', 'Les Boucles de Rachelle', 'Rachelle T.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 5, 'Sainte-Rose', 'La Boucan', 16.33416, -61.69258, array['coiffure', 'tresses']::text[], array['Cheveux texturés', 'Défrisage', 'Mixte']::text[], 'Coiffeuse diplômée, elle se déplace avec tout son matériel.', 540, 1110, array[0]::smallint[], 102, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g073', 'a', 'Mèches et balayage', 150, 100);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g073', 'b', 'Coiffure événement', 60, 60);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g073', 'c', 'Défrisage + soin', 120, 75);
@@ -637,7 +637,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g073
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g073', 'e', 'Pose de perruque', 60, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g073', 'f', 'Box braids mi-longues', 240, 115);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g074', 'Kassandra Onglerie', 'Kassandra C.', 'Indépendante', array['Chez elle']::text[], 0, 'Sainte-Rose', 'Sofaïa', 16.34162, -61.70642, array['ongles']::text[], array['Semi-permanent', 'Baby boomer', 'Pose gel']::text[], 'Passionnée de nail art, elle reproduit le modèle que tu lui montres.', 540, 1050, array[0]::smallint[], 142, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g074', 'Kassandra Onglerie', 'Kassandra C.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Sainte-Rose', 'Sofaïa', 16.34162, -61.70642, array['ongles']::text[], array['Semi-permanent', 'Baby boomer', 'Pose gel']::text[], 'Passionnée de nail art, elle reproduit le modèle que tu lui montres.', 540, 1050, array[0]::smallint[], 142, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g074', 'a', 'Dépose', 30, 16);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g074', 'b', 'Beauté des pieds complète', 60, 41);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g074', 'c', 'Nail art 10 doigts', 30, 16);
@@ -666,14 +666,14 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g077
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g077', 'd', 'Mèches et balayage', 150, 85);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g077', 'e', 'Coupe + brushing', 60, 40);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g078', 'Coiffure by Shaïna', 'Shaïna N.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 5, 'Capesterre-Belle-Eau', 'Bourg', 16.05296, -61.56981, array['coiffure']::text[], array['Brushing', 'Lissage', 'Boucles']::text[], 'Coiffe à la maison pour les familles, enfants compris.', 540, 1110, array[0]::smallint[], 239, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g078', 'Coiffure by Shaïna', 'Shaïna N.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 5, 'Capesterre-Belle-Eau', 'Bourg', 16.05296, -61.56981, array['coiffure']::text[], array['Brushing', 'Lissage', 'Boucles']::text[], 'Coiffe à la maison pour les familles, enfants compris.', 540, 1110, array[0]::smallint[], 239, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g078', 'a', 'Coloration', 90, 70);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g078', 'b', 'Coiffure événement', 60, 55);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g078', 'c', 'Wash and go', 60, 37);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g078', 'd', 'Shampoing + brushing', 60, 31);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g078', 'e', 'Lissage brésilien', 180, 165);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g079', 'Anaïs Beauty', 'Anaïs G.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 5, 'Capesterre-Belle-Eau', 'Bananier', 16.04109, -61.56755, array['maquillage']::text[], array['Shooting', 'Invitée', 'Soirée']::text[], 'Maquilleuse professionnelle, mariages et événements dans toute l''île.', 510, 1110, array[]::smallint[], 164, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g079', 'Anaïs Beauty', 'Anaïs G.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 5, 'Capesterre-Belle-Eau', 'Bananier', 16.04109, -61.56755, array['maquillage']::text[], array['Shooting', 'Invitée', 'Soirée']::text[], 'Maquilleuse professionnelle, mariages et événements dans toute l''île.', 510, 1110, array[]::smallint[], 164, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g079', 'a', 'Maquillage mariée + essai', 120, 150);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g079', 'b', 'Maquillage soirée', 60, 60);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g079', 'c', 'Maquillage jour', 60, 40);
@@ -682,7 +682,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g079
 
 insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g080', 'Maïlys Beauty', 'Maïlys L.', 'Indépendante', array['À domicile']::text[], 15, 'Capesterre-Belle-Eau', 'Saint-Sauveur', 16.05308, -61.55790, array['maquillage']::text[], array['Invitée', 'Mariée', 'Cours']::text[], 'Teint sur mesure pour toutes les carnations, tenue longue durée.', 510, 1080, array[0]::smallint[], 72, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g080', 'a', 'Maquillage mariée + essai', 120, 145);
-insert into services (pro_id, code, name, duration_min, price_eur) values ('g080', 'b', 'Maquillage invitée', 60, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('g080', 'b', 'Maquillage invitée de mariage', 60, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g080', 'c', 'Maquillage carnaval', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g080', 'd', 'Maquillage jour', 60, 40);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g080', 'e', 'Cours d''auto-maquillage', 90, 65);
@@ -693,7 +693,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g081
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g081', 'c', 'Rehaussement + teinture', 60, 55);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g081', 'd', 'Remplissage cils', 60, 45);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g082', 'Nadège Braids', 'Nadège B.', 'Indépendante', array['Chez elle']::text[], 0, 'Basse-Terre', 'Centre', 16.00413, -61.73243, array['tresses']::text[], array['Box braids', 'Nattes collées', 'Knotless']::text[], 'Se déplace à domicile, mèches fournies sur demande en supplément.', 480, 1110, array[0]::smallint[], 158, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g082', 'Nadège Braids', 'Nadège B.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Basse-Terre', 'Centre', 16.00413, -61.73243, array['tresses']::text[], array['Box braids', 'Nattes collées', 'Knotless']::text[], 'Se déplace à domicile, mèches fournies sur demande en supplément.', 480, 1110, array[0]::smallint[], 158, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g082', 'a', 'Pose de perruque', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g082', 'b', 'Knotless braids', 300, 140);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g082', 'c', 'Nattes collées', 90, 45);
@@ -728,7 +728,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g086
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g086', 'c', 'Baby boomer', 120, 55);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g086', 'd', 'Beauté des pieds complète', 60, 35);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g087', 'Gwladys Hair', 'Gwladys C.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 0, 'Morne-à-l''Eau', 'Vieux-Bourg', 16.33232, -61.45667, array['coiffure']::text[], array['Balayage', 'Brushing', 'Mixte']::text[], 'Coiffe à la maison pour les familles, enfants compris.', 540, 1080, array[0, 1]::smallint[], 251, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g087', 'Gwladys Hair', 'Gwladys C.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 0, 'Morne-à-l''Eau', 'Vieux-Bourg', 16.33232, -61.45667, array['coiffure']::text[], array['Balayage', 'Brushing', 'Mixte']::text[], 'Coiffe à la maison pour les familles, enfants compris.', 540, 1080, array[0, 1]::smallint[], 251, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g087', 'a', 'Wash and go', 60, 33);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g087', 'b', 'Shampoing + brushing', 60, 28);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g087', 'c', 'Lissage brésilien', 180, 150);
@@ -763,7 +763,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g091
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g091', 'c', 'Retwist locks', 90, 55);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g091', 'd', 'Nattes collées', 90, 50);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g092', 'Joanie Lash', 'Joanie D.', 'Indépendante', array['Chez elle']::text[], 0, 'Lamentin', 'Bourg', 16.28078, -61.63663, array['cils']::text[], array['Volume russe', 'Rehaussement', 'Brow lift']::text[], 'Technicienne cils certifiée, pose naturelle ou sophistiquée selon l''envie.', 570, 1110, array[0]::smallint[], 36, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g092', 'Joanie Lash', 'Joanie D.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Lamentin', 'Bourg', 16.28078, -61.63663, array['cils']::text[], array['Volume russe', 'Rehaussement', 'Brow lift']::text[], 'Technicienne cils certifiée, pose naturelle ou sophistiquée selon l''envie.', 570, 1110, array[0]::smallint[], 36, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g092', 'a', 'Volume mixte', 150, 85);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g092', 'b', 'Rehaussement + teinture', 60, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g092', 'c', 'Teinture sourcils', 30, 16);
@@ -776,7 +776,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g093
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g093', 'd', 'Défrisage + soin', 120, 65);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g093', 'e', 'Coupe + brushing', 60, 40);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g094', 'Cils by Lindsay', 'Lindsay B.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 15, 'Lamentin', 'Caillou', 16.26702, -61.63885, array['cils']::text[], array['Brow lift', 'Cil à cil', 'Volume russe']::text[], 'Technicienne cils certifiée, pose naturelle ou sophistiquée selon l''envie.', 510, 1170, array[0, 1]::smallint[], 13, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g094', 'Cils by Lindsay', 'Lindsay B.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 15, 'Lamentin', 'Caillou', 16.26702, -61.63885, array['cils']::text[], array['Brow lift', 'Cil à cil', 'Volume russe']::text[], 'Technicienne cils certifiée, pose naturelle ou sophistiquée selon l''envie.', 510, 1170, array[0, 1]::smallint[], 13, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g094', 'a', 'Sourcils au fil', 30, 12);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g094', 'b', 'Volume russe', 150, 90);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g094', 'c', 'Rehaussement + teinture', 60, 45);
@@ -796,9 +796,9 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g096
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g096', 'c', 'Rehaussement + teinture', 60, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g096', 'd', 'Volume russe', 150, 90);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g097', 'Tessa Make-up', 'Tessa V.', 'Indépendante', array['Chez elle']::text[], 0, 'Saint-François', 'Bourg', 16.24714, -61.26895, array['maquillage']::text[], array['Invitée', 'Soirée', 'Cours']::text[], 'Se déplace avec sa valise et sa lumière, essai possible avant le grand jour.', 510, 1110, array[]::smallint[], 239, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g097', 'Tessa Make-up', 'Tessa V.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Saint-François', 'Bourg', 16.24714, -61.26895, array['maquillage']::text[], array['Invitée', 'Soirée', 'Cours']::text[], 'Se déplace avec sa valise et sa lumière, essai possible avant le grand jour.', 510, 1110, array[]::smallint[], 239, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g097', 'a', 'Maquillage carnaval', 60, 45);
-insert into services (pro_id, code, name, duration_min, price_eur) values ('g097', 'b', 'Maquillage invitée', 60, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('g097', 'b', 'Maquillage invitée de mariage', 60, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g097', 'c', 'Maquillage soirée', 60, 60);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g097', 'd', 'Cours d''auto-maquillage', 90, 70);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g097', 'e', 'Maquillage shooting', 60, 65);
@@ -818,7 +818,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g099
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g099', 'e', 'Coloration', 90, 70);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g099', 'f', 'Soin profond + coiffage boucles', 60, 45);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g100', 'Marine Braids', 'Marine N.', 'Indépendante', array['Chez elle']::text[], 0, 'Saint-François', 'Sainte-Marthe', 16.25630, -61.27175, array['tresses']::text[], array['Nattes collées', 'Crochet braids', 'Vanilles']::text[], 'Spécialiste des locks, du départ à l''entretien.', 540, 1140, array[0]::smallint[], 309, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g100', 'Marine Braids', 'Marine N.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Saint-François', 'Sainte-Marthe', 16.25630, -61.27175, array['tresses']::text[], array['Nattes collées', 'Crochet braids', 'Vanilles']::text[], 'Spécialiste des locks, du départ à l''entretien.', 540, 1140, array[0]::smallint[], 309, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g100', 'a', 'Nattes collées', 90, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g100', 'b', 'Vanilles', 120, 60);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g100', 'c', 'Pose de perruque', 60, 45);
@@ -845,14 +845,14 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g103
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g103', 'd', 'Baby boomer', 120, 65);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g103', 'e', 'Semi-permanent pieds', 45, 31);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g104', 'Cils by Chloé', 'Chloé A.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 8, 'Saint-Claude', 'Morin', 16.02204, -61.70056, array['cils']::text[], array['Rehaussement', 'Volume russe', 'Volume mixte']::text[], 'Reçoit dans une pièce dédiée, climatisée et au calme.', 480, 1170, array[0]::smallint[], 309, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g104', 'Cils by Chloé', 'Chloé A.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 8, 'Saint-Claude', 'Morin', 16.02204, -61.70056, array['cils']::text[], array['Rehaussement', 'Volume russe', 'Volume mixte']::text[], 'Reçoit dans une pièce dédiée, climatisée et au calme.', 480, 1170, array[0]::smallint[], 309, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g104', 'a', 'Remplissage cils', 60, 40);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g104', 'b', 'Restructuration sourcils', 30, 16);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g104', 'c', 'Extensions cil à cil', 120, 65);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g104', 'd', 'Volume russe', 150, 85);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g104', 'e', 'Brow lift', 60, 40);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g105', 'Le Regard de Yoline', 'Yoline D.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 15, 'Goyave', 'Bourg', 16.14043, -61.56630, array['cils']::text[], array['Sourcils au fil', 'Rehaussement', 'Volume russe']::text[], 'Technicienne cils certifiée, pose naturelle ou sophistiquée selon l''envie.', 540, 1050, array[0]::smallint[], 337, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g105', 'Le Regard de Yoline', 'Yoline D.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 15, 'Goyave', 'Bourg', 16.14043, -61.56630, array['cils']::text[], array['Sourcils au fil', 'Rehaussement', 'Volume russe']::text[], 'Technicienne cils certifiée, pose naturelle ou sophistiquée selon l''envie.', 540, 1050, array[0]::smallint[], 337, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g105', 'a', 'Brow lift', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g105', 'b', 'Rehaussement + teinture', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g105', 'c', 'Restructuration sourcils', 30, 17);
@@ -860,7 +860,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g105
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g105', 'e', 'Remplissage cils', 60, 40);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g105', 'f', 'Volume russe', 150, 90);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g106', 'Daphné Esthétique', 'Daphné L.', 'Indépendante', array['Chez elle']::text[], 0, 'Goyave', 'Morne-Rouge', 16.13761, -61.56654, array['soins']::text[], array['Cire tiède', 'Gommage', 'Soin éclat']::text[], 'Massages et soins du visage, table et matériel apportés chez toi.', 510, 1050, array[]::smallint[], 295, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g106', 'Daphné Esthétique', 'Daphné L.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Goyave', 'Morne-Rouge', 16.13761, -61.56654, array['soins']::text[], array['Cire tiède', 'Gommage', 'Soin éclat']::text[], 'Massages et soins du visage, table et matériel apportés chez toi.', 510, 1050, array[]::smallint[], 295, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g106', 'a', 'Gommage corps', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g106', 'b', 'Épilation demi-jambes', 30, 17);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g106', 'c', 'Soin visage hydratant', 60, 50);
@@ -880,9 +880,9 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g108
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g108', 'c', 'Maquillage shooting', 60, 60);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g108', 'd', 'Maquillage soirée', 60, 55);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g108', 'e', 'Maquillage mariée + essai', 120, 140);
-insert into services (pro_id, code, name, duration_min, price_eur) values ('g108', 'f', 'Maquillage invitée', 60, 45);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('g108', 'f', 'Maquillage invitée de mariage', 60, 45);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g109', 'Ti Très a Anaïs', 'Anaïs L.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 15, 'Petit-Canal', 'Les Mangles', 16.38014, -61.48993, array['tresses']::text[], array['Vanilles', 'Enfants', 'Nattes collées']::text[], 'Se déplace à domicile, mèches fournies sur demande en supplément.', 540, 1170, array[0]::smallint[], 149, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g109', 'Ti Très a Anaïs', 'Anaïs L.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 15, 'Petit-Canal', 'Les Mangles', 16.38014, -61.48993, array['tresses']::text[], array['Vanilles', 'Enfants', 'Nattes collées']::text[], 'Se déplace à domicile, mèches fournies sur demande en supplément.', 540, 1170, array[0]::smallint[], 149, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g109', 'a', 'Retwist locks', 90, 55);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g109', 'b', 'Fulani braids', 180, 100);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g109', 'c', 'Nattes collées', 90, 50);
@@ -920,7 +920,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g113
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g113', 'd', 'Pose capsules + gel', 120, 55);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g113', 'e', 'Semi-permanent mains', 45, 27);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g114', 'Marvin Barber', 'Marvin R.', 'Indépendant', array['Chez lui', 'À domicile']::text[], 15, 'Gourbeyre', 'Bourg', 15.99953, -61.70090, array['barbier']::text[], array['Contours', 'Barbe', 'Enfants']::text[], 'Barbier à domicile, précis sur les dégradés et les contours.', 480, 1140, array[]::smallint[], 169, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g114', 'Marvin Barber', 'Marvin R.', 'Indépendant', array['Chez le/la pro', 'À domicile']::text[], 15, 'Gourbeyre', 'Bourg', 15.99953, -61.70090, array['barbier']::text[], array['Contours', 'Barbe', 'Enfants']::text[], 'Barbier à domicile, précis sur les dégradés et les contours.', 480, 1140, array[]::smallint[], 169, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g114', 'a', 'Coupe homme', 30, 21);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g114', 'b', 'Dégradé + contours', 30, 23);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g114', 'c', 'Rasage traditionnel', 30, 23);
@@ -933,11 +933,11 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g115
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g115', 'd', 'Beauté des pieds complète', 60, 37);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g115', 'e', 'Manucure express', 30, 17);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g116', 'Glam by Tessa', 'Tessa R.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 5, 'Gourbeyre', 'Rivière-Sens', 15.99629, -61.68719, array['maquillage']::text[], array['Invitée', 'Cours', 'Mariée']::text[], 'Maquilleuse professionnelle, mariages et événements dans toute l''île.', 570, 1170, array[0]::smallint[], 239, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g116', 'Glam by Tessa', 'Tessa R.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 5, 'Gourbeyre', 'Rivière-Sens', 15.99629, -61.68719, array['maquillage']::text[], array['Invitée', 'Cours', 'Mariée']::text[], 'Maquilleuse professionnelle, mariages et événements dans toute l''île.', 570, 1170, array[0]::smallint[], 239, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g116', 'a', 'Maquillage carnaval', 60, 40);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g116', 'b', 'Maquillage mariée + essai', 120, 140);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g116', 'c', 'Cours d''auto-maquillage', 90, 65);
-insert into services (pro_id, code, name, duration_min, price_eur) values ('g116', 'd', 'Maquillage invitée', 60, 45);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('g116', 'd', 'Maquillage invitée de mariage', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g116', 'e', 'Maquillage soirée', 60, 55);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g116', 'f', 'Maquillage shooting', 60, 60);
 
@@ -953,7 +953,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g118
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g118', 'c', 'Épilation sourcils', 30, 11);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g118', 'd', 'Épilation maillot', 30, 21);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g119', 'Doriane Hair', 'Doriane C.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 5, 'Trois-Rivières', 'Bourg', 15.97145, -61.64933, array['coiffure', 'tresses']::text[], array['Boucles', 'Mixte', 'Défrisage']::text[], 'Spécialiste des cheveux naturels et des boucles, soins sur mesure.', 540, 1140, array[0]::smallint[], 106, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g119', 'Doriane Hair', 'Doriane C.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 5, 'Trois-Rivières', 'Bourg', 15.97145, -61.64933, array['coiffure', 'tresses']::text[], array['Boucles', 'Mixte', 'Défrisage']::text[], 'Spécialiste des cheveux naturels et des boucles, soins sur mesure.', 540, 1140, array[0]::smallint[], 106, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g119', 'a', 'Coupe + brushing', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g119', 'b', 'Coupe enfant', 30, 15);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g119', 'c', 'Coiffure événement', 60, 55);
@@ -962,7 +962,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g119
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g119', 'f', 'Nattes collées', 90, 45);
 
 insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g120', 'Noémie Make-up', 'Noémie G.', 'Indépendante', array['À domicile']::text[], 0, 'Bouillante', 'Bourg', 16.12429, -61.77620, array['maquillage']::text[], array['Shooting', 'Invitée', 'Soirée']::text[], 'Maquilleuse professionnelle, mariages et événements dans toute l''île.', 510, 1170, array[0, 1]::smallint[], 304, true);
-insert into services (pro_id, code, name, duration_min, price_eur) values ('g120', 'a', 'Maquillage invitée', 60, 55);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('g120', 'a', 'Maquillage invitée de mariage', 60, 55);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g120', 'b', 'Maquillage jour', 60, 45);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g120', 'c', 'Maquillage soirée', 60, 65);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g120', 'd', 'Cours d''auto-maquillage', 90, 75);
@@ -983,7 +983,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g122
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g122', 'd', 'Coiffure événement', 60, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g122', 'e', 'Wash and go', 60, 32);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g123', 'Priscilla Locks Deshaies', 'Priscilla C.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 10, 'Deshaies', 'Bourg', 16.30906, -61.79981, array['tresses']::text[], array['Enfants', 'Locks', 'Box braids']::text[], 'Tresseuse rapide et soignée, tresses régulières et pas trop serrées.', 540, 1170, array[]::smallint[], 16, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g123', 'Priscilla Locks Deshaies', 'Priscilla C.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 10, 'Deshaies', 'Bourg', 16.30906, -61.79981, array['tresses']::text[], array['Enfants', 'Locks', 'Box braids']::text[], 'Tresseuse rapide et soignée, tresses régulières et pas trop serrées.', 540, 1170, array[]::smallint[], 16, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g123', 'a', 'Vanilles', 120, 70);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g123', 'b', 'Nattes collées', 90, 50);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g123', 'c', 'Retwist locks', 90, 55);
@@ -997,7 +997,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g124
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g124', 'e', 'Dépose', 30, 15);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g124', 'f', 'Nail art 10 doigts', 30, 15);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g125', 'Ti Très a Tatiana', 'Tatiana N.', 'Indépendante', array['Chez elle']::text[], 0, 'Pointe-Noire', 'Bourg', 16.22241, -61.79643, array['tresses']::text[], array['Box braids', 'Enfants', 'Nattes collées']::text[], 'Spécialiste des locks, du départ à l''entretien.', 480, 1170, array[0, 1]::smallint[], 86, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g125', 'Ti Très a Tatiana', 'Tatiana N.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Pointe-Noire', 'Bourg', 16.22241, -61.79643, array['tresses']::text[], array['Box braids', 'Enfants', 'Nattes collées']::text[], 'Spécialiste des locks, du départ à l''entretien.', 480, 1170, array[0, 1]::smallint[], 86, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g125', 'a', 'Départ de locks', 180, 90);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g125', 'b', 'Tresses enfant', 90, 35);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g125', 'c', 'Fulani braids', 180, 85);
@@ -1013,7 +1013,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g126
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g126', 'e', 'Taille de barbe', 30, 13);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g126', 'f', 'Coupe homme', 30, 20);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g127', 'Axelle Coiffure', 'Axelle T.', 'Indépendante', array['Chez elle']::text[], 0, 'Vieux-Habitants', 'Géry', 16.05394, -61.75799, array['coiffure']::text[], array['Mixte', 'Lissage', 'Défrisage']::text[], 'Coiffe à la maison pour les familles, enfants compris.', 480, 1050, array[]::smallint[], 350, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g127', 'Axelle Coiffure', 'Axelle T.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Vieux-Habitants', 'Géry', 16.05394, -61.75799, array['coiffure']::text[], array['Mixte', 'Lissage', 'Défrisage']::text[], 'Coiffe à la maison pour les familles, enfants compris.', 480, 1050, array[]::smallint[], 350, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g127', 'a', 'Coloration', 90, 70);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g127', 'b', 'Shampoing + brushing', 60, 32);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g127', 'c', 'Coupe enfant', 30, 16);
@@ -1067,7 +1067,7 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g133
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g133', 'd', 'Volume mixte', 150, 85);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g133', 'e', 'Restructuration sourcils', 30, 20);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g134', 'Priscilla Nails', 'Priscilla D.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 0, 'Grand-Bourg', 'Grande-Savane', 15.89243, -61.30892, array['ongles']::text[], array['Pose gel', 'Baby boomer', 'French']::text[], 'Passionnée de nail art, elle reproduit le modèle que tu lui montres.', 570, 1140, array[]::smallint[], 104, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g134', 'Priscilla Nails', 'Priscilla D.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 0, 'Grand-Bourg', 'Grande-Savane', 15.89243, -61.30892, array['ongles']::text[], array['Pose gel', 'Baby boomer', 'French']::text[], 'Passionnée de nail art, elle reproduit le modèle que tu lui montres.', 570, 1140, array[]::smallint[], 104, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g134', 'a', 'Beauté des pieds complète', 60, 40);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g134', 'b', 'Dépose', 30, 16);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g134', 'c', 'Pose gel + couleur', 90, 60);
@@ -1080,14 +1080,14 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g135
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g135', 'c', 'Coupe enfant', 30, 16);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g135', 'd', 'Coloration', 90, 70);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g136', 'Tresses by Gwladys', 'Gwladys C.', 'Indépendante', array['Chez elle', 'À domicile']::text[], 8, 'Saint-Louis', 'Vieux-Fort', 15.95009, -61.32332, array['tresses']::text[], array['Box braids', 'Crochet braids', 'Vanilles']::text[], 'Se déplace à domicile, mèches fournies sur demande en supplément.', 510, 1050, array[0]::smallint[], 284, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g136', 'Tresses by Gwladys', 'Gwladys C.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 8, 'Saint-Louis', 'Vieux-Fort', 15.95009, -61.32332, array['tresses']::text[], array['Box braids', 'Crochet braids', 'Vanilles']::text[], 'Se déplace à domicile, mèches fournies sur demande en supplément.', 510, 1050, array[0]::smallint[], 284, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g136', 'a', 'Knotless braids', 300, 150);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g136', 'b', 'Fulani braids', 180, 90);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g136', 'c', 'Tresses enfant', 90, 37);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g136', 'd', 'Vanilles', 120, 65);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g136', 'e', 'Box braids mi-longues', 240, 120);
 
-insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g137', 'Élodie Esthétique', 'Élodie D.', 'Indépendante', array['Chez elle']::text[], 0, 'Vieux-Fort', 'Bourg', 15.94010, -61.69571, array['soins']::text[], array['Soin visage', 'Cire tiède', 'Épilation']::text[], 'Esthéticienne diplômée, soins et épilation à domicile.', 480, 1080, array[0, 1]::smallint[], 194, true);
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('g137', 'Élodie Esthétique', 'Élodie D.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Vieux-Fort', 'Bourg', 15.94010, -61.69571, array['soins']::text[], array['Soin visage', 'Cire tiède', 'Épilation']::text[], 'Esthéticienne diplômée, soins et épilation à domicile.', 480, 1080, array[0, 1]::smallint[], 194, true);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g137', 'a', 'Soin visage éclat', 60, 55);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g137', 'b', 'Épilation demi-jambes', 30, 19);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g137', 'c', 'Soin visage hydratant', 60, 50);
@@ -1114,3 +1114,393 @@ insert into services (pro_id, code, name, duration_min, price_eur) values ('g140
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g140', 'c', 'Remplissage gel', 60, 40);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g140', 'd', 'Baby boomer', 120, 60);
 insert into services (pro_id, code, name, duration_min, price_eur) values ('g140', 'e', 'Beauté des pieds complète', 60, 38);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h001', 'Atelier Anoli Bijoux', null, 'Studio', array['Au studio']::text[], 0, 'Les Abymes', 'Boisripeaux', 16.26682, -61.50153, array['piercing']::text[], array['Oreille', 'Bijoux', 'Cartilage']::text[], 'Perçage à l''aiguille, choix de bijoux sur place.', 570, 1170, array[0]::smallint[], 275, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h001', 'a', 'Piercing septum', 30, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h001', 'b', 'Bijou en titane (pose)', 30, 25);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h001', 'c', 'Piercing nez (narine)', 30, 45);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h001', 'd', 'Piercing nombril', 30, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h001', 'e', 'Piercing lobe', 30, 36);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h002', 'Ink Coco', null, 'Studio', array['Au studio']::text[], 0, 'Les Abymes', 'Raizet', 16.26813, -61.51051, array['tatouage', 'piercing']::text[], array['Fine line', 'Cover-up', 'Blackwork']::text[], 'Studio de tatouage : hygiène stricte, matériel à usage unique, projets sur mesure.', 480, 1080, array[0]::smallint[], 68, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h002', 'a', 'Retouche', 60, 65);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h002', 'b', 'Tatouage fine line', 60, 95);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h002', 'c', 'Lettrage ou prénom', 60, 85);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h002', 'd', 'Cover-up (étude incluse)', 240, 325);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h002', 'e', 'Séance journée (grande pièce)', 360, 485);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h002', 'f', 'Changement de bijou', 30, 16);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h002', 'g', 'Piercing septum', 30, 55);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h003', 'Les Mains de Solène', 'Solène C.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 5, 'Les Abymes', 'Grand-Camp', 16.26485, -61.51362, array['massage']::text[], array['Relaxant', 'Californien', 'Prénatal']::text[], 'Massages relaxants et sportifs, à l''écoute de ce qui fait du bien.', 540, 1050, array[0]::smallint[], 176, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h003', 'a', 'Massage relaxant 1 h', 60, 60);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h003', 'b', 'Massage aux pierres chaudes', 90, 90);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h003', 'c', 'Massage sportif', 60, 70);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h003', 'd', 'Massage prénatal', 60, 65);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h004', 'Institut Tamarin Massage', null, 'Institut', array['À l''institut']::text[], 0, 'Les Abymes', 'Raizet', 16.27720, -61.50696, array['massage']::text[], array['À domicile', 'Sportif', 'Réflexologie']::text[], 'Massages bien-être et sportifs, sur rendez-vous.', 480, 1080, array[0]::smallint[], 270, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h004', 'a', 'Massage relaxant 30 min', 30, 36);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h004', 'b', 'Massage aux pierres chaudes', 90, 85);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h004', 'c', 'Massage à quatre mains', 60, 130);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h004', 'd', 'Réflexologie plantaire', 45, 40);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h004', 'e', 'Massage relaxant 1 h', 60, 55);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h005', 'Institut Bougainvillée Massage', null, 'Institut', array['À l''institut']::text[], 0, 'Les Abymes', 'Raizet', 16.26282, -61.51296, array['massage']::text[], array['Réflexologie', 'Relaxant', 'Californien']::text[], 'Massages bien-être et sportifs, sur rendez-vous.', 540, 1170, array[0]::smallint[], 161, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h005', 'a', 'Massage à quatre mains', 60, 150);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h005', 'b', 'Massage relaxant 30 min', 30, 41);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h005', 'c', 'Massage sportif', 60, 75);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h005', 'd', 'Massage aux pierres chaudes', 90, 95);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h005', 'e', 'Massage prénatal', 60, 70);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h005', 'f', 'Massage dos et nuque', 30, 38);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h006', 'Johanna Massage', 'Johanna T.', 'Indépendant', array['Chez le/la pro']::text[], 0, 'Les Abymes', 'Dothémare', 16.27317, -61.49784, array['massage']::text[], array['À domicile', 'Réflexologie', 'Prénatal']::text[], 'Massages relaxants et sportifs, à l''écoute de ce qui fait du bien.', 480, 1110, array[0, 1]::smallint[], 305, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h006', 'a', 'Massage dos et nuque', 30, 35);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h006', 'b', 'Massage à quatre mains', 60, 140);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h006', 'c', 'Massage relaxant 30 min', 30, 38);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h006', 'd', 'Réflexologie plantaire', 45, 45);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h007', 'Ludovic Tattoo', 'Ludovic S.', 'Indépendant', array['À domicile']::text[], 10, 'Pointe-à-Pitre', 'Massabielle', 16.24107, -61.53864, array['tatouage']::text[], array['Old school', 'Flash', 'Blackwork']::text[], 'Spécialité fine line et lettrage, matériel à usage unique ouvert devant le client.', 570, 1110, array[]::smallint[], 305, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h007', 'a', 'Flash tattoo petit', 60, 70);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h007', 'b', 'Tatouage pièce moyenne', 180, 225);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h007', 'c', 'Tatouage fine line', 60, 90);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h007', 'd', 'Tatouage petite pièce', 90, 115);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h007', 'e', 'Retouche', 60, 60);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h007', 'f', 'Lettrage ou prénom', 60, 80);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h008', 'Sandy Piercing', 'Sandy G.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 8, 'Pointe-à-Pitre', 'Centre-ville', 16.23754, -61.54145, array['piercing']::text[], array['Septum', 'Titane', 'Nombril']::text[], 'Perceur ou perceuse professionnel, matériel stérile à usage unique.', 510, 1140, array[0, 1]::smallint[], 137, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h008', 'a', 'Changement de bijou', 30, 15);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h008', 'b', 'Piercing lobe', 30, 35);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h008', 'c', 'Bijou en titane (pose)', 30, 25);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h008', 'd', 'Piercing langue', 30, 55);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h009', 'Piercing by Sabrina', 'Sabrina L.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 5, 'Pointe-à-Pitre', 'Carénage', 16.24945, -61.53171, array['piercing']::text[], array['Septum', 'Nez', 'Cartilage']::text[], 'Perceur ou perceuse professionnel, matériel stérile à usage unique.', 510, 1170, array[]::smallint[], 318, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h009', 'a', 'Piercing langue', 30, 60);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h009', 'b', 'Bijou en titane (pose)', 30, 26);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h009', 'c', 'Piercing nombril', 30, 55);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h009', 'd', 'Piercing nez (narine)', 30, 50);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h010', 'Ink Zétwal', null, 'Studio', array['Au studio']::text[], 0, 'Pointe-à-Pitre', 'Bergevin', 16.24240, -61.53982, array['tatouage', 'piercing']::text[], array['Fine line', 'Cover-up', 'Flash']::text[], 'Plusieurs artistes, dessin personnalisé et devis avant chaque séance.', 510, 1050, array[0]::smallint[], 27, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h010', 'a', 'Tatouage pièce moyenne', 180, 210);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h010', 'b', 'Flash tattoo petit', 60, 65);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h010', 'c', 'Tatouage fine line', 60, 85);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h010', 'd', 'Cover-up (étude incluse)', 240, 290);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h010', 'e', 'Piercing lobe', 30, 34);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h010', 'f', 'Piercing nez (narine)', 30, 45);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h011', 'Ink Trois Îlets', null, 'Studio', array['Au studio']::text[], 0, 'Baie-Mahault', 'La Jaille', 16.26771, -61.57875, array['tatouage']::text[], array['Flash', 'Réalisme', 'Fine line']::text[], 'Plusieurs artistes, dessin personnalisé et devis avant chaque séance.', 510, 1110, array[0]::smallint[], 145, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h011', 'a', 'Lettrage ou prénom', 60, 80);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h011', 'b', 'Tatouage pièce moyenne', 180, 225);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h011', 'c', 'Séance journée (grande pièce)', 360, 460);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h011', 'd', 'Cover-up (étude incluse)', 240, 305);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h011', 'e', 'Tatouage fine line', 60, 90);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h012', 'Studio Maracudja Ink', null, 'Studio', array['Au studio']::text[], 0, 'Baie-Mahault', 'Bourg', 16.26949, -61.58764, array['tatouage', 'piercing']::text[], array['Blackwork', 'Flash', 'Lettrage']::text[], 'Studio de tatouage : hygiène stricte, matériel à usage unique, projets sur mesure.', 480, 1080, array[0, 1]::smallint[], 276, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h012', 'a', 'Lettrage ou prénom', 60, 90);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h012', 'b', 'Tatouage pièce moyenne', 180, 245);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h012', 'c', 'Tatouage petite pièce', 90, 120);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h012', 'd', 'Flash tattoo petit', 60, 80);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h012', 'e', 'Cover-up (étude incluse)', 240, 330);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h012', 'f', 'Piercing septum', 30, 55);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h012', 'g', 'Piercing lobe', 30, 39);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h013', 'Hôtel Alizés', null, 'Hôtel', array['À l''hôtel']::text[], 0, 'Baie-Mahault', 'Destrellan', 16.26569, -61.57921, array['hotel']::text[], array['Brunch', 'Vue mer', 'Détente']::text[], 'Établissement de charme, accès piscine et plage ouvert aux non-résidents.', 540, 1140, array[0]::smallint[], 174, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h013', 'a', 'Chambre à la journée (day use, 8 h)', 480, 115);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h013', 'b', 'Brunch en bord de piscine', 120, 39);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h013', 'c', 'Accès piscine et plage (journée)', 360, 36);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h013', 'd', 'Pack détente : chambre et massage', 300, 165);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h013', 'e', 'Chambre à la demi-journée (4 h)', 240, 70);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h013', 'f', 'Salle de séminaire (demi-journée)', 240, 225);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h014', 'Karambole Tattoo', null, 'Studio', array['Au studio']::text[], 0, 'Baie-Mahault', 'Jarry', 16.26589, -61.59176, array['tatouage']::text[], array['Lettrage', 'Old school', 'Blackwork']::text[], 'Studio de tatouage : hygiène stricte, matériel à usage unique, projets sur mesure.', 570, 1080, array[0, 1]::smallint[], 63, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h014', 'a', 'Tatouage petite pièce', 90, 100);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h014', 'b', 'Lettrage ou prénom', 60, 70);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h014', 'c', 'Flash tattoo petit', 60, 65);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h014', 'd', 'Séance journée (grande pièce)', 360, 405);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h014', 'e', 'Cover-up (étude incluse)', 240, 270);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h015', 'Anoli Bien-être', null, 'Institut', array['À l''institut']::text[], 0, 'Le Gosier', 'Pliane', 16.20780, -61.49567, array['massage']::text[], array['Réflexologie', 'Prénatal', 'À domicile']::text[], 'Cabines calmes et climatisées, huiles chaudes et massages sur mesure.', 540, 1140, array[0]::smallint[], 190, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h015', 'a', 'Massage dos et nuque', 30, 33);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h015', 'b', 'Massage relaxant 30 min', 30, 36);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h015', 'c', 'Massage relaxant 1 h', 60, 55);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h015', 'd', 'Massage prénatal', 60, 60);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h015', 'e', 'Massage sportif', 60, 65);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h016', 'Maïlys Bien-être', 'Maïlys V.', 'Indépendant', array['Chez le/la pro']::text[], 0, 'Le Gosier', 'Bourg', 16.20854, -61.48396, array['massage']::text[], array['Sportif', 'Pierres chaudes', 'Réflexologie']::text[], 'Praticien ou praticienne en massage bien-être, table et huiles apportées à domicile.', 540, 1170, array[0, 1]::smallint[], 124, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h016', 'a', 'Massage à quatre mains', 60, 125);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h016', 'b', 'Massage aux pierres chaudes', 90, 80);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h016', 'c', 'Massage dos et nuque', 30, 32);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h016', 'd', 'Massage sportif', 60, 65);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h016', 'e', 'Massage relaxant 30 min', 30, 34);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h016', 'f', 'Massage prénatal', 60, 60);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h017', 'Spa Caravelle', null, 'Spa', array['Au spa']::text[], 0, 'Le Gosier', 'Bas-du-Fort', 16.21446, -61.49311, array['spa']::text[], array['Détente', 'Jacuzzi', 'Hammam']::text[], 'Un lieu calme pour une parenthèse : hammam, soins du corps et du visage.', 570, 1080, array[0, 1]::smallint[], 349, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h017', 'a', 'Journée spa avec déjeuner', 360, 120);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h017', 'b', 'Soin duo (2 personnes)', 90, 160);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h017', 'c', 'Accès spa 2 h (hammam, sauna)', 120, 35);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h017', 'd', 'Rituel visage et corps', 120, 110);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h017', 'e', 'Enveloppement aux algues', 60, 55);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h017', 'f', 'Hammam et gommage', 90, 60);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h018', 'Ink Pomme Cannelle', null, 'Studio', array['Au studio']::text[], 0, 'Le Gosier', 'Montauban', 16.20431, -61.48396, array['tatouage', 'piercing']::text[], array['Cover-up', 'Flash', 'Blackwork']::text[], 'Plusieurs artistes, dessin personnalisé et devis avant chaque séance.', 570, 1110, array[0, 1]::smallint[], 148, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h018', 'a', 'Tatouage fine line', 60, 90);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h018', 'b', 'Retouche', 60, 60);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h018', 'c', 'Cover-up (étude incluse)', 240, 305);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h018', 'd', 'Séance journée (grande pièce)', 360, 460);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h018', 'e', 'Tatouage petite pièce', 90, 110);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h018', 'f', 'Flash tattoo petit', 60, 70);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h018', 'g', 'Piercing nombril', 30, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h018', 'h', 'Piercing nez (narine)', 30, 45);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h019', 'Teddy Bien-être', 'Teddy L.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 5, 'Petit-Bourg', 'Colin', 16.18162, -61.58323, array['massage']::text[], array['Pierres chaudes', 'Relaxant', 'Californien']::text[], 'Massages relaxants et sportifs, à l''écoute de ce qui fait du bien.', 510, 1050, array[0]::smallint[], 349, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h019', 'a', 'Massage relaxant 30 min', 30, 43);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h019', 'b', 'Massage à quatre mains', 60, 155);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h019', 'c', 'Massage aux pierres chaudes', 90, 100);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h019', 'd', 'Massage relaxant 1 h', 60, 65);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h020', 'Studio Lalin Piercing', null, 'Studio', array['Au studio']::text[], 0, 'Petit-Bourg', 'Arnouville', 16.18682, -61.59408, array['piercing']::text[], array['Bijoux', 'Oreille', 'Septum']::text[], 'Perçage à l''aiguille, choix de bijoux sur place.', 570, 1110, array[0, 1]::smallint[], 339, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h020', 'a', 'Piercing nez (narine)', 30, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h020', 'b', 'Bijou en titane (pose)', 30, 27);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h020', 'c', 'Changement de bijou', 30, 16);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h020', 'd', 'Piercing septum', 30, 55);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h020', 'e', 'Piercing cartilage (hélix)', 30, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h020', 'f', 'Piercing nombril', 30, 55);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h021', 'Chloé Bien-être', 'Chloé S.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 5, 'Petit-Bourg', 'Arnouville', 16.18163, -61.59740, array['massage']::text[], array['Relaxant', 'Pierres chaudes', 'Californien']::text[], 'Massages relaxants et sportifs, à l''écoute de ce qui fait du bien.', 540, 1170, array[0]::smallint[], 13, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h021', 'a', 'Massage relaxant 1 h', 60, 70);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h021', 'b', 'Massage sportif', 60, 80);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h021', 'c', 'Massage dos et nuque', 30, 40);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h021', 'd', 'Massage californien', 60, 75);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h021', 'e', 'Massage à quatre mains', 60, 160);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h022', 'Atelier Corossol Tattoo', null, 'Studio', array['Au studio']::text[], 0, 'Sainte-Anne', 'Douville', 16.22191, -61.38607, array['tatouage', 'piercing']::text[], array['Cover-up', 'Flash', 'Blackwork']::text[], 'Studio de tatouage : hygiène stricte, matériel à usage unique, projets sur mesure.', 570, 1170, array[0, 1]::smallint[], 7, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h022', 'a', 'Flash tattoo petit', 60, 70);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h022', 'b', 'Tatouage fine line', 60, 90);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h022', 'c', 'Tatouage petite pièce', 90, 110);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h022', 'd', 'Retouche', 60, 60);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h022', 'e', 'Lettrage ou prénom', 60, 80);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h022', 'f', 'Cover-up (étude incluse)', 240, 300);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h022', 'g', 'Piercing septum', 30, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h022', 'h', 'Piercing cartilage (hélix)', 30, 45);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h023', 'Élodie Ink', 'Élodie F.', 'Indépendante', array['Chez le/la pro']::text[], 0, 'Sainte-Anne', 'Châteaubrun', 16.22036, -61.38483, array['tatouage']::text[], array['Cover-up', 'Fine line', 'Blackwork']::text[], 'Tatoueur indépendant ou tatoueuse indépendante, dessin sur mesure et devis avant la séance.', 510, 1050, array[0]::smallint[], 323, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h023', 'a', 'Tatouage fine line', 60, 95);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h023', 'b', 'Cover-up (étude incluse)', 240, 325);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h023', 'c', 'Séance journée (grande pièce)', 360, 485);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h023', 'd', 'Tatouage petite pièce', 90, 120);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h024', 'Atelier Solèy Bijoux', null, 'Studio', array['Au studio']::text[], 0, 'Sainte-Anne', 'Douville', 16.21704, -61.38633, array['piercing']::text[], array['Oreille', 'Titane', 'Cartilage']::text[], 'Perçage à l''aiguille, choix de bijoux sur place.', 570, 1080, array[0]::smallint[], 212, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h024', 'a', 'Piercing langue', 30, 55);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h024', 'b', 'Changement de bijou', 30, 15);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h024', 'c', 'Piercing nez (narine)', 30, 45);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h024', 'd', 'Piercing cartilage (hélix)', 30, 45);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h024', 'e', 'Piercing nombril', 30, 50);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h025', 'Institut Tamarin Massage Le Moule', null, 'Institut', array['À l''institut']::text[], 0, 'Le Moule', 'Damencourt', 16.32232, -61.34921, array['massage']::text[], array['Prénatal', 'Réflexologie', 'Californien']::text[], 'Massages bien-être et sportifs, sur rendez-vous.', 480, 1170, array[0]::smallint[], 295, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h025', 'a', 'Massage à quatre mains', 60, 145);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h025', 'b', 'Massage prénatal', 60, 65);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h025', 'c', 'Massage dos et nuque', 30, 36);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h025', 'd', 'Massage aux pierres chaudes', 90, 90);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h025', 'e', 'Massage sportif', 60, 70);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h025', 'f', 'Massage californien', 60, 65);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h026', 'Karine Ink', 'Karine C.', 'Indépendante', array['À domicile']::text[], 10, 'Le Moule', 'Sergent', 16.33510, -61.35581, array['tatouage']::text[], array['Flash', 'Old school', 'Lettrage']::text[], 'Spécialité fine line et lettrage, matériel à usage unique ouvert devant le client.', 510, 1080, array[0, 1]::smallint[], 14, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h026', 'a', 'Tatouage petite pièce', 90, 115);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h026', 'b', 'Tatouage fine line', 60, 95);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h026', 'c', 'Retouche', 60, 65);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h026', 'd', 'Flash tattoo petit', 60, 75);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h026', 'e', 'Séance journée (grande pièce)', 360, 480);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h027', 'Studio Corossol Piercing', null, 'Studio', array['Au studio']::text[], 0, 'Le Moule', 'Bourg', 16.32488, -61.35322, array['piercing']::text[], array['Titane', 'Septum', 'Bijoux']::text[], 'Studio de piercing : matériel stérile, bijoux en titane et conseils de cicatrisation.', 540, 1140, array[0]::smallint[], 216, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h027', 'a', 'Piercing langue', 30, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h027', 'b', 'Bijou en titane (pose)', 30, 23);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h027', 'c', 'Piercing cartilage (hélix)', 30, 40);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h027', 'd', 'Piercing lobe', 30, 32);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h027', 'e', 'Piercing septum', 30, 45);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h028', 'Atelier Péyi Bijoux', null, 'Studio', array['Au studio']::text[], 0, 'Sainte-Rose', 'Viard', 16.32641, -61.68955, array['piercing']::text[], array['Nez', 'Titane', 'Nombril']::text[], 'Perçage à l''aiguille, choix de bijoux sur place.', 570, 1080, array[0]::smallint[], 182, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h028', 'a', 'Changement de bijou', 30, 15);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h028', 'b', 'Bijou en titane (pose)', 30, 25);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h028', 'c', 'Piercing lobe', 30, 36);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h028', 'd', 'Piercing cartilage (hélix)', 30, 45);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h028', 'e', 'Piercing langue', 30, 55);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h028', 'f', 'Piercing nombril', 30, 50);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h029', 'Spa Sable Blanc Sainte-Rose', null, 'Spa', array['Au spa']::text[], 0, 'Sainte-Rose', 'Viard', 16.33430, -61.70143, array['spa']::text[], array['Jacuzzi', 'Hammam', 'Soin duo']::text[], 'Un lieu calme pour une parenthèse : hammam, soins du corps et du visage.', 540, 1080, array[0]::smallint[], 275, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h029', 'a', 'Rituel visage et corps', 120, 120);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h029', 'b', 'Bain à remous privatif', 60, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h029', 'c', 'Sauna et hammam', 90, 33);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h029', 'd', 'Accès spa 2 h (hammam, sauna)', 120, 39);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h029', 'e', 'Soin duo (2 personnes)', 90, 175);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h029', 'f', 'Enveloppement aux algues', 60, 60);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h030', 'La Pause Soufrière', null, 'Institut', array['À l''institut', 'À domicile']::text[], 0, 'Capesterre-Belle-Eau', 'Bourg', 16.04386, -61.57173, array['massage', 'spa']::text[], array['Réflexologie', 'Pierres chaudes', 'Californien']::text[], 'Massages bien-être et sportifs, sur rendez-vous.', 570, 1140, array[0, 1]::smallint[], 3, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h030', 'a', 'Massage à quatre mains', 60, 130);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h030', 'b', 'Massage relaxant 30 min', 30, 36);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h030', 'c', 'Réflexologie plantaire', 45, 45);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h030', 'd', 'Massage prénatal', 60, 60);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h030', 'e', 'Accès spa 2 h (hammam, sauna)', 120, 33);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h030', 'f', 'Sauna et hammam', 90, 28);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h031', 'Jessica Tattoo', 'Jessica T.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 10, 'Capesterre-Belle-Eau', 'Bourg', 16.04100, -61.56861, array['tatouage', 'piercing']::text[], array['Flash', 'Old school', 'Réalisme']::text[], 'Tatoueur indépendant ou tatoueuse indépendante, dessin sur mesure et devis avant la séance.', 510, 1170, array[0]::smallint[], 225, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h031', 'a', 'Retouche', 60, 60);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h031', 'b', 'Cover-up (étude incluse)', 240, 310);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h031', 'c', 'Séance journée (grande pièce)', 360, 465);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h031', 'd', 'Lettrage ou prénom', 60, 85);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h031', 'e', 'Tatouage fine line', 60, 95);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h031', 'f', 'Piercing nombril', 30, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h031', 'g', 'Piercing septum', 30, 50);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h032', 'Grand Large Tattoo', null, 'Studio', array['Au studio']::text[], 0, 'Basse-Terre', 'Rivière-des-Pères', 15.99356, -61.72289, array['tatouage', 'piercing']::text[], array['Old school', 'Réalisme', 'Flash']::text[], 'Studio de tatouage : hygiène stricte, matériel à usage unique, projets sur mesure.', 480, 1140, array[0, 1]::smallint[], 201, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h032', 'a', 'Séance journée (grande pièce)', 360, 475);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h032', 'b', 'Cover-up (étude incluse)', 240, 315);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h032', 'c', 'Flash tattoo petit', 60, 75);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h032', 'd', 'Tatouage petite pièce', 90, 115);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h032', 'e', 'Changement de bijou', 30, 16);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h032', 'f', 'Piercing septum', 30, 55);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h033', 'Studio Coco Ink', null, 'Studio', array['Au studio']::text[], 0, 'Basse-Terre', 'Petit-Paris', 15.99832, -61.71982, array['tatouage']::text[], array['Lettrage', 'Blackwork', 'Cover-up']::text[], 'Studio de tatouage : hygiène stricte, matériel à usage unique, projets sur mesure.', 540, 1050, array[0, 1]::smallint[], 31, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h033', 'a', 'Séance journée (grande pièce)', 360, 515);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h033', 'b', 'Lettrage ou prénom', 60, 90);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h033', 'c', 'Tatouage fine line', 60, 105);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h033', 'd', 'Cover-up (étude incluse)', 240, 340);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h033', 'e', 'Tatouage pièce moyenne', 180, 250);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h033', 'f', 'Flash tattoo petit', 60, 80);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h034', 'Institut Zandoli Massage', null, 'Institut', array['À l''institut']::text[], 0, 'Morne-à-l''Eau', 'Bourg', 16.33545, -61.45959, array['massage']::text[], array['Pierres chaudes', 'Relaxant', 'Sportif']::text[], 'Cabines calmes et climatisées, huiles chaudes et massages sur mesure.', 510, 1110, array[0]::smallint[], 104, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h034', 'a', 'Massage à quatre mains', 60, 155);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h034', 'b', 'Réflexologie plantaire', 45, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h034', 'c', 'Massage prénatal', 60, 70);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h034', 'd', 'Massage sportif', 60, 75);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h034', 'e', 'Massage relaxant 1 h', 60, 65);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h035', 'Escale Corossol Spa', null, 'Spa', array['Au spa']::text[], 0, 'Morne-à-l''Eau', 'Richeval', 16.33193, -61.46661, array['spa']::text[], array['Jacuzzi', 'Sauna', 'Gommage']::text[], 'Spa avec hammam, sauna et bain à remous, accès en demi-journée.', 510, 1050, array[0, 1]::smallint[], 61, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h035', 'a', 'Hammam et gommage', 90, 70);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h035', 'b', 'Accès spa 2 h (hammam, sauna)', 120, 40);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h035', 'c', 'Soin duo (2 personnes)', 90, 185);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h035', 'd', 'Rituel visage et corps', 120, 125);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h036', 'Kannèl Spa', null, 'Spa', array['Au spa']::text[], 0, 'Lamentin', 'Caillou', 16.27215, -61.63695, array['spa']::text[], array['Gommage', 'Hammam', 'Jacuzzi']::text[], 'Un lieu calme pour une parenthèse : hammam, soins du corps et du visage.', 570, 1140, array[0]::smallint[], 207, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h036', 'a', 'Enveloppement aux algues', 60, 60);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h036', 'b', 'Rituel visage et corps', 120, 125);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h036', 'c', 'Accès spa 2 h (hammam, sauna)', 120, 40);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h036', 'd', 'Sauna et hammam', 90, 34);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h036', 'e', 'Hammam et gommage', 90, 70);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h036', 'f', 'Journée spa avec déjeuner', 360, 135);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h037', 'Ink Sable Blanc', null, 'Studio', array['Au studio']::text[], 0, 'Lamentin', 'Ravine-Chaude', 16.26255, -61.63955, array['tatouage', 'piercing']::text[], array['Blackwork', 'Cover-up', 'Flash']::text[], 'Plusieurs artistes, dessin personnalisé et devis avant chaque séance.', 480, 1110, array[0]::smallint[], 288, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h037', 'a', 'Lettrage ou prénom', 60, 75);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h037', 'b', 'Tatouage petite pièce', 90, 105);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h037', 'c', 'Cover-up (étude incluse)', 240, 280);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h037', 'd', 'Tatouage pièce moyenne', 180, 205);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h037', 'e', 'Séance journée (grande pièce)', 360, 425);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h037', 'f', 'Piercing langue', 30, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h037', 'g', 'Changement de bijou', 30, 14);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h038', 'Gwladys Massage', 'Gwladys K.', 'Indépendant', array['À domicile']::text[], 15, 'Saint-François', 'Bragelogne', 16.25502, -61.27926, array['massage', 'spa']::text[], array['Pierres chaudes', 'Relaxant', 'Californien']::text[], 'Praticien ou praticienne en massage bien-être, table et huiles apportées à domicile.', 540, 1050, array[0, 1]::smallint[], 10, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h038', 'a', 'Massage relaxant 1 h', 60, 60);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h038', 'b', 'Réflexologie plantaire', 45, 45);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h038', 'c', 'Massage aux pierres chaudes', 90, 90);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h038', 'd', 'Massage à quatre mains', 60, 140);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h038', 'e', 'Sauna et hammam', 90, 30);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h038', 'f', 'Rituel visage et corps', 120, 110);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h039', 'Atelier Zandoli Bijoux', null, 'Studio', array['Au studio']::text[], 0, 'Saint-François', 'Marina', 16.24246, -61.26974, array['piercing']::text[], array['Bijoux', 'Cartilage', 'Nez']::text[], 'Studio de piercing : matériel stérile, bijoux en titane et conseils de cicatrisation.', 540, 1140, array[0, 1]::smallint[], 227, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h039', 'a', 'Piercing nombril', 30, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h039', 'b', 'Piercing septum', 30, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h039', 'c', 'Piercing cartilage (hélix)', 30, 45);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h039', 'd', 'Piercing lobe', 30, 36);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h039', 'e', 'Piercing nez (narine)', 30, 45);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h039', 'f', 'Bijou en titane (pose)', 30, 26);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h040', 'Ink by Davy', 'Davy M.', 'Indépendant', array['Chez le/la pro', 'À domicile']::text[], 15, 'Saint-Claude', 'Bourg', 16.02562, -61.69985, array['tatouage']::text[], array['Old school', 'Flash', 'Cover-up']::text[], 'Tatoueur indépendant ou tatoueuse indépendante, dessin sur mesure et devis avant la séance.', 570, 1140, array[0, 1]::smallint[], 111, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h040', 'a', 'Séance journée (grande pièce)', 360, 440);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h040', 'b', 'Tatouage fine line', 60, 90);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h040', 'c', 'Flash tattoo petit', 60, 70);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h040', 'd', 'Cover-up (étude incluse)', 240, 295);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h041', 'Habitation Flamboyant', null, 'Hôtel', array['À l''hôtel']::text[], 0, 'Goyave', 'Morne-Rouge', 16.12934, -61.57390, array['hotel']::text[], array['Day use', 'Vue mer', 'Brunch']::text[], 'Hôtel avec piscine : chambre à la journée, brunch et soins sur place.', 510, 1050, array[0, 1]::smallint[], 114, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h041', 'a', 'Accès piscine et plage (journée)', 360, 34);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h041', 'b', 'Salle de séminaire (demi-journée)', 240, 215);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h041', 'c', 'Dîner au restaurant', 120, 45);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h041', 'd', 'Pack détente : chambre et massage', 300, 155);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h042', 'Massage by Rachelle', 'Rachelle A.', 'Indépendante', array['À domicile']::text[], 15, 'Petit-Canal', 'Les Mangles', 16.37831, -61.48698, array['massage']::text[], array['Pierres chaudes', 'Sportif', 'Prénatal']::text[], 'Massages relaxants et sportifs, à l''écoute de ce qui fait du bien.', 570, 1080, array[0, 1]::smallint[], 15, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h042', 'a', 'Massage californien', 60, 60);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h042', 'b', 'Massage à quatre mains', 60, 130);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h042', 'c', 'Réflexologie plantaire', 45, 40);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h042', 'd', 'Massage sportif', 60, 65);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h042', 'e', 'Massage aux pierres chaudes', 90, 85);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h043', 'Massage by Brice', 'Brice J.', 'Indépendant', array['À domicile']::text[], 5, 'Port-Louis', 'Pelletan', 16.42173, -61.53647, array['massage']::text[], array['À domicile', 'Pierres chaudes', 'Sportif']::text[], 'Massages relaxants et sportifs, à l''écoute de ce qui fait du bien.', 570, 1110, array[0]::smallint[], 264, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h043', 'a', 'Réflexologie plantaire', 45, 45);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h043', 'b', 'Massage aux pierres chaudes', 90, 90);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h043', 'c', 'Massage à quatre mains', 60, 140);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h043', 'd', 'Massage prénatal', 60, 65);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h044', 'Ink by Malika', 'Malika T.', 'Indépendante', array['Chez le/la pro', 'À domicile']::text[], 0, 'Gourbeyre', 'Bourg', 15.98394, -61.68358, array['tatouage']::text[], array['Old school', 'Réalisme', 'Cover-up']::text[], 'Spécialité fine line et lettrage, matériel à usage unique ouvert devant le client.', 540, 1050, array[0, 1]::smallint[], 109, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h044', 'a', 'Lettrage ou prénom', 60, 75);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h044', 'b', 'Cover-up (étude incluse)', 240, 275);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h044', 'c', 'Flash tattoo petit', 60, 65);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h044', 'd', 'Tatouage fine line', 60, 85);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h044', 'e', 'Tatouage pièce moyenne', 180, 205);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h044', 'f', 'Séance journée (grande pièce)', 360, 415);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h045', 'Atelier Balisier Tattoo', null, 'Studio', array['Au studio']::text[], 0, 'Trois-Rivières', 'Bourg', 15.98423, -61.64413, array['tatouage']::text[], array['Lettrage', 'Fine line', 'Old school']::text[], 'Studio de tatouage : hygiène stricte, matériel à usage unique, projets sur mesure.', 540, 1170, array[0, 1]::smallint[], 49, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h045', 'a', 'Cover-up (étude incluse)', 240, 315);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h045', 'b', 'Séance journée (grande pièce)', 360, 470);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h045', 'c', 'Lettrage ou prénom', 60, 85);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h045', 'd', 'Tatouage pièce moyenne', 180, 230);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h045', 'e', 'Retouche', 60, 65);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h046', 'Massages Solèy', null, 'Institut', array['À l''institut']::text[], 0, 'Bouillante', 'Bourg', 16.13561, -61.76313, array['massage']::text[], array['À domicile', 'Relaxant', 'Pierres chaudes']::text[], 'Cabines calmes et climatisées, huiles chaudes et massages sur mesure.', 570, 1080, array[0]::smallint[], 132, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h046', 'a', 'Massage dos et nuque', 30, 34);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h046', 'b', 'Massage aux pierres chaudes', 90, 85);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h046', 'c', 'Réflexologie plantaire', 45, 45);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h046', 'd', 'Massage prénatal', 60, 60);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h046', 'e', 'Massage californien', 60, 60);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h046', 'f', 'Massage relaxant 1 h', 60, 55);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h047', 'Atelier Corail Tattoo', null, 'Studio', array['Au studio']::text[], 0, 'Deshaies', 'Ferry', 16.30600, -61.79393, array['tatouage']::text[], array['Old school', 'Cover-up', 'Réalisme']::text[], 'Plusieurs artistes, dessin personnalisé et devis avant chaque séance.', 540, 1110, array[0]::smallint[], 228, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h047', 'a', 'Cover-up (étude incluse)', 240, 275);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h047', 'b', 'Lettrage ou prénom', 60, 75);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h047', 'c', 'Tatouage pièce moyenne', 180, 205);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h047', 'd', 'Tatouage petite pièce', 90, 100);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h048', 'Les Encres de Steeve', 'Steeve R.', 'Indépendant', array['Chez le/la pro', 'À domicile']::text[], 10, 'Pointe-Noire', 'Acomat', 16.22478, -61.78510, array['tatouage', 'piercing']::text[], array['Old school', 'Blackwork', 'Lettrage']::text[], 'Spécialité fine line et lettrage, matériel à usage unique ouvert devant le client.', 570, 1110, array[]::smallint[], 166, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h048', 'a', 'Séance journée (grande pièce)', 360, 420);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h048', 'b', 'Lettrage ou prénom', 60, 75);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h048', 'c', 'Cover-up (étude incluse)', 240, 280);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h048', 'd', 'Tatouage petite pièce', 90, 105);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h048', 'e', 'Piercing lobe', 30, 33);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h048', 'f', 'Piercing septum', 30, 45);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h049', 'Ti Kaz Bien-être', null, 'Institut', array['À l''institut']::text[], 0, 'Vieux-Habitants', 'Bourg', 16.06255, -61.75875, array['massage']::text[], array['À domicile', 'Prénatal', 'Relaxant']::text[], 'Cabines calmes et climatisées, huiles chaudes et massages sur mesure.', 570, 1050, array[0, 1]::smallint[], 335, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h049', 'a', 'Massage sportif', 60, 65);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h049', 'b', 'Massage prénatal', 60, 60);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h049', 'c', 'Massage californien', 60, 60);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h049', 'd', 'Massage dos et nuque', 30, 32);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h049', 'e', 'Massage relaxant 1 h', 60, 55);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h049', 'f', 'Massage relaxant 30 min', 30, 35);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h050', 'Ink by Vanessa', 'Vanessa J.', 'Indépendant', array['Chez le/la pro']::text[], 0, 'Anse-Bertrand', 'Massioux', 16.47542, -61.50061, array['tatouage']::text[], array['Blackwork', 'Flash', 'Fine line']::text[], 'Tatoueur indépendant ou tatoueuse indépendante, dessin sur mesure et devis avant la séance.', 480, 1140, array[0, 1]::smallint[], 209, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h050', 'a', 'Cover-up (étude incluse)', 240, 340);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h050', 'b', 'Tatouage petite pièce', 90, 125);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h050', 'c', 'Séance journée (grande pièce)', 360, 510);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h050', 'd', 'Retouche', 60, 70);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h051', 'Marjorie Ink', 'Marjorie L.', 'Indépendant', array['Chez le/la pro']::text[], 0, 'Baillif', 'Saint-Robert', 16.02518, -61.73656, array['tatouage']::text[], array['Réalisme', 'Old school', 'Flash']::text[], 'Spécialité fine line et lettrage, matériel à usage unique ouvert devant le client.', 540, 1080, array[0]::smallint[], 235, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h051', 'a', 'Retouche', 60, 65);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h051', 'b', 'Lettrage ou prénom', 60, 85);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h051', 'c', 'Cover-up (étude incluse)', 240, 315);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h051', 'd', 'Tatouage pièce moyenne', 180, 235);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h051', 'e', 'Séance journée (grande pièce)', 360, 475);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h051', 'f', 'Flash tattoo petit', 60, 75);
+
+insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values ('h052', 'Hôtel Bougainvillée', null, 'Hôtel', array['À l''hôtel']::text[], 0, 'Grand-Bourg', 'Bourg', 15.88072, -61.30540, array['hotel', 'spa']::text[], array['Séminaire', 'Day use', 'Brunch']::text[], 'Hôtel avec piscine : chambre à la journée, brunch et soins sur place.', 540, 1170, array[0]::smallint[], 41, true);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h052', 'a', 'Salle de séminaire (demi-journée)', 240, 240);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h052', 'b', 'Pack détente : chambre et massage', 300, 175);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h052', 'c', 'Accès piscine et plage (journée)', 360, 38);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h052', 'd', 'Dîner au restaurant', 120, 50);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h052', 'e', 'Chambre à la journée (day use, 8 h)', 480, 120);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h052', 'f', 'Chambre à la demi-journée (4 h)', 240, 75);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h052', 'g', 'Accès spa 2 h (hammam, sauna)', 120, 38);
+insert into services (pro_id, code, name, duration_min, price_eur) values ('h052', 'h', 'Rituel visage et corps', 120, 120);

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronDown, House, List, Map as MapIcon, MapPin, Search, SearchX, SlidersHorizontal, X } from 'lucide-vue-next'
+import { ChevronDown, List, Map as MapIcon, MapPin, Search, SearchX, SlidersHorizontal, X } from 'lucide-vue-next'
 import { CATEGORIES } from '~/data/pros'
 import type { Category, Pro } from '~/data/pros'
 
@@ -23,8 +23,7 @@ const input = ref<HTMLInputElement | null>(null)
 onMounted(() => { if (route.query.saisie) input.value?.focus() })
 watch([q, cat, place, kind, maxKm, todayOnly, sort], () => { shown.value = 12; selected.value = '' })
 
-const cats = CATEGORIES.filter(c => c[0] !== 'all') as [Category, string][]
-const SUGGESTIONS = ['Pose gel', 'Box braids', 'Extensions de cils', 'Dégradé', 'Massage', 'Brushing', 'Maquillage mariée', 'Épilation']
+const SUGGESTIONS = ['Pose gel', 'Box braids', 'Extensions de cils', 'Dégradé', 'Massage', 'Tatouage', 'Piercing', 'Spa', 'Hôtel piscine', 'Brushing', 'Maquillage mariée', 'Épilation']
 const minPrice = (p: Pro) => Math.min(...p.services.map(s => s.p))
 const freeToday = (p: Pro) => p.services.some(s => starts(p, today.value, s.d).length > 0)
 /** Tant que rien n'est cherché ni choisi, on montre d'abord les catégories. */
@@ -69,14 +68,7 @@ function resetFilters() {
   <template v-if="browsing">
     <section class="section mt24">
       <h2 class="h2">Catégories</h2>
-      <div class="cat-grid">
-        <button v-for="c in cats" :key="c[0]" class="cat" @click="cat = c[0]">
-          <span class="ico"><component :is="CAT_ICON[c[0]]" :size="25" :stroke-width="1.6" /></span>{{ CAT_SHORT[c[0]] }}
-        </button>
-        <button class="cat" @click="place = 'client'">
-          <span class="ico"><House :size="25" :stroke-width="1.6" /></span>À domicile
-        </button>
-      </div>
+      <CategoryGrid @pick="c => (c === 'domicile' ? (place = 'client') : (cat = c))" />
     </section>
     <section class="section">
       <h2 class="h2">Recherches fréquentes</h2>
@@ -108,7 +100,7 @@ function resetFilters() {
     <button v-if="activeFilters" class="btn sm soft" @click="resetFilters">Enlever les filtres</button>
   </div>
 
-  <div v-else-if="view === 'list'" class="col mt16">
+  <div v-else-if="view === 'list'" class="col mt16 results">
     <ProResult v-for="h in list.slice(0, shown)" :key="h.pro.id" :pro="h.pro" :services="h.services" />
     <button v-if="list.length > shown" class="btn block soft" @click="shown += 12">Voir plus de résultats</button>
   </div>
@@ -134,8 +126,8 @@ function resetFilters() {
       <span class="h3">Prestataire</span>
       <div class="seg">
         <button :aria-pressed="kind === 'all'" @click="kind = 'all'">Tous</button>
-        <button :aria-pressed="kind === 'salon'" @click="kind = 'salon'">Salons, instituts</button>
-        <button :aria-pressed="kind === 'indep'" @click="kind = 'indep'">Indépendants</button>
+        <button :aria-pressed="kind === 'salon'" @click="kind = 'salon'">Établissements</button>
+        <button :aria-pressed="kind === 'indep'" @click="kind = 'indep'">Indépendant·es</button>
       </div>
     </div>
     <div class="col gap8">

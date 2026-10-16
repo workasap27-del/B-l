@@ -24,7 +24,7 @@ const list = computed(() => {
     <button :aria-pressed="order === 'near'" @click="order = 'near'">Les plus proches de {{ state.pos.gps ? 'moi' : state.pos.label }}</button>
     <button :aria-pressed="order === 'soon'" @click="order = 'soon'">Les plus tôt</button>
   </div>
-  <div class="col gap12 mt16">
+  <div class="col gap12 mt16 results">
     <SlotCard v-for="s in list" :key="s.id" :item="s" />
     <div v-if="!list.length" class="empty">
       <Zap :size="32" />

@@ -1,4 +1,4 @@
-// Où a lieu la prestation : chez le prestataire (salon, institut, son domicile) ou chez la cliente.
+// Où a lieu la prestation : chez le ou la prestataire (salon, institut, studio, spa, hôtel, son domicile) ou à domicile (chez le client ou la cliente).
 import type { Pro } from '~/data/pros'
 
 export type Place = 'pro' | 'client'
@@ -7,7 +7,10 @@ const AT_CLIENT = 'À domicile'
 
 /** Le prestataire reçoit-il chez lui, dans son salon ou son institut ? Renvoie le libellé, sinon null. */
 export function proPlace(p: Pro): string | null {
-  return p.where.find(w => w !== AT_CLIENT) ?? null
+  const w = p.where.find(x => x !== AT_CLIENT)
+  if (!w) return null
+  // Anciennes valeurs genrées de la base : on affiche un libellé universel.
+  return w === 'Chez elle' || w === 'Chez lui' ? 'Chez le/la pro' : w
 }
 
 export function goesToClient(p: Pro): boolean {

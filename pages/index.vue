@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { ChevronDown, ChevronRight, House, MapPin, Search, Settings2 } from 'lucide-vue-next'
-import { CATEGORIES } from '~/data/pros'
-import type { Category } from '~/data/pros'
+import { ChevronDown, ChevronRight, MapPin, Search, Settings2 } from 'lucide-vue-next'
 
 const { pros, openSlots, km, ratingOf, account, myBookings, isDone, pro, service, today, placeLabel, state } = useVladi()
 const locOpen = ref(false)
 const settingsOpen = ref(false)
-const cats = CATEGORIES.filter(c => c[0] !== 'all') as [Category, string][]
 
 const byDistance = computed(() => [...pros.value].sort((a, b) => km(a) - km(b)))
 const near = computed(() => byDistance.value.slice(0, 10))
@@ -31,23 +28,16 @@ const nextPro = computed(() => (nextBooking.value ? pro(nextBooking.value.proId)
       <button class="place-picker" aria-label="Changer de lieu" @click="locOpen = true">
         <MapPin :size="15" /><span>{{ state.pos.label }}</span><ChevronDown :size="15" />
       </button>
-      <h1 class="title">Trouve ton rendez-vous beauté</h1>
+      <h1 class="title">Réserve ton moment beauté et bien-être</h1>
     </div>
     <NuxtLink class="search-field" to="/recherche?saisie=1">
-      <Search :size="19" /><span>Ongles, tresses, cils, massage…</span>
+      <Search :size="19" /><span>Ongles, tatouage, massage, spa…</span>
     </NuxtLink>
   </section>
   </div>
 
   <section class="section">
-    <div class="cat-grid">
-      <NuxtLink v-for="c in cats" :key="c[0]" class="cat" :to="`/recherche?cat=${c[0]}`">
-        <span class="ico"><component :is="CAT_ICON[c[0]]" :size="25" :stroke-width="1.6" /></span>{{ CAT_SHORT[c[0]] }}
-      </NuxtLink>
-      <NuxtLink class="cat" to="/recherche?lieu=client">
-        <span class="ico"><House :size="25" :stroke-width="1.6" /></span>À domicile
-      </NuxtLink>
-    </div>
+    <CategoryGrid link />
   </section>
 
   <section v-if="nextBooking && nextPro" class="section">
@@ -98,8 +88,8 @@ const nextPro = computed(() => (nextBooking.value ? pro(nextBooking.value.proId)
   <section v-if="!account" class="section">
     <NuxtLink class="banner" to="/connexion?mode=inscription&role=pro">
       <div class="grow col gap4">
-        <span class="name">Tu es professionnelle de la beauté ?</span>
-        <span class="meta">Crée ta fiche gratuitement et reçois tes réservations ici.</span>
+        <span class="name">Tu es prestataire ?</span>
+        <span class="meta">Crée ta fiche gratuitement et reçois tes réservations ici : beauté, bien-être, tatouage, spa, hôtel.</span>
       </div>
       <ChevronRight :size="18" style="align-self:center" />
     </NuxtLink>

@@ -30,7 +30,7 @@ async function save() {
 }
 async function out() {
   await logout()
-  toast('Tu es déconnectée')
+  toast('Déconnexion effectuée')
 }
 </script>
 
@@ -45,7 +45,7 @@ async function out() {
     </div>
 
     <section class="section">
-      <h2 class="h2">{{ remote.myPro ? 'Mon activité' : 'Tu es professionnelle ?' }}</h2>
+      <h2 class="h2">{{ remote.myPro ? 'Mon activité' : 'Tu proposes des services ?' }}</h2>
       <div class="list">
         <template v-if="remote.myPro">
           <NuxtLink to="/espace-pro"><Store :size="20" />Mon agenda<span class="sub"><ChevronRight :size="18" /></span></NuxtLink>
@@ -80,7 +80,7 @@ async function out() {
       <NuxtLink class="banner" to="/connexion?mode=inscription&role=pro">
         <Store :size="22" />
         <div class="grow col gap4">
-          <span class="name">Professionnelle de la beauté ?</span>
+          <span class="name">Tu es prestataire ?</span>
           <span class="meta">Crée ta fiche gratuitement, gère ton agenda et remplis tes créneaux vides.</span>
         </div>
         <ChevronRight :size="18" style="align-self:center" />

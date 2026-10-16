@@ -27,7 +27,7 @@ const r = computed(() => ratingOf(props.pro))
           <span v-if="r.count" class="rate"><Star :size="13" />{{ fr(r.rating) }} <span class="n">({{ r.count }})</span></span>
           <span v-else class="tag">Nouveau</span>
         </div>
-        <span class="meta">{{ pro.commune }} · {{ formatKm(km(pro)) }} · {{ pro.kind }}</span>
+        <span class="meta">{{ pro.commune }} · {{ formatKm(km(pro)) }} · {{ kindLabel(pro.kind) }}</span>
         <div v-if="isMine(pro) || goesToClient(pro)" class="tags mt8">
           <span v-if="isMine(pro)" class="tag accent">Votre entreprise</span>
           <span v-if="goesToClient(pro)" class="tag">Se déplace à domicile</span>

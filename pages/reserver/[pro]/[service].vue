@@ -5,7 +5,7 @@ import type { Place } from '~/utils/places'
 
 const route = useRoute()
 const router = useRouter()
-const { pro, service, starts, today, state, remote, nowMin, book, km, account, firstName } = useVladi()
+const { pro, service, starts, today, state, remote, nowMin, book, km, account, firstName, saveProfile } = useVladi()
 
 const p = computed(() => pro(String(route.params.pro)))
 const sv = computed(() => (p.value ? service(p.value, String(route.params.service)) : undefined))
@@ -14,7 +14,7 @@ const isSlot = computed(() => !!route.query.creneau)
 const slotGone = computed(() => isSlot.value && (!slot.value || slot.value.status !== 'open' || slot.value.time < nowMin.value + 10))
 const needsAccount = computed(() => !!p.value?.real && !account.value)
 
-// Lieu : chez le prestataire ou chez la cliente, selon ce qu'il propose.
+// Lieu : chez le/la prestataire ou à domicile, selon ce qui est proposé.
 const places = computed(() => (p.value ? allowedPlaces(p.value) : []))
 const place = ref<Place>('pro')
 const address = ref(state.address)
@@ -50,14 +50,26 @@ const price = computed(() => servicePrice.value + fee.value)
 const deposit = computed(() => Math.round(price.value * RULES.depositRate))
 const when = computed(() => (slot.value ? { date: slot.value.date, time: slot.value.time } : { date: date.value, time: time.value ?? 0 }))
 const hasTime = computed(() => (isSlot.value ? !slotGone.value : time.value !== null))
-const ready = computed(() => addressOk.value && hasTime.value)
-const hint = computed(() => (!hasTime.value ? 'Choisis une heure' : !addressOk.value ? 'Indique ton adresse' : `${capitalize(dayLabel(when.value.date, today.value))} à ${hm(when.value.time)}`))
+// Chez une vraie fiche, le/la prestataire doit pouvoir joindre la personne : le téléphone est demandé une fois.
+const phone = ref('')
+const needsPhone = computed(() => !!p.value?.real && !!account.value && !account.value.phone)
+const phoneOk = computed(() => !needsPhone.value || phone.value.replace(/\D/g, '').length >= 8)
+const ready = computed(() => addressOk.value && hasTime.value && phoneOk.value)
+const hint = computed(() => (!hasTime.value ? 'Choisis une heure' : !addressOk.value ? 'Indique ton adresse' : !phoneOk.value ? 'Indique ton téléphone' : `${capitalize(dayLabel(when.value.date, today.value))} à ${hm(when.value.time)}`))
 const loginLink = computed(() => `/connexion?retour=${encodeURIComponent(route.fullPath)}`)
 
 async function pay() {
   if (!p.value || !sv.value || busy.value) return
   busy.value = true
   error.value = ''
+  if (needsPhone.value) {
+    const e = await saveProfile({ phone: phone.value })
+    if (e) {
+      busy.value = false
+      error.value = e
+      return
+    }
+  }
   const res = await book({ proId: p.value.id, sid: sv.value.id, date: when.value.date, time: when.value.time, slotId: slot.value?.id, place: place.value, address: address.value, note: note.value })
   busy.value = false
   if (res.error === 'connexion') return router.push(loginLink.value)
@@ -140,11 +152,19 @@ function back() {
         <label class="field" for="note">
           <span>Une info pour {{ p.owner?.split(' ')[0] ?? p.name }} ? <span class="help">(facultatif)</span></span>
           <textarea id="note" v-model="note" class="textarea" maxlength="300" placeholder="Grossesse, allergie, cheveux fragiles, accès difficile…" />
-          <span class="help">Le prestataire lit ce message avant le rendez-vous. VLADI ne vérifie pas les informations de santé.</span>
+          <span class="help">Ce message est lu par le/la prestataire avant le rendez-vous. VLADI ne vérifie pas les informations de santé.</span>
         </label>
       </section>
 
-      <p v-if="!isSlot" class="tiny mt16">Annulation gratuite jusqu'à {{ RULES.freeCancelHours }} h avant. Passé ce délai, l'acompte reste au prestataire.</p>
+      <section v-if="needsPhone" class="section">
+        <label class="field" for="tel">
+          <span class="h3">Ton téléphone</span>
+          <input id="tel" v-model="phone" class="input" type="tel" autocomplete="tel" inputmode="tel" placeholder="0690 00 00 00">
+          <span class="help">Transmis au/à la prestataire pour te joindre si besoin. Enregistré dans ton compte.</span>
+        </label>
+      </section>
+
+      <p v-if="!isSlot" class="tiny mt16">Annulation gratuite jusqu'à {{ RULES.freeCancelHours }} h avant. Passé ce délai, l'acompte reste au/à la prestataire.</p>
 
       <div class="cta mt24">
         <div class="sum grow"><b>{{ euro(price) }}</b><span class="tiny ellip">{{ hint }}</span></div>

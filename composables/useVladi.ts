@@ -121,6 +121,8 @@ const remote = reactive({
   busy: {} as Record<string, Record<string, [number, number][]>>,
   reviews: {} as Record<string, RemoteReview[]>,
   reviewed: [] as string[],
+  /** vrai quand la personne arrive depuis le lien de réinitialisation du mot de passe */
+  recovery: false,
 })
 
 const clock = ref(new Date())
@@ -159,7 +161,7 @@ function baseReviews(p: Pro): Review[] {
 }
 
 function reviewsOf(p: Pro): Review[] {
-  if (p.real) return (remote.reviews[p.id] ?? []).map(r => ({ a: 'Cliente vérifiée', s: r.stars, t: r.body || 'Sans commentaire.' }))
+  if (p.real) return (remote.reviews[p.id] ?? []).map(r => ({ a: 'Avis vérifié', s: r.stars, t: r.body || 'Sans commentaire.' }))
   return [...(state.reviews[p.id] ?? []), ...baseReviews(p)]
 }
 
@@ -411,7 +413,7 @@ async function change(id: string, f: Partial<Pick<Booking, 'status' | 'arrivedAt
   return true
 }
 
-/** Qui se déplace : la cliente quand ça se passe chez le prestataire, le prestataire quand il vient chez elle. */
+/** Qui se déplace : le client ou la cliente quand ça se passe chez le/la prestataire, le/la prestataire quand il ou elle vient à domicile. */
 function traveler(b: Booking): 'client' | 'pro' {
   return b.place === 'client' ? 'pro' : 'client'
 }
@@ -485,7 +487,7 @@ function agenda(date: string): AgendaItem[] {
   else {
     for (const b of proBookings.value) {
       if (b.date === date && b.status === 'confirmed') {
-        items.push({ a: b.time, b: b.time + b.dur, kind: 'app', who: b.clientName || 'Cliente', what: service(p, b.sid)?.n ?? 'Prestation', price: b.price, deposit: b.deposit, mode: b.mode, place: b.place, address: b.address, bookingId: b.id, phone: b.clientPhone, note: b.note })
+        items.push({ a: b.time, b: b.time + b.dur, kind: 'app', who: b.clientName || 'Client·e', what: service(p, b.sid)?.n ?? 'Prestation', price: b.price, deposit: b.deposit, mode: b.mode, place: b.place, address: b.address, bookingId: b.id, phone: b.clientPhone, note: b.note })
       }
     }
   }
@@ -578,6 +580,17 @@ async function logout() {
   remote.myPro = null
   remote.bookings = []
   remote.reviewed = []
+}
+
+async function newPassword(password: string): Promise<string | null> {
+  try {
+    await api.setPassword(password)
+    remote.recovery = false
+    return null
+  }
+  catch (e) {
+    return api.readable(e)
+  }
 }
 
 async function forgotPassword(email: string): Promise<string | null> {
@@ -714,7 +727,10 @@ function start() {
   setInterval(() => { clock.value = new Date() }, 30000)
   watch(today, () => seedSlots())
   void refresh()
-  api.onAuthChange(() => { void refresh() })
+  api.onAuthChange((event) => {
+    if (event === 'PASSWORD_RECOVERY') remote.recovery = true
+    void refresh()
+  })
   // Les réservations et les créneaux bougent : on recharge régulièrement.
   setInterval(() => {
     if (remote.profile) void api.loadBookings().then((b) => { remote.bookings = b.map(fromRemote) }).catch(() => {})
@@ -732,7 +748,7 @@ export function useVladi() {
     km, setCommune, locate, currentPosition, nextSlots, openStatus,
     traveler, arrival, signalArrival, confirmArrival, announceLate, waitMore, declareNoShow, dispute,
     workPro, proBookings, agenda, earliestIn, publishSlot, removeSlot, mySlots,
-    account, firstName, register, login, logout, forgotPassword, saveProfile, saveMyPro, checkSiren, refresh,
+    account, firstName, register, login, logout, forgotPassword, newPassword, saveProfile, saveMyPro, checkSiren, refresh,
     setSim, toast, reset,
   }
 }

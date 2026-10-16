@@ -9,7 +9,7 @@ const { arrival, traveler, signalArrival, confirmArrival, announceLate, waitMore
 
 const st = computed(() => arrival(props.booking))
 const iTravel = computed(() => traveler(props.booking) === props.side)
-const other = computed(() => (props.side === 'client' ? 'Le prestataire' : 'La cliente'))
+const other = computed(() => (props.side === 'client' ? 'Le/la prestataire' : 'Le/la client·e'))
 const limit = computed(() => hm(props.booking.waitUntil ?? props.booking.time + TOLERANCE))
 const lateOpen = ref(false)
 
@@ -57,10 +57,10 @@ async function act(fn: (id: string) => unknown, msg: string) {
         </div>
       </template>
       <template v-else-if="st === 'a_confirmer'">
-        <p ><MapPinCheck :size="15" /> {{ other }} dit être arrivé{{ side === 'pro' ? 'e' : '' }} à {{ hm(booking.arrivedAt!) }}.</p>
+        <p ><MapPinCheck :size="15" /> {{ other }} indique être arrivé·e à {{ hm(booking.arrivedAt!) }}.</p>
         <div class="row wrap gap8">
           <button class="btn sm" @click="act(confirmArrival, 'Arrivée confirmée')"><CircleCheck :size="15" />Confirmer</button>
-          <button class="btn sm line" @click="act(dispute, 'Désaccord transmis au service client')">{{ side === 'pro' ? 'Elle' : 'Il' }} n'est pas là</button>
+          <button class="btn sm line" @click="act(dispute, 'Désaccord transmis au service client')">Pas arrivé·e</button>
         </div>
       </template>
     </template>
@@ -69,8 +69,8 @@ async function act(fn: (id: string) => unknown, msg: string) {
     <p v-if="st === 'arrive'" class="ok"><CircleCheck :size="15" /> Arrivée confirmée à {{ hm(booking.confirmedAt!) }}.</p>
     <template v-if="st === 'absent'">
       <p class="warn"><TriangleAlert :size="15" />
-        <template v-if="booking.noShow === 'client'">Absence de la cliente déclarée. L'acompte revient au prestataire.</template>
-        <template v-else>Absence du prestataire déclarée. L'acompte est remboursé.</template>
+        <template v-if="booking.noShow === 'client'">Absence du/de la client·e déclarée. L'acompte revient au/à la prestataire.</template>
+        <template v-else>Absence du/de la prestataire déclarée. L'acompte est remboursé.</template>
       </p>
       <button v-if="(booking.noShow === 'client') === (side === 'client')" class="btn sm line" @click="act(dispute, 'Contestation transmise au service client')">Contester</button>
     </template>

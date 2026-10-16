@@ -1,9 +1,9 @@
 # VLADI
 
-Appli web mobile de réservation beauté en Guadeloupe : ongles, cils, coiffure, tresses, maquillage, soins, barbier.
+Appli web de réservation beauté et bien-être en Guadeloupe : ongles, cils, coiffure, tresses, maquillage, soins, barbier, tatouage, piercing, massage, spa et hôtels (chambre à la journée, piscine, brunch). Elle s'adapte au téléphone, à la tablette et à l'ordinateur.
 Deux façons de réserver : à l'avance (classique) ou tout de suite sur un créneau qui se libère (Konyéla, avec remise).
 
-**État actuel : comptes réels, catalogue mixte.** Clientes et prestataires peuvent créer un compte (Supabase).
+**État actuel : comptes réels, catalogue mixte.** Les personnes qui réservent et les prestataires peuvent créer un compte (Supabase).
 Une prestataire inscrite publie sa fiche (SIREN obligatoire), ses prestations et ses horaires ; ses réservations
 et ses créneaux Konyéla sont enregistrés en base. À côté, 155 fiches d'exemple (marquées "Exemple") restent
 affichées pour la démonstration : leurs réservations ne quittent pas le navigateur. Un réglage permet de les masquer.
@@ -37,7 +37,7 @@ Elle s'ouvre ensuite en plein écran avec son icône. Une connexion reste néces
 
 ## Ce que fait l'appli
 
-Côté cliente
+Pour réserver
 - Accueil : lieu de départ (position du téléphone ou commune), recherche, catégories, créneaux Konyéla, prestataires proches, ceux qui se déplacent, les mieux notés.
 - Recherche : par prestation ("cils", "pose gel", "massage"), par nom ou par commune. Chaque résultat montre la prestation, son prix et les prochains créneaux, réservables en un geste. Filtres (lieu, type, distance, disponibilité du jour), tri, vue liste ou carte.
 - Distances : estimées depuis la position de l'utilisateur ou le centre de sa commune (vol d'oiseau majoré de 30 %, pas un calcul d'itinéraire). Le bouton "Itinéraire" ouvre l'application de cartes du téléphone.
@@ -48,14 +48,14 @@ Côté cliente
 - Le jour J : celui qui se déplace signale son arrivée ou un retard (5 à 15 min), l'autre confirme. Passé 15 min, l'attente peut être prolongée ou une absence déclarée. Un désaccord part au service client (pas de géolocalisation).
 
 Comptes (page Compte, puis Connexion)
-- Inscription par e-mail et mot de passe, en tant que cliente ou professionnelle.
+- Inscription par e-mail et mot de passe : « Je réserve » ou « Je propose mes services ».
 - Réserver chez une vraie prestataire demande un compte : son prénom, son téléphone et sa note sont transmis.
-- Une professionnelle crée sa fiche dans "Créer ma fiche prestataire" : nom, SIREN, catégories, prestations
-  (suggestions par métier), commune ou position exacte, reçoit ou se déplace, horaires, présentation.
-- Sur sa propre fiche, elle voit "Votre entreprise" au lieu du bouton de réservation.
+- Un ou une prestataire crée sa fiche dans "Créer ma fiche prestataire" : nom, SIREN, catégories, prestations
+  (suggestions par métier, statut indépendant·e, salon, institut, studio, spa ou hôtel), commune ou position exacte, reçoit ou se déplace, horaires, présentation.
+- Sur sa propre fiche, on voit "Votre entreprise" au lieu du bouton de réservation.
 
 Côté prestataire, depuis Compte puis "Mon agenda" (sans fiche : l'espace d'exemple de Kaz a Zong)
-- Agenda sur cinq jours, avec les trous, le lieu, le téléphone et la note de chaque cliente.
+- Agenda sur cinq jours, avec les trous, le lieu, le téléphone et la note de chaque client ou cliente.
 - "Proposer en Konyéla" sur un trou : prestation, heure, remise.
 - Activité : remplissage, chiffre du jour, réservations à venir, prestations.
 
@@ -64,6 +64,12 @@ d'exemple, heure simulée (utile le soir) et remise à zéro des données de dé
 
 Heure : l'appli fonctionne à l'heure de la Guadeloupe (UTC-4), quel que soit le fuseau du téléphone.
 Photos : photos libres de droits de Pexels (licence Pexels), une par fiche selon son métier.
+
+Écrans : sur téléphone, menu en bas ; sur tablette, contenu centré en colonnes ; sur ordinateur (1000 px et plus), menu latéral à gauche et grilles de 3 à 4 colonnes. Les fenêtres (filtres, récapitulatif) s'ouvrent au centre sur grand écran.
+
+Langage : l'appli évite les accords de genre (« Je réserve », « Je propose mes services », « Indépendant·e », « Chez le/la pro »).
+
+Limites connues : un hôtel ne vend pas encore de nuitées (réservation par dates). L'appli propose des créneaux dans la journée : chambre en day use, piscine, brunch, séminaire. Pour le tatouage et le piercing, la formation à l'hygiène et à la salubrité et la déclaration à l'ARS sont obligatoires : l'appli le rappelle mais ne le vérifie pas.
 
 ## Organisation du code
 

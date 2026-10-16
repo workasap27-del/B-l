@@ -54,7 +54,7 @@ const bars = computed(() => {
       <div class="row wrap" style="gap:6px">
         <span v-if="r.count" class="rate"><Star :size="14" />{{ fr(r.rating) }} <span class="n">({{ r.count }} avis)</span></span>
         <span v-else class="tag">Nouveau sur VLADI</span>
-        <span class="meta">· {{ p.kind }}{{ p.owner ? `, ${p.owner}` : '' }}</span>
+        <span class="meta">· {{ kindLabel(p.kind) }}{{ p.owner ? `, ${p.owner}` : '' }}</span>
       </div>
       <span class="status" :class="{ open: status.open }"><Clock :size="14" />{{ status.text }}</span>
       <span class="meta">{{ p.quartier ? `${p.quartier}, ` : '' }}{{ p.commune }} · {{ formatKm(d) }}, environ {{ driveMinutes(d) }} min en voiture</span>
@@ -103,7 +103,7 @@ const bars = computed(() => {
         <div class="row between"><span class="name">{{ rv.a }}</span><span class="stars5"><Star v-for="n in rv.s" :key="n" :size="12" /></span></div>
         <span>{{ rv.t }}</span>
       </div>
-      <p v-if="!reviewsOf(p).length" class="empty">Pas encore d'avis. Les clientes peuvent en laisser un après leur rendez-vous.</p>
+      <p v-if="!reviewsOf(p).length" class="empty">Pas encore d'avis. Les avis sont publiés après un rendez-vous effectué.</p>
     </div>
 
     <div v-else class="col gap24 mt16">
@@ -123,13 +123,13 @@ const bars = computed(() => {
           </template>
         </div>
       </div>
-      <p v-if="!p.real" class="tiny">Prestataire fictif, créé pour tester l'appli. Photo d'illustration (Pexels), position approximative.</p>
-      <p v-else-if="p.siren" class="tiny">Professionnel déclaré, SIREN {{ p.siren.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3') }}.</p>
+      <p v-if="!p.real" class="tiny">Fiche fictive, créée pour tester l'appli. Photo d'illustration (Pexels), position approximative.</p>
+      <p v-else-if="p.siren" class="tiny">Entreprise déclarée, SIREN {{ p.siren.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3') }}.</p>
     </div>
   </template>
   <div v-else-if="remote.loading" class="empty" style="padding-top:96px">Chargement…</div>
   <div v-else class="empty" style="padding-top:96px">
-    <b>Ce prestataire n'existe pas</b>
+    <b>Cette fiche n'existe pas</b>
     <NuxtLink class="btn sm soft" to="/">Retour à l'accueil</NuxtLink>
   </div>
 </template>

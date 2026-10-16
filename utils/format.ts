@@ -11,6 +11,11 @@ export function duration(min: number): string {
   return m ? `${h} h ${String(m).padStart(2, '0')}` : `${h} h`
 }
 
+/** Statut d'un prestataire affiché sans accord de genre : "Indépendant·e". */
+export function kindLabel(kind: string): string {
+  return kind === 'Indépendante' || kind === 'Indépendant' ? 'Indépendant·e' : kind
+}
+
 export function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }

@@ -73,13 +73,13 @@ function back() {
   <form class="col gap16 mt24" novalidate @submit.prevent="submit">
     <template v-if="mode === 'inscription'">
       <div class="col gap8">
-        <span class="h3">Tu es</span>
+        <span class="h3">Ton profil</span>
         <div class="choice">
           <button type="button" :aria-pressed="role === 'client'" @click="role = 'client'">
-            <Sparkles :size="22" /><span class="grow col gap4"><span class="name">Cliente</span><span class="meta">Je réserve des prestations</span></span><span class="radio" />
+            <Sparkles :size="22" /><span class="grow col gap4"><span class="name">Je réserve</span><span class="meta">Je cherche des prestations</span></span><span class="radio" />
           </button>
           <button type="button" :aria-pressed="role === 'pro'" @click="role = 'pro'">
-            <Scissors :size="22" /><span class="grow col gap4"><span class="name">Professionnelle</span><span class="meta">Je propose mes services (SIREN demandé)</span></span><span class="radio" />
+            <Scissors :size="22" /><span class="grow col gap4"><span class="name">Je propose mes services</span><span class="meta">Je suis prestataire (SIREN demandé)</span></span><span class="radio" />
           </button>
         </div>
       </div>

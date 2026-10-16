@@ -109,7 +109,7 @@ export async function signOut() {
 }
 
 export async function resetPassword(email: string) {
-  const { error } = await sb()!.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${location.origin}/profil` })
+  const { error } = await sb()!.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${location.origin}/nouveau-mot-de-passe` })
   if (error) throw error
 }
 
@@ -369,8 +369,14 @@ export async function addReview(input: { bookingId: string, proId: string, clien
   if (error) throw error
 }
 
-export function onAuthChange(fn: () => void) {
-  sb()?.auth.onAuthStateChange(() => fn())
+export function onAuthChange(fn: (event: string) => void) {
+  sb()?.auth.onAuthStateChange(event => fn(event))
+}
+
+/** Enregistre un nouveau mot de passe pour la personne connectée (après le lien reçu par e-mail). */
+export async function setPassword(password: string) {
+  const { error } = await sb()!.auth.updateUser({ password })
+  if (error) throw error
 }
 
 // Registre officiel des entreprises ------------------------------------------

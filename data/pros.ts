@@ -3,7 +3,7 @@ import { generatePros } from './generate'
 import { hash, rng } from './random'
 import { COMMUNE_COORDS } from '../utils/geo'
 
-export type Category = 'ongles' | 'cils' | 'coiffure' | 'tresses' | 'maquillage' | 'soins' | 'barbier'
+export type Category = 'ongles' | 'cils' | 'coiffure' | 'tresses' | 'maquillage' | 'soins' | 'barbier' | 'tatouage' | 'piercing' | 'massage' | 'spa' | 'hotel'
 
 export interface Service {
   id: string
@@ -25,8 +25,9 @@ export interface Pro {
   id: string
   name: string
   owner?: string
-  kind: 'Salon' | 'Institut' | 'Indépendante' | 'Indépendant'
-  /** lieux possibles : 'Au salon', "À l'institut", 'Chez elle', 'Chez lui' (chez le prestataire) et 'À domicile' (chez la cliente) */
+  /** 'Indépendante' et 'Indépendant' sont deux valeurs de la base ; l'appli les affiche toutes les deux « Indépendant·e ». */
+  kind: 'Salon' | 'Institut' | 'Studio' | 'Spa' | 'Hôtel' | 'Indépendante' | 'Indépendant'
+  /** lieux possibles : 'Au salon', "À l'institut", 'Chez le/la pro', 'Chez le/la pro' (chez le prestataire) et 'À domicile' (chez la cliente) */
   where: string[]
   /** frais de déplacement en euros quand la prestation a lieu chez la cliente */
   travel?: number
@@ -69,6 +70,11 @@ export const CATEGORIES: [Category | 'all', string][] = [
   ['maquillage', 'Maquillage'],
   ['soins', 'Soins & épilation'],
   ['barbier', 'Barbier'],
+  ['tatouage', 'Tatouage'],
+  ['piercing', 'Piercing'],
+  ['massage', 'Massage'],
+  ['spa', 'Spa & bien-être'],
+  ['hotel', 'Hôtels'],
 ]
 
 const s = (id: string, n: string, d: number, p: number): Service => ({ id, n, d, p })
@@ -76,7 +82,7 @@ const s = (id: string, n: string, d: number, p: number): Service => ({ id, n, d,
 /** Prestataires écrits à la main. */
 const HAND_MADE: Omit<Pro, 'lat' | 'lng'>[] = [
   {
-    id: 'kaz', name: 'Kaz a Zong', owner: 'Maëva L.', kind: 'Indépendante', where: ['Chez elle', 'À domicile'], travel: 5,
+    id: 'kaz', name: 'Kaz a Zong', owner: 'Maëva L.', kind: 'Indépendante', where: ['Chez le/la pro', 'À domicile'], travel: 5,
     commune: 'Les Abymes', quartier: 'Raizet', cats: ['ongles'], tags: ['Pose gel', 'Nail art', 'Semi-permanent'],
     rating: 4.9, nrev: 87, open: 540, close: 1140, closed: [0], fill: 0.55, h: 330,
     about: "Prothésiste ongulaire depuis 6 ans. Reçoit dans son atelier au Raizet ou se déplace dans l'agglomération pointoise.",
@@ -146,7 +152,7 @@ const HAND_MADE: Omit<Pro, 'lat' | 'lng'>[] = [
     services: [s('a', 'Soin visage éclat', 60, 55), s('b', 'Épilation jambes complètes', 60, 30), s('c', 'Épilation maillot', 30, 18), s('d', 'Maquillage jour', 60, 40), s('e', 'Massage relaxant', 60, 60)],
   },
   {
-    id: 'oce', name: 'Cils by Océane', owner: 'Océane V.', kind: 'Indépendante', where: ['Chez elle'],
+    id: 'oce', name: 'Cils by Océane', owner: 'Océane V.', kind: 'Indépendante', where: ['Chez le/la pro'],
     commune: 'Le Moule', quartier: 'Sergent', cats: ['cils'], tags: ['Cil à cil', 'Volume mixte'],
     rating: 4.9, nrev: 52, open: 540, close: 1080, closed: [0, 1], fill: 0.5, h: 245,
     about: 'Technicienne cils certifiée, reçoit dans une pièce dédiée de sa maison.',
@@ -176,10 +182,10 @@ const HAND_MADE: Omit<Pro, 'lat' | 'lng'>[] = [
 ]
 
 const ZOMBI: Omit<Pro, 'lat' | 'lng'> = {
-  id: 'zom', name: 'Zombi', owner: 'Yolène R.', kind: 'Indépendante', where: ['Chez elle', 'À domicile'], travel: 6,
+  id: 'zom', name: 'Zombi', owner: 'Yolène R.', kind: 'Indépendante', where: ['Chez le/la pro', 'À domicile'], travel: 6,
   commune: 'Les Abymes', quartier: 'Dothémare', cats: ['cils'], tags: ['Cil à cil', 'Volume russe', 'Rehaussement'],
   rating: 4.8, nrev: 34, open: 540, close: 1110, closed: [0], fill: 0.45, h: 280,
-  about: "Un nom qui ne dit rien de son métier : Yolène pose des extensions de cils et travaille les sourcils, chez elle ou chez toi.",
+  about: "Un nom qui ne dit rien de son métier : Yolène pose des extensions de cils et travaille les sourcils, sur place ou chez toi.",
   services: [s('a', 'Extensions cil à cil', 120, 68), s('b', 'Volume russe', 150, 90), s('c', 'Remplissage cils', 60, 40), s('d', 'Rehaussement + teinture', 60, 45), s('e', 'Sourcils au fil', 30, 12)],
 }
 HAND_MADE.push(ZOMBI)
@@ -201,6 +207,11 @@ export const REVIEW_TEXTS: Record<Category, string[]> = {
   tresses: ['Tresses fines et régulières, pas trop serrées.', "Rapide et soignée, elle est venue à l'heure à la maison.", "Mes locks n'ont jamais été aussi propres.", 'Ma fille a adoré, et ça a tenu un mois.', 'Aucune douleur au cuir chevelu, enfin.', 'Finitions propres, les raccords ne se voient pas.', 'Très patiente, six heures de travail sans se plaindre.', 'Prix honnête pour la longueur.'],
   maquillage: ['Teint parfait toute la soirée, même en dansant.', 'Elle a su trouver la bonne teinte du premier coup.', 'Maquillage léger et lumineux, exactement mon style.', "Tout a tenu jusqu'à la fin du mariage.", "L'essai m'a rassurée, le jour J était parfait.", 'Ponctuelle et très douce.', 'Rendu magnifique en photo.', 'Elle écoute vraiment ce qu\'on veut.'],
   soins: ['Moment de détente, peau toute douce en sortant.', 'Épilation rapide et presque sans douleur.', 'Cabine propre et fraîche, je reviendrai.', 'Massage excellent, mes épaules la remercient.', 'Le soin visage a vraiment éclairci mon teint.', 'Accueil souriant et tisane offerte.', 'Très pro, elle explique chaque étape.', 'Bon rapport qualité-prix.'],
+  tatouage: ['Le dessin est exactement celui que j\'imaginais, trait très net.', 'Hygiène irréprochable, tout le matériel est ouvert devant moi.', 'Explique bien les soins après la séance, cicatrisation parfaite.', 'Très à l\'écoute pour adapter le dessin à mon bras.', 'Séance longue mais on prend des pauses quand il faut.', 'Retouche offerte, super accueil.', 'Un vrai artiste, je reviens pour mon deuxième.', 'Prix annoncé au devis, aucune surprise.'],
+  piercing: ['Rapide, précis et presque indolore.', 'Matériel stérile et bijou en titane, rien à redire.', 'On m\'a bien expliqué comment nettoyer pendant la cicatrisation.', 'Placement parfait, très bons conseils sur le bijou.', 'Accueil rassurant pour une première fois.', 'Cartilage cicatrisé sans souci après deux mois.', 'Studio propre et choix de bijoux sympa.', 'Je recommande les yeux fermés.'],
+  massage: ['Un vrai lâcher-prise, mon dos me dit merci.', 'Pression juste comme il faut, très bon massage.', 'Ambiance calme, huiles chaudes, je me suis endormi.', 'Parfait après une semaine de travail debout.', 'Le massage prénatal m\'a fait un bien fou.', 'Ponctuel et à l\'écoute de ce qui fait mal.', 'Cabine propre et silencieuse.', 'Le meilleur massage que j\'aie fait sur l\'île.'],
+  spa: ['Hammam et jacuzzi sans foule, vraie parenthèse.', 'Personnel discret et attentionné.', 'Le rituel visage et corps vaut le détour.', 'Très propre, serviettes et peignoirs de qualité.', 'On est venus à deux, soin duo parfait.', 'Un cadre calme, on oublie tout.', 'Bon rapport qualité-prix pour la demi-journée.', 'Réservation simple, aucune attente à l\'arrivée.'],
+  hotel: ['Chambre propre et calme, le day use est une super idée.', 'Piscine agréable et personnel très accueillant.', 'Brunch copieux, vue superbe sur la mer.', 'Réservation facile, pas de mauvaise surprise sur le prix.', 'Idéal pour une demi-journée de détente en famille.', 'Cadre soigné et climatisation efficace.', 'Salle de séminaire bien équipée.', 'On reviendra pour un week-end.'],
   barbier: ['Dégradé net, rien à redire.', 'Bon coup de ciseaux et bonne ambiance.', 'Mon fils ne veut plus aller ailleurs.', 'Contours au cordeau.', "Ponctuel, pas d'attente interminable.", 'Barbe bien taillée, il prend son temps.', 'Le meilleur dégradé du secteur.', 'Salon propre, matériel désinfecté.'],
 }
 
