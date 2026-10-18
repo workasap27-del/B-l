@@ -68,12 +68,13 @@ onBeforeUnmount(() => { document.documentElement.classList.remove('hd-home') })
 
 // Composition propre à chaque thème : textes d'accompagnement, photos d'en-tête, mention de signature.
 const themeId = computed(() => themeOf(state.theme).id)
+const PHRASE = 'Des prestataires locaux près de chez toi'
 const COPY: Record<string, { eyebrow: string, sub: string, subM: string, script?: boolean }> = {
-  terracotta: { eyebrow: '', sub: 'Des salons et praticien·nes de confiance en Guadeloupe, pour prendre soin de toi, tout simplement.', subM: 'Des prestataires locaux près de chez toi' },
-  lavande: { eyebrow: 'Guadeloupe · Beauté · Bien-être · Proche de toi', sub: 'Instituts, salons et experts près de chez toi, en toute simplicité.', subM: 'Des établissements de confiance, près de chez toi.' },
-  jardin: { eyebrow: 'Beauté & bien-être en Guadeloupe', sub: 'Instituts, coiffeurs, nail bars, spas… Les meilleur·e·s prestataires près de chez toi, pour prendre soin de toi en toute simplicité.', subM: 'En Guadeloupe, des prestataires de confiance pour prendre soin de toi.' },
-  corail: { eyebrow: '', sub: 'Les meilleurs instituts et prestataires de Guadeloupe, près de chez toi.', subM: '', script: true },
-  editorial: { eyebrow: 'Guadeloupe · Beauté & bien-être', sub: 'Coiffeurs, instituts, ongleries, soins bien-être… Les meilleur·e·s prestataires près de chez toi, en toute simplicité.', subM: '', script: true },
+  terracotta: { eyebrow: '', sub: PHRASE, subM: PHRASE },
+  lavande: { eyebrow: '', sub: PHRASE, subM: PHRASE },
+  jardin: { eyebrow: '', sub: PHRASE, subM: PHRASE },
+  corail: { eyebrow: '', sub: PHRASE, subM: PHRASE, script: true },
+  editorial: { eyebrow: '', sub: PHRASE, subM: PHRASE, script: true },
 }
 const copy = computed(() => COPY[themeId.value])
 const ART = {
@@ -101,7 +102,7 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
 <template>
   <div class="hd" :class="[`hd-${themeId}`, { 'with-rdv': nextBooking && nextPro }]">
     <header class="hd-bar">
-      <AppLogo class="hd-logo" :height="26" tagline />
+      <AppLogo class="hd-logo" :height="26" />
       <div class="hd-tools">
         <button class="icon-btn hd-gear" aria-label="Réglages et thème" @click="settingsOpen = true"><Settings2 :size="19" /></button>
         <NuxtLink class="me-chip hd-me" to="/profil" :aria-label="`Mon compte, ${who}`">
@@ -119,7 +120,7 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
       <span v-if="copy.script" class="hd-script" aria-hidden="true">Plus qu'un rendez-vous, un moment pour toi</span>
       <div class="hd-copy">
         <span v-if="copy.eyebrow" class="hd-eyebrow">{{ copy.eyebrow }}</span>
-        <h1 class="hd-title"><span class="sr-only">Bonjour {{ who }}. </span>{{ themeId === 'terracotta' ? 'Réserve ton moment' : 'Réserve ton moment beauté et bien-être' }}</h1>
+        <h1 class="hd-title"><span class="sr-only">Bonjour {{ who }}. </span>Réserve ton moment</h1>
         <p v-if="copy.sub" class="hd-sub hd-sub-pc">{{ copy.sub }}</p>
         <p v-if="copy.subM" class="hd-sub hd-sub-m">{{ copy.subM }}</p>
       </div>
