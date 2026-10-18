@@ -28,6 +28,6 @@ const size = computed(() => `${props.height}px`)
         <path d="M30 36 C30 24 30 14 30 6" /><path d="M30 30 C20 28 12 22 8 12" /><path d="M30 30 C40 28 48 22 52 12" /><path d="M30 22 C22 20 16 14 14 6" /><path d="M30 22 C38 20 44 14 46 6" />
       </svg>
     </span>
-    <span v-if="tagline" class="tl-tag" aria-hidden="true">{{ id === 'corail' ? 'Beauté  Bien-être  Guadeloupe' : 'Beauté & bien-être en Guadeloupe' }}</span>
+    <span v-if="tagline" class="tl-tag" aria-hidden="true">{{ id === 'corail' ? 'Beauté  Bien-être  Guadeloupe' : id === 'terracotta' ? 'Beauté & bien-être' : 'Beauté & bien-être en Guadeloupe' }}</span>
   </span>
 </template>
