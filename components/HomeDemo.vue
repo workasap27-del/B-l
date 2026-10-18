@@ -69,7 +69,7 @@ onBeforeUnmount(() => { document.documentElement.classList.remove('hd-home') })
 // Composition propre à chaque thème : textes d'accompagnement, photos d'en-tête, mention de signature.
 const themeId = computed(() => themeOf(state.theme).id)
 const COPY: Record<string, { eyebrow: string, sub: string, subM: string, script?: boolean }> = {
-  terracotta: { eyebrow: '', sub: 'Des salons et praticien·nes de confiance en Guadeloupe, pour prendre soin de toi, tout simplement.', subM: 'Des prestataires locaux près de chez toi' },
+  terracotta: { eyebrow: '', sub: 'Des salons et praticien·nes de confiance en Guadeloupe, pour prendre soin de toi, tout simplement.', subM: '' },
   lavande: { eyebrow: 'Guadeloupe · Beauté · Bien-être · Proche de toi', sub: 'Instituts, salons et experts près de chez toi, en toute simplicité.', subM: 'Des établissements de confiance, près de chez toi.' },
   jardin: { eyebrow: 'Beauté & bien-être en Guadeloupe', sub: 'Instituts, coiffeurs, nail bars, spas… Les meilleur·e·s prestataires près de chez toi, pour prendre soin de toi en toute simplicité.', subM: 'En Guadeloupe, des prestataires de confiance pour prendre soin de toi.' },
   corail: { eyebrow: '', sub: 'Les meilleurs instituts et prestataires de Guadeloupe, près de chez toi.', subM: '', script: true },
@@ -119,7 +119,7 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
       <span v-if="copy.script" class="hd-script" aria-hidden="true">Plus qu'un rendez-vous, un moment pour toi</span>
       <div class="hd-copy">
         <span v-if="copy.eyebrow" class="hd-eyebrow">{{ copy.eyebrow }}</span>
-        <h1 class="hd-title"><span class="sr-only">Bonjour {{ who }}. </span>Réserve ton moment beauté et bien-être</h1>
+        <h1 class="hd-title"><span class="sr-only">Bonjour {{ who }}. </span>{{ themeId === 'terracotta' ? 'Des prestataires locaux près de chez toi' : 'Réserve ton moment beauté et bien-être' }}</h1>
         <p v-if="copy.sub" class="hd-sub hd-sub-pc">{{ copy.sub }}</p>
         <p v-if="copy.subM" class="hd-sub hd-sub-m">{{ copy.subM }}</p>
       </div>
