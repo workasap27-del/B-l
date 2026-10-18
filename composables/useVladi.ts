@@ -91,6 +91,8 @@ interface State {
   address: string
   /** charte graphique en test */
   charte: string
+  /** thème visuel complet du mode présentation (accueil, recherche, fiches, réservation) */
+  theme: string
   /** d'où l'on mesure les distances : la position du téléphone ou le centre d'une commune */
   pos: LatLng & { label: string, gps: boolean }
   /** mode démonstration : fiches fictives visibles (ouvert par le lien ?demo=1, fermé par ?demo=0) */
@@ -104,7 +106,7 @@ const STORAGE_KEY = 'vladi-v3'
 function blank(): State {
   return {
     bookings: [], slots: [], fav: {}, reviews: {}, seq: 100, seededFor: '', sim: null, unseen: 0, address: '',
-    charte: 'noir', pos: { ...communePoint(DEMO_CLIENT.commune), label: DEMO_CLIENT.commune, gps: false }, demo: false, demoNoRdv: false,
+    charte: 'noir', theme: 'terracotta', pos: { ...communePoint(DEMO_CLIENT.commune), label: DEMO_CLIENT.commune, gps: false }, demo: false, demoNoRdv: false,
   }
 }
 
@@ -705,7 +707,7 @@ function toast(message: string) {
 }
 
 function reset() {
-  const keep = { charte: state.charte, pos: state.pos }
+  const keep = { charte: state.charte, theme: state.theme, pos: state.pos }
   Object.assign(state, blank(), keep)
   seedBookings()
   seedSlots(true)
@@ -737,6 +739,9 @@ function start() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)) }
     catch { /* ignore */ }
   }, { deep: true })
+  // Premier enregistrement : le lien ?demo=1 et le thème survivent à une navigation par adresse.
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)) }
+  catch { /* ignore */ }
   setInterval(() => { clock.value = new Date() }, 30000)
   watch(today, () => seedSlots())
   void refresh()

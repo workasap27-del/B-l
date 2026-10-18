@@ -1,8 +1,13 @@
 <script setup lang="ts">
 // Réglages : couleurs de l'appli pour tout le monde. En mode présentation (lien ?demo=1), outils pour faire une démonstration.
+import { Check } from 'lucide-vue-next'
 const emit = defineEmits<{ close: [] }>()
 const { state, nowMin, setSim, reset, toast } = useVladi()
 const current = computed(() => CHARTES.find(c => c.id === state.charte) ?? CHARTES[0])
+const theme = computed(() => themeOf(state.theme))
+function pickTheme(id: string) {
+  state.theme = id
+}
 function doReset() {
   reset()
   toast('Démonstration remise à zéro')
@@ -18,7 +23,20 @@ function stopDemo() {
 <template>
   <BottomSheet @close="emit('close')">
     <h2 class="h2">Réglages</h2>
-    <section class="col gap12">
+    <section v-if="state.demo" class="col gap12">
+      <div class="col gap4">
+        <span class="h3">Thème de l'appli</span>
+        <span class="meta">{{ theme.name }} : {{ theme.mood }}.</span>
+      </div>
+      <div class="themes" role="radiogroup" aria-label="Thème de l'appli">
+        <button v-for="t in THEMES" :key="t.id" class="theme-opt" role="radio" :aria-checked="state.theme === t.id" :aria-pressed="state.theme === t.id" @click="pickTheme(t.id)">
+          <span class="disc"><i :style="{ background: t.colors[0] }" /><i :style="{ background: t.colors[1] }" /><i :style="{ background: t.colors[2] }" /></span>
+          <span class="grow name">{{ t.name }}</span>
+          <span v-if="state.theme === t.id" class="tag accent"><Check :size="14" />Actif</span>
+        </button>
+      </div>
+    </section>
+    <section v-else class="col gap12">
       <div class="col gap4">
         <span class="h3">Couleurs de l'appli</span>
         <span class="meta">{{ current.mood }}.</span>

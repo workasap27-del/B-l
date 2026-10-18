@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BarChart3, CalendarDays, ChevronRight, MapPin, Search, Settings2, Store, X } from 'lucide-vue-next'
+import { ArrowRight, BarChart3, CalendarDays, ChevronDown, ChevronRight, MapPin, Search, Settings2, Store, X } from 'lucide-vue-next'
 import { DEMO_CLIENT } from '~/data/pros'
 import type { Category } from '~/data/pros'
 import { LEGAL } from '~/data/legal'
@@ -61,62 +61,108 @@ const near = computed(() => byDistance.value.slice(0, 10))
 const atHome = computed(() => byDistance.value.filter(goesToClient).slice(0, 10))
 const best = computed(() => byDistance.value.slice(0, 60).filter(p => ratingOf(p).count >= 15).sort((a, b) => ratingOf(b).rating - ratingOf(a).rating).slice(0, 10))
 const slots = computed(() => openSlots().filter(s => km(pro(s.proId)!) <= 30).slice(0, 10))
-// Palette chaude de la maquette, posée seulement le temps que cet accueil est affiché.
-onMounted(() => { document.documentElement.dataset.home = 'chaud' })
-onBeforeUnmount(() => { delete document.documentElement.dataset.home })
+// Le thème est posé sur la page par le gabarit ; ici on signale seulement que l'accueil est affiché
+// (en-tête transparent sur la photo, pour les thèmes qui le demandent).
+onMounted(() => { document.documentElement.classList.add('hd-home') })
+onBeforeUnmount(() => { document.documentElement.classList.remove('hd-home') })
+
+// Composition propre à chaque thème : textes d'accompagnement, photos d'en-tête, mention de signature.
+const themeId = computed(() => themeOf(state.theme).id)
+const COPY: Record<string, { eyebrow: string, sub: string, subM: string, script?: boolean }> = {
+  terracotta: { eyebrow: '', sub: 'Des salons et praticien·nes de confiance en Guadeloupe, pour prendre soin de toi, tout simplement.', subM: 'Des prestataires locaux près de chez toi' },
+  lavande: { eyebrow: 'Guadeloupe · Beauté · Bien-être · Proche de toi', sub: 'Instituts, salons et experts près de chez toi, en toute simplicité.', subM: 'Des établissements de confiance, près de chez toi.' },
+  jardin: { eyebrow: 'Beauté & bien-être en Guadeloupe', sub: 'Instituts, coiffeurs, nail bars, spas… Les meilleur·e·s prestataires près de chez toi, pour prendre soin de toi en toute simplicité.', subM: 'En Guadeloupe, des prestataires de confiance pour prendre soin de toi.' },
+  corail: { eyebrow: '', sub: 'Les meilleurs instituts et prestataires de Guadeloupe, près de chez toi.', subM: '', script: true },
+  editorial: { eyebrow: 'Guadeloupe · Beauté & bien-être', sub: 'Coiffeurs, instituts, ongleries, soins bien-être… Les meilleur·e·s prestataires près de chez toi, en toute simplicité.', subM: '', script: true },
+}
+const copy = computed(() => COPY[themeId.value])
+const ART = {
+  terracotta: { m: '/themes/terra-m.jpg', pc: '/themes/terra-pc.jpg' },
+  lavande: { m: '/themes/lavande-m-hibiscus.png', pc: '/themes/lavande-pc-feuilles.png' },
+  jardin: { m: '/themes/jardin-m-tall.webp', pc: '/themes/jardin-pc.webp' },
+  corail: { m: '/themes/corail-m.jpg', pc: '/themes/corail-pc-right.jpg' },
+  editorial: { m: '/themes/edito-m.jpg', pc: '/themes/edito-pc.jpg' },
+} as Record<string, { m: string, pc: string }>
+const art = computed(() => ART[themeId.value])
+// Date du prochain rendez-vous, en lettres (pour les thèmes qui l'affichent en vignette).
+const nextDate = computed(() => {
+  if (!nextBooking.value) return { wd: '', day: '', mon: '' }
+  const [y, m, d] = nextBooking.value.date.split('-').map(Number)
+  const dt = new Date(y, m - 1, d, 12)
+  return {
+    wd: dt.toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', ''),
+    day: String(d),
+    mon: dt.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', ''),
+  }
+})
 const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c] : Search)
 </script>
 
 <template>
-  <div class="hd" :class="{ 'with-rdv': nextBooking && nextPro }">
-    <header class="topbar hd-bar">
-      <AppLogo />
-      <div class="row gap8">
-        <button class="icon-btn filled" aria-label="Réglages" @click="settingsOpen = true"><Settings2 :size="20" /></button>
-        <NuxtLink class="me-chip" to="/profil" :aria-label="`Mon compte, ${who}`">
-          <span class="avatar-xs">{{ initial }}</span><span class="me-name ellip">{{ who }}</span>
+  <div class="hd" :class="[`hd-${themeId}`, { 'with-rdv': nextBooking && nextPro }]">
+    <header class="hd-bar">
+      <AppLogo class="hd-logo" :height="26" tagline />
+      <div class="hd-tools">
+        <button class="icon-btn hd-gear" aria-label="Réglages et thème" @click="settingsOpen = true"><Settings2 :size="19" /></button>
+        <NuxtLink class="me-chip hd-me" to="/profil" :aria-label="`Mon compte, ${who}`">
+          <span class="avatar-xs">{{ initial }}</span><span class="me-name ellip">{{ who }}</span><ChevronDown :size="15" class="hd-me-chev" />
         </NuxtLink>
       </div>
     </header>
 
     <section class="hd-hero">
-      <div class="hd-hello">
-        <span class="hd-bonjour">Bonjour {{ who }}</span>
-        <h1 class="hd-title">Réserve ton moment beauté et bien-être</h1>
+      <picture class="hd-art" aria-hidden="true">
+        <source media="(min-width: 700px)" :srcset="art.pc">
+        <img :src="art.m" alt="" width="800" height="600" fetchpriority="high">
+      </picture>
+      <img v-if="themeId === 'corail'" class="hd-art-l" src="/themes/corail-pc-left.jpg" alt="" aria-hidden="true">
+      <span v-if="copy.script" class="hd-script" aria-hidden="true">Plus qu'un rendez-vous, un moment pour toi</span>
+      <div class="hd-copy">
+        <span v-if="copy.eyebrow" class="hd-eyebrow">{{ copy.eyebrow }}</span>
+        <h1 class="hd-title"><span class="sr-only">Bonjour {{ who }}. </span>Réserve ton moment beauté et bien-être</h1>
+        <p v-if="copy.sub" class="hd-sub hd-sub-pc">{{ copy.sub }}</p>
+        <p v-if="copy.subM" class="hd-sub hd-sub-m">{{ copy.subM }}</p>
       </div>
 
       <form class="hd-panel" role="search" aria-label="Rechercher" @submit.prevent="router.push(resultsUrl())">
         <div class="hd-field">
           <button type="button" class="hd-row" @click="searchOpen = true">
-            <component :is="catOf(what?.cat)" :size="20" class="hd-ico" />
+            <component :is="catOf(what?.cat)" :size="22" class="hd-ico" />
             <span class="hd-txt">
-              <span class="hd-k">Prestation</span>
-              <span class="hd-v" :class="{ ph: !what }">{{ what?.label ?? 'Tous les soins' }}</span>
+              <span class="hd-a" :class="{ ph: !what }">{{ what?.label ?? 'Soin ou établissement' }}</span>
+              <span class="hd-b">{{ what ? 'Soin ou établissement' : 'Ex. : Coiffure, onglerie, massage…' }}</span>
             </span>
+            <ChevronRight :size="18" class="hd-chev" />
           </button>
           <button v-if="what" type="button" class="icon-btn hd-clear" aria-label="Retirer la prestation" @click="what = null"><X :size="17" /></button>
         </div>
-        <button type="button" class="hd-row" @click="locOpen = true">
-          <MapPin :size="20" class="hd-ico" />
-          <span class="hd-txt"><span class="hd-k">Où ?</span><span class="hd-v">{{ state.pos.label }}</span></span>
-          <span class="hd-change">Changer</span>
+        <button type="button" class="hd-row" aria-label="Changer de lieu" @click="locOpen = true">
+          <MapPin :size="22" class="hd-ico" />
+          <span class="hd-txt"><span class="hd-a">{{ state.pos.label }}</span><span class="hd-b">Guadeloupe</span></span>
+          <ChevronRight :size="18" class="hd-chev" />
         </button>
         <button type="button" class="hd-row" @click="whenOpen = true">
-          <CalendarDays :size="20" class="hd-ico" />
-          <span class="hd-txt"><span class="hd-k">Quand ?</span><span class="hd-v" :class="{ ph: !when }">{{ whenLabel }}</span></span>
+          <CalendarDays :size="22" class="hd-ico" />
+          <span class="hd-txt"><span class="hd-a">Quand ? <span class="hd-dot">·</span> <span class="hd-when" :class="{ ph: !when }">{{ whenLabel }}</span></span><span class="hd-b">Choisis une date</span></span>
+          <ChevronRight :size="18" class="hd-chev" />
         </button>
-        <button type="submit" class="btn block hd-go">Rechercher</button>
+        <button type="submit" class="btn block hd-go">Rechercher<ArrowRight :size="19" /></button>
       </form>
     </section>
 
     <NuxtLink v-if="nextBooking && nextPro" class="hd-rdv" :to="account ? '/rdv' : `/pro/${nextPro.id}`">
-      <ProPhoto class="thumb" :pro="nextPro" :w="128" :h="128" ratio="none" :demo-label="false" />
-      <div class="grow col gap4" style="min-width:0">
-        <span class="hd-k">Ton prochain rendez-vous</span>
-        <span class="name">{{ capitalize(dayLabel(nextBooking.date, today)) }} à {{ hm(nextBooking.time) }}</span>
-        <span class="meta ellip">{{ service(nextPro, nextBooking.sid)?.n }} · {{ nextPro.name }}</span>
-      </div>
-      <ChevronRight :size="18" class="muted" style="align-self:center" />
+      <span class="rdv-ic" aria-hidden="true"><CalendarDays :size="22" /></span>
+      <span class="rdv-date" aria-hidden="true"><i>{{ nextDate.wd }}.</i><b>{{ nextDate.day }}</b><i>{{ nextDate.mon }}.</i></span>
+      <span class="rdv-when">
+        <span class="rdv-k">Ton prochain rendez-vous</span>
+        <span class="rdv-v">{{ capitalize(dayLabel(nextBooking.date, today)) }} à {{ hm(nextBooking.time) }}</span>
+      </span>
+      <ProPhoto class="rdv-thumb thumb" :pro="nextPro" :w="128" :h="128" ratio="none" :demo-label="false" />
+      <span class="rdv-what">
+        <span class="rdv-svc"><span class="rdv-s">{{ service(nextPro, nextBooking.sid)?.n }}</span><span class="rdv-dot"> · </span><span class="rdv-p">{{ nextPro.name }}</span></span>
+        <span class="rdv-where"><MapPin :size="13" />{{ nextPro.commune }}</span>
+      </span>
+      <span class="rdv-go"><span class="rdv-go-t">Voir mon rendez-vous</span><ArrowRight :size="17" class="rdv-go-a" /><ChevronRight :size="18" class="rdv-go-c" /></span>
     </NuxtLink>
   </div>
 
@@ -144,18 +190,21 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
       </NuxtLink>
     </section>
 
-    <section v-if="slots.length" class="hd-sec band">
+    <section v-if="slots.length" class="hd-sec hd-slots">
       <div class="section-head">
-        <h2 class="h2">Libre aujourd'hui, prix réduit</h2>
-        <NuxtLink class="see-all" to="/konyela">Tout voir<ChevronRight :size="16" /></NuxtLink>
+        <div class="col gap4">
+          <h2 class="h2">Libre aujourd'hui</h2>
+          <p class="hd-sec-sub">Des créneaux disponibles près de chez toi, pour te faire du bien sans attendre.</p>
+        </div>
+        <NuxtLink class="see-all" to="/konyela">Voir tout<ChevronRight :size="16" /></NuxtLink>
       </div>
-      <div class="carousel wide"><SlotCard v-for="s in slots" :key="s.id" :item="s" /></div>
+      <div class="carousel wide hd-car"><SlotPhoto v-for="s in slots" :key="s.id" :item="s" /></div>
     </section>
 
     <section v-if="near.length" class="hd-sec">
       <div class="section-head">
         <h2 class="h2">Près de toi</h2>
-        <NuxtLink class="see-all" to="/recherche">Tout voir<ChevronRight :size="16" /></NuxtLink>
+        <NuxtLink class="see-all" to="/recherche">Voir tout<ChevronRight :size="16" /></NuxtLink>
       </div>
       <div class="carousel"><ProCard v-for="p in near" :key="p.id" :pro="p" /></div>
     </section>

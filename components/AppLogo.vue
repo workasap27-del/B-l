@@ -1,10 +1,12 @@
 <script setup lang="ts">
 // Logo VLADI : le V et le A se répondent en miroir, chacun avec son point.
-withDefaults(defineProps<{ height?: number }>(), { height: 22 })
+withDefaults(defineProps<{ height?: number, tagline?: boolean }>(), { height: 22, tagline: false })
+const { state } = useVladi()
 </script>
 
 <template>
-  <svg class="logo" :height="height" viewBox="0 0 268 80" role="img" aria-label="VLADI" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+  <ThemeLogo v-if="state.demo" :height="height" :tagline="tagline" />
+  <svg v-else class="logo" :height="height" viewBox="0 0 268 80" role="img" aria-label="VLADI" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
     <path d="M10 12 L32 68 L54 12" stroke="var(--logo-v, var(--accent))" />
     <circle cx="32" cy="16" r="7" fill="var(--logo-dot, var(--now))" stroke="none" />
     <path d="M82 12 V68 H110" />
