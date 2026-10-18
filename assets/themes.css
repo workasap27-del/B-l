@@ -567,3 +567,7 @@
   [data-theme="editorial"] .hd-title { font-size: 30px; }
   [data-theme="editorial"] .hd-rdv .rdv-v { font-size: 20px; }
 }
+
+/* Cartes « Près de toi » : marge intérieure du texte et prix en gras */
+[data-theme] .pcard .lines { padding: 2px 10px 6px; }
+[data-theme] .pcard .from { font-weight: 700; color: var(--ink); }

@@ -29,7 +29,7 @@ const r = computed(() => ratingOf(props.pro))
       </div>
       <span class="meta ellip">{{ CAT_SHORT[pro.cats[0]] }} · {{ pro.commune }} · {{ formatKm(km(pro)) }}</span>
       <span class="meta">
-        Dès {{ euro(from) }}
+        <span class="from">Dès {{ euro(from) }}</span>
         <template v-if="next"> · <span class="ok">Libre {{ shortDay(next.date, today).toLowerCase() }} {{ hm(next.time) }}</span></template>
       </span>
     </div>
