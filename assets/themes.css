@@ -560,8 +560,8 @@
 
 /* Ajustements mobile : titres, accroches et rendez-vous */
 @media (max-width: 699px) {
-  [data-theme="corail"] .hd-title { font-size: 31px; line-height: .94; }
-  [data-theme="corail"] .hd-copy { max-width: 60%; }
+  [data-theme="corail"] .hd-title { font-size: 27px; line-height: .94; }
+  [data-theme="corail"] .hd-copy { max-width: 56%; }
   [data-theme="corail"] .hd-rdv .rdv-v { font-size: 22px; line-height: 1.05; }
   [data-theme="editorial"] .tl-tag, [data-theme="corail"] .tl-tag { white-space: nowrap; font-size: 8px; letter-spacing: .16em; }
   [data-theme="editorial"] .hd-title { font-size: 30px; }

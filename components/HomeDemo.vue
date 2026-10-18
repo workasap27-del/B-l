@@ -120,7 +120,7 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
       <span v-if="copy.script" class="hd-script" aria-hidden="true">Plus qu'un rendez-vous, un moment pour toi</span>
       <div class="hd-copy">
         <span v-if="copy.eyebrow" class="hd-eyebrow">{{ copy.eyebrow }}</span>
-        <h1 class="hd-title"><span class="sr-only">Bonjour {{ who }}. </span>Réserve ton moment</h1>
+        <h1 class="hd-title"><span class="sr-only">Bonjour {{ who }}. </span>Réserve ton instant beauté et bien-être</h1>
         <p v-if="copy.sub" class="hd-sub hd-sub-pc">{{ copy.sub }}</p>
         <p v-if="copy.subM" class="hd-sub hd-sub-m">{{ copy.subM }}</p>
       </div>
