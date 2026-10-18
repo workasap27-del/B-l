@@ -85,6 +85,14 @@ export function euro(n: number): string {
   return `${String(Math.round(n * 100) / 100).replace('.', ',')} €`
 }
 
+/** Un rendez-vous : jour, heure de début et durée en minutes. */
+export interface Span { date: string, time: number, dur: number }
+
+/** Deux rendez-vous se chevauchent s'ils sont le même jour et que l'un commence avant la fin de l'autre. */
+export function spansOverlap(a: Span, b: Span): boolean {
+  return a.date === b.date && a.time < b.time + b.dur && b.time < a.time + a.dur
+}
+
 export function ceil30(x: number): number {
   return Math.ceil(x / 30) * 30
 }

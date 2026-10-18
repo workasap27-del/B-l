@@ -182,4 +182,24 @@ begin
   perform * from admin_bookings(0);
 end $$;
 reset role;
+-- 14. Une même cliente ne peut pas avoir deux rendez-vous à la même heure, chez deux prestataires différents.
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false);
+do $$
+declare v_p1 text; v_s1 uuid; v_p2 text; v_s2 uuid;
+begin
+  select p.id, s.id into v_p1, v_s1 from pros p join services s on s.pro_id = p.id where s.active order by p.id limit 1;
+  select p.id, s.id into v_p2, v_s2 from pros p join services s on s.pro_id = p.id where s.active and p.id <> v_p1 order by p.id limit 1;
+  insert into bookings (pro_id, service_id, client_id, starts_at, ends_at, price_eur, deposit_eur)
+    values (v_p1, v_s1, auth.uid(), now() + interval '9 days', now() + interval '9 days 60 minutes', 0, 0);
+  begin
+    insert into bookings (pro_id, service_id, client_id, starts_at, ends_at, price_eur, deposit_eur)
+      values (v_p2, v_s2, auth.uid(), now() + interval '9 days 15 minutes', now() + interval '9 days 75 minutes', 0, 0);
+    raise exception 'deux rendez-vous à la même heure acceptés';
+  exception when exclusion_violation then null; end;
+  -- Juste après la fin du premier rendez-vous, c'est permis.
+  insert into bookings (pro_id, service_id, client_id, starts_at, ends_at, price_eur, deposit_eur)
+    values (v_p2, v_s2, auth.uid(), now() + interval '9 days 60 minutes', now() + interval '9 days 120 minutes', 0, 0);
+end $$;
+reset role;
 select 'tous les contrôles passent' as resultat;

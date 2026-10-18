@@ -87,6 +87,7 @@ export function readable(e: unknown): string {
   if (/same as the old password/i.test(msg)) return 'Choisis un mot de passe différent de l\'ancien.'
   if (/Error sending|sending (confirmation|recovery)/i.test(msg)) return 'Envoi de l\'e-mail impossible pour le moment. Réessaie plus tard.'
   if (/session.*missing|not authenticated|JWT/i.test(msg)) return 'Ta session a expiré. Reconnecte-toi.'
+  if (/bookings_client_no_overlap/i.test(msg)) return 'Tu as déjà un rendez-vous à cette heure.'
   if (/bookings_no_overlap|exclusion/i.test(msg)) return 'Ce créneau vient d\'être pris. Choisis-en un autre.'
   if (/pros_one_per_owner/i.test(msg)) return 'Ton compte a déjà une fiche.'
   if (/siren/i.test(msg)) return 'Le numéro SIREN doit faire 9 chiffres.'

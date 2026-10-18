@@ -141,7 +141,9 @@ create table bookings (
   -- Une prestation chez la cliente a forcément une adresse.
   check (place = 'pro' or length(trim(coalesce(client_address, ''))) >= 5),
   -- Empêche la double réservation, même si deux clientes valident en même temps.
-  constraint bookings_no_overlap exclude using gist (pro_id with =, tstzrange(starts_at, ends_at) with &&) where (status = 'confirmed')
+  constraint bookings_no_overlap exclude using gist (pro_id with =, tstzrange(starts_at, ends_at) with &&) where (status = 'confirmed'),
+  -- Une même cliente ne peut pas avoir deux rendez-vous à la même heure.
+  constraint bookings_client_no_overlap exclude using gist (client_id with =, tstzrange(starts_at, ends_at) with &&) where (status = 'confirmed')
 );
 create index bookings_client on bookings (client_id, starts_at);
 

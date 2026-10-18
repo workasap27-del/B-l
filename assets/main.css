@@ -221,6 +221,8 @@ svg.lucide { flex: 0 0 auto; }
 .input.bad { border-color: var(--warn); }
 .error { font-size: 13.5px; color: var(--warn); background: var(--warn-soft); border-radius: 10px; padding: 10px 12px; }
 .notice { font-size: 13.5px; color: var(--ink2); background: var(--surface2); border-radius: 10px; padding: 12px 14px; }
+/* Alerte : un autre rendez-vous tombe à la même heure */
+.notice.clash { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 16px; border: 1px solid var(--warn); background: var(--warn-soft); color: var(--ink); }
 .box { display: flex; flex-direction: column; gap: 10px; padding: 16px; border-radius: var(--r-lg); background: var(--surface2); }
 .switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; font-size: 15px; }
 .switch input { appearance: none; width: 50px; height: 30px; border-radius: 15px; background: var(--surface3); position: relative; flex: 0 0 auto; cursor: pointer; transition: background-color .2s; }

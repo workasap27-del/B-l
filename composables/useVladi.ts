@@ -6,8 +6,8 @@ import { computed, reactive, ref, watch } from 'vue'
 import { DEMO_CLIENT, DEMO_PRO_ID, PROS, REVIEW_TEXTS, RULES, CLIENT_NAMES } from '~/data/pros'
 import { hash, rng } from '~/data/random'
 import type { Pro, Review, Service } from '~/data/pros'
-import { addDays, ceil30, discounted, freeStarts, gaps, isClosed, simulatedAppointments } from '~/utils/schedule'
-import type { Interval } from '~/utils/schedule'
+import { addDays, ceil30, discounted, freeStarts, gaps, isClosed, simulatedAppointments, spansOverlap } from '~/utils/schedule'
+import type { Interval, Span } from '~/utils/schedule'
 import { allowedPlaces, proPlace, travelFee } from '~/utils/places'
 import type { Place } from '~/utils/places'
 import { arrivalState, clampLate, deadline, TOLERANCE } from '~/utils/arrival'
@@ -350,10 +350,29 @@ function findBooking(id: string): Booking | undefined {
   return state.bookings.find(x => x.id === id) ?? remote.bookings.find(x => x.id === id)
 }
 
-export interface BookInput { proId: string, sid: string, date: string, time: number, slotId?: string, place: Place, address?: string, note?: string }
+export interface BookInput { proId: string, sid: string, date: string, time: number, slotId?: string, place: Place, address?: string, note?: string, replaceId?: string }
 
-/** Réserve. Renvoie la réservation, ou un message d'erreur ('connexion' si un compte est nécessaire). */
+/** Rendez-vous à venir de la personne connectée qui chevauche cette plage, s'il y en a un. */
+function clashWith(span: Span): Booking | undefined {
+  return myBookings.value.find(b => b.status === 'confirmed' && !isDone(b) && spansOverlap(b, span))
+}
+
+/** Réserve. Renvoie la réservation, ou un message d'erreur ('connexion' si un compte est nécessaire, 'chevauchement' si un autre rendez-vous tombe à la même heure). */
 async function book(input: BookInput): Promise<{ booking?: Booking, error?: string }> {
+  const sv0 = pro(input.proId) && service(pro(input.proId)!, input.sid)
+  const clash = sv0 && remote.profile ? clashWith({ date: input.date, time: input.time, dur: sv0.d }) : undefined
+  if (clash) {
+    // Deux rendez-vous à la même heure sont impossibles : il faut remplacer l'ancien ou choisir une autre heure.
+    if (input.replaceId !== clash.id) return { error: 'chevauchement' }
+    if (!(await change(clash.id, { status: 'cancelled' }))) return { error: 'L\'ancien rendez-vous n\'a pas pu être annulé. Réessaie.' }
+  }
+  const res = await bookNew(input)
+  // Si la nouvelle réservation échoue, l'ancien rendez-vous de présentation est rétabli.
+  if (clash && !res.booking && !clash.real) clash.status = 'confirmed'
+  return res
+}
+
+async function bookNew(input: BookInput): Promise<{ booking?: Booking, error?: string }> {
   const p = pro(input.proId)
   const sv = p && service(p, input.sid)
   if (!p || !sv) return { error: 'Prestation introuvable.' }
@@ -762,7 +781,7 @@ export function useVladi() {
     state, remote, today, nowMin, toastMessage,
     pros: catalogue, pro, service, isMine, reviewsOf, ratingOf, loadReviewsFor,
     starts, openSlots, isDone, refundable, minutesUntil, myBookings, findBooking,
-    book, cancel, addReview, toggleFav, placeLabel,
+    book, clashWith, cancel, addReview, toggleFav, placeLabel,
     km, setCommune, locate, currentPosition, nextSlots, openStatus,
     traveler, arrival, signalArrival, confirmArrival, announceLate, waitMore, declareNoShow, dispute,
     workPro, proBookings, agenda, earliestIn, publishSlot, removeSlot, mySlots,

@@ -5,7 +5,7 @@ import type { Place } from '~/utils/places'
 
 const route = useRoute()
 const router = useRouter()
-const { pro, service, starts, today, state, remote, nowMin, book, km, account, firstName, saveProfile } = useVladi()
+const { pro, service, starts, today, state, remote, nowMin, book, clashWith, km, account, firstName, saveProfile } = useVladi()
 
 const p = computed(() => pro(String(route.params.pro)))
 const sv = computed(() => (p.value ? service(p.value, String(route.params.service)) : undefined))
@@ -54,8 +54,17 @@ const hasTime = computed(() => (isSlot.value ? !slotGone.value : time.value !== 
 const phone = ref('')
 const needsPhone = computed(() => !!p.value?.real && !!account.value && !account.value.phone)
 const phoneOk = computed(() => !needsPhone.value || phone.value.replace(/\D/g, '').length >= 8)
-const ready = computed(() => addressOk.value && hasTime.value && phoneOk.value)
-const hint = computed(() => (!hasTime.value ? 'Choisis une heure' : !addressOk.value ? 'Indique ton adresse' : !phoneOk.value ? 'Indique ton téléphone' : `${capitalize(dayLabel(when.value.date, today.value))} à ${hm(when.value.time)}`))
+// Deux rendez-vous à la même heure sont impossibles : on prévient, et on propose de remplacer l'ancien.
+const clash = computed(() => (hasTime.value && sv.value && account.value ? clashWith({ date: when.value.date, time: when.value.time, dur: sv.value.d }) : undefined))
+const replace = ref(false)
+const clashBox = ref<HTMLElement | null>(null)
+watch(() => clash.value?.id, async (id) => { if (id) { await nextTick(); clashBox.value?.scrollIntoView({ block: 'center', behavior: 'smooth' }) } })
+watch(() => clash.value?.id, () => { replace.value = false })
+const clashPro = computed(() => (clash.value ? pro(clash.value.proId) : undefined))
+const clashService = computed(() => (clash.value && clashPro.value ? service(clashPro.value, clash.value.sid) : undefined))
+const clashFree = computed(() => !clash.value || replace.value)
+const ready = computed(() => addressOk.value && hasTime.value && phoneOk.value && clashFree.value)
+const hint = computed(() => (!hasTime.value ? 'Choisis une heure' : !clashFree.value ? 'Heure déjà prise' : !addressOk.value ? 'Indique ton adresse' : !phoneOk.value ? 'Indique ton téléphone' : `${capitalize(dayLabel(when.value.date, today.value))} à ${hm(when.value.time)}`))
 const loginLink = computed(() => `/connexion?retour=${encodeURIComponent(route.fullPath)}`)
 
 async function pay() {
@@ -70,9 +79,14 @@ async function pay() {
       return
     }
   }
-  const res = await book({ proId: p.value.id, sid: sv.value.id, date: when.value.date, time: when.value.time, slotId: slot.value?.id, place: place.value, address: address.value, note: note.value })
+  const res = await book({ proId: p.value.id, sid: sv.value.id, date: when.value.date, time: when.value.time, slotId: slot.value?.id, place: place.value, address: address.value, note: note.value, replaceId: replace.value ? clash.value?.id : undefined })
   busy.value = false
   if (res.error === 'connexion') return router.push(loginLink.value)
+  if (res.error === 'chevauchement') {
+    recap.value = false
+    error.value = ''
+    return
+  }
   if (!res.booking) {
     error.value = res.error ?? 'La réservation n\'a pas abouti.'
     return
@@ -148,6 +162,12 @@ function back() {
         </section>
       </template>
 
+      <div v-if="clash" ref="clashBox" class="notice clash" role="alert">
+        <b>Tu as déjà un rendez-vous à cette heure</b>
+        <span>{{ clashService?.n ?? 'Rendez-vous' }} chez {{ clashPro?.name ?? 'un autre prestataire' }}, {{ dayLabel(clash.date, today) }} de {{ hm(clash.time) }} à {{ hm(clash.time + clash.dur) }}. Choisis une autre heure, ou remplace-le par celui-ci.</span>
+        <button class="btn sm line" type="button" :aria-pressed="replace" @click="replace = !replace">{{ replace ? 'Je garde plutôt l\'ancien rendez-vous' : 'Remplacer l\'ancien rendez-vous' }}</button>
+      </div>
+
       <section class="section">
         <label class="field" for="note">
           <span>Une info pour {{ p.owner?.split(' ')[0] ?? p.name }} ? <span class="help">(facultatif)</span></span>
@@ -189,6 +209,7 @@ function back() {
         </template>
         <div v-else class="kv"><span>Paiement</span><span>Sur place</span></div>
       </div>
+      <p v-if="replace && clash" class="notice">Ton rendez-vous du {{ dayLabel(clash.date, today) }} à {{ hm(clash.time) }} sera annulé et remplacé par celui-ci.</p>
       <p class="notice">{{ p.real ? `Réservation au nom de ${firstName}. Le règlement se fait directement auprès de ${p.name}.` : 'Établissement de démonstration : aucune réservation n\'est transmise.' }}</p>
       <p v-if="error" class="error">{{ error }}</p>
       <button class="btn block" :disabled="busy" @click="pay">{{ busy ? 'Réservation…' : RULES.onlinePayment ? `Confirmer et payer ${euro(deposit)}` : 'Confirmer la réservation' }}</button>
