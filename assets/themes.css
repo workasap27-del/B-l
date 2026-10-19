@@ -570,3 +570,6 @@
 
 /* Cartes prestataire : prix « Dès » en gras */
 [data-theme] .pcard .from { font-weight: 700; color: var(--ink); }
+
+/* Liens légaux en bas de l'accueil : en ligne, centrés, ils passent à la ligne si l'écran est étroit */
+.hd-legal { margin-top: 44px; padding-bottom: 24px; }

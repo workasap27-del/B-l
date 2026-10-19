@@ -236,7 +236,7 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
       </NuxtLink>
     </section>
 
-    <footer class="legal-links hd-sec">
+    <footer class="legal-links hd-legal">
       <NuxtLink to="/cgu">Conditions générales</NuxtLink>
       <NuxtLink to="/confidentialite">Confidentialité</NuxtLink>
       <NuxtLink to="/mentions-legales">Mentions légales</NuxtLink>
