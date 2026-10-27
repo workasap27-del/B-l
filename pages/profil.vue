@@ -2,6 +2,8 @@
 import { BarChart3, ChevronRight, FileText, Heart, LogOut, Mail, MapPin, Settings2, Shield, Store, UserRound } from 'lucide-vue-next'
 import { LEGAL } from '~/data/legal'
 
+useHead({ title: 'Mon compte · VLADI' })
+
 const { state, pros, km, account, remote, logout, saveProfile, toast } = useVladi()
 const favs = computed(() => pros.value.filter(p => state.fav[p.id]).sort((a, b) => km(a) - km(b)))
 const locOpen = ref(false)

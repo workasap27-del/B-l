@@ -3,6 +3,8 @@ import { Zap } from 'lucide-vue-next'
 import { CATEGORIES } from '~/data/pros'
 import type { Category } from '~/data/pros'
 
+useHead({ title: 'Konyéla, créneaux du jour à prix réduit · VLADI' })
+
 const { openSlots, pro, km, state } = useVladi()
 const cat = ref('all')
 const order = ref<'near' | 'soon'>('near')

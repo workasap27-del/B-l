@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { BarChart3, CalendarDays, ChevronDown, ChevronRight, MapPin, Search, Settings2, Store } from 'lucide-vue-next'
 
+useHead({ title: 'VLADI · Beauté et bien-être en Guadeloupe' })
+
 const { pros, openSlots, km, ratingOf, account, myBookings, isDone, pro, service, today, placeLabel, state, remote, firstName, agenda } = useVladi()
 const locOpen = ref(false)
 const settingsOpen = ref(false)

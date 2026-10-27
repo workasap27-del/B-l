@@ -35,7 +35,15 @@ export default defineNuxtConfig({
       htmlAttrs: { lang: 'fr' },
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
-        { name: 'description', content: 'Réserver une prestation beauté en Guadeloupe, à l\'avance ou tout de suite.' },
+        { name: 'description', content: 'Réserve ta prestation beauté et bien-être en Guadeloupe : coiffure, ongles, cils, soins, massage, tatouage… à l\'avance ou tout de suite.' },
+        // Aperçu quand un lien VLADI est partagé (WhatsApp, Facebook, SMS).
+        { property: 'og:site_name', content: 'VLADI' },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:locale', content: 'fr_FR' },
+        { property: 'og:title', content: 'VLADI · Réserve ton instant beauté et bien-être' },
+        { property: 'og:description', content: 'Des prestataires locaux près de chez toi, en Guadeloupe.' },
+        { property: 'og:image', content: 'https://bel-manzel.vercel.app/og.png' },
+        { name: 'twitter:card', content: 'summary_large_image' },
         // Installée sur l'écran d'accueil, l'appli s'ouvre en plein écran comme une appli native.
         { name: 'theme-color', content: '#ffffff' },
         { name: 'mobile-web-app-capable', content: 'yes' },

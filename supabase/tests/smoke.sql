@@ -214,4 +214,61 @@ begin
   if exists (select 1 from pros where categories && array['tresses', 'soins', 'spa', 'hotel']) then raise exception 'anciennes catégories restantes'; end if;
 end $$;
 delete from pros where id = 'old-cat';
+-- 16. Réponse aux avis, photos des fiches et signalements (patch 006).
+\ir ../storage.sql
+insert into bookings (id, pro_id, service_id, client_id, starts_at, ends_at, price_eur, deposit_eur)
+  select '00000000-0000-0000-0000-00000000d016', 'kaz', id, '00000000-0000-0000-0000-0000000000a1', now() + interval '30 days', now() + interval '30 days 45 minutes', 28, 0
+  from services where pro_id = 'kaz' and code = 'c';
+-- Le rendez-vous a eu lieu : on le place dans le passé (impossible depuis l'appli).
+update bookings set starts_at = now() - interval '20 days', ends_at = now() - interval '20 days' + interval '45 minutes' where id = '00000000-0000-0000-0000-00000000d016';
+insert into reviews (id, booking_id, pro_id, client_id, stars, body)
+  values ('00000000-0000-0000-0000-00000000e016', '00000000-0000-0000-0000-00000000d016', 'kaz', '00000000-0000-0000-0000-0000000000a1', 4, 'Très bien');
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b1', false);
+do $$ begin
+  update reviews set reply = '  Merci beaucoup !  ' where id = '00000000-0000-0000-0000-00000000e016';
+  if (select reply from reviews where id = '00000000-0000-0000-0000-00000000e016') <> 'Merci beaucoup !' then raise exception 'réponse du prestataire non enregistrée'; end if;
+  if (select replied_at from reviews where id = '00000000-0000-0000-0000-00000000e016') is null then raise exception 'date de réponse absente'; end if;
+  begin
+    update reviews set stars = 5 where id = '00000000-0000-0000-0000-00000000e016';
+    raise exception 'le prestataire modifie la note';
+  exception when insufficient_privilege then null; end;
+  -- Photos : dans le dossier de sa fiche seulement, douze au plus.
+  insert into storage.objects (bucket_id, name) values ('pro-photos', 'kaz/1.jpg');
+  begin
+    insert into storage.objects (bucket_id, name) values ('pro-photos', 'g001/1.jpg');
+    raise exception 'dépôt dans le dossier d''une autre fiche';
+  exception when insufficient_privilege then null; end;
+  insert into pro_photos (pro_id, path, url) select 'kaz', 'kaz/' || n || '.jpg', 'https://x.supabase.co/' || n from generate_series(1, 12) n;
+  begin
+    insert into pro_photos (pro_id, path, url) values ('kaz', 'kaz/13.jpg', 'https://x.supabase.co/13');
+    raise exception 'treizième photo acceptée';
+  exception when raise_exception then
+    if sqlerrm not like 'Douze photos%' then raise; end if;
+  end;
+  begin
+    insert into pro_photos (pro_id, path, url) values ('kaz', 'g001/1.jpg', 'https://x.supabase.co/x');
+    raise exception 'photo rangée ailleurs acceptée';
+  exception when raise_exception then
+    if sqlerrm not like 'Photo rangée%' then raise; end if;
+  end;
+end $$;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a2', false);
+do $$ begin
+  update reviews set reply = 'piratage' where id = '00000000-0000-0000-0000-00000000e016';
+  if (select reply from reviews where id = '00000000-0000-0000-0000-00000000e016') <> 'Merci beaucoup !' then raise exception 'une autre personne répond à la place du prestataire'; end if;
+  begin
+    insert into pro_photos (pro_id, path, url) values ('g001', 'g001/1.jpg', 'https://x.supabase.co/x');
+    raise exception 'photo ajoutée à la fiche d''un autre';
+  exception when insufficient_privilege then null; end;
+  insert into reports (review_id, reason) values ('00000000-0000-0000-0000-00000000e016', 'Avis qui ne correspond pas');
+  begin
+    perform count(*) from reports;
+    raise exception 'les signalements sont lisibles';
+  exception when insufficient_privilege then null; end;
+  if (select count(*) from admin_reports('ouvert') where pro_id = 'kaz') <> 1 then raise exception 'signalement absent du pilotage'; end if;
+  perform admin_close_report((select id from admin_reports('ouvert') limit 1));
+  if (select count(*) from admin_reports('ouvert')) <> 0 then raise exception 'signalement non clôturé'; end if;
+end $$;
+reset role;
 select 'tous les contrôles passent' as resultat;

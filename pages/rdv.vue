@@ -3,6 +3,8 @@ import { CalendarDays, Navigation, Star } from 'lucide-vue-next'
 import type { Booking } from '~/composables/useVladi'
 import { RULES } from '~/data/pros'
 
+useHead({ title: 'Mes rendez-vous · VLADI' })
+
 const { myBookings, pro, service, today, isDone, refundable, cancel, addReview, toast, placeLabel, account, remote } = useVladi()
 const stamp = (b: Booking) => `${b.date} ${String(b.time).padStart(4, '0')}`
 const upcoming = computed(() => myBookings.value.filter(b => b.status === 'confirmed' && !isDone(b) && pro(b.proId)).sort((a, b) => stamp(a).localeCompare(stamp(b))))

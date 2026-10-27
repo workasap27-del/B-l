@@ -66,12 +66,22 @@ export interface RemoteSlot {
 }
 
 export interface RemoteReview {
+  id: string
   bookingId: string
   proId: string
   clientId: string
   stars: number
   body: string
   date: string
+  reply: string
+  replyDate: string
+}
+
+export interface ProPhoto { id: string, path: string, url: string, position: number }
+
+export interface AdminReport {
+  id: string, at: string, status: string, reason: string, proId: string, proName: string,
+  reviewBody: string, reviewStars: number, reporter: string
 }
 
 /** Message d'erreur compréhensible à partir d'une erreur Supabase. */
@@ -79,7 +89,10 @@ export function readable(e: unknown): string {
   const msg = (e as { message?: string })?.message ?? String(e)
   if (/Invalid login credentials/i.test(msg)) return 'E-mail ou mot de passe incorrect.'
   if (/already registered|already been registered/i.test(msg)) return 'Un compte existe déjà avec cet e-mail. Connecte-toi.'
-  if (/Password should be at least/i.test(msg)) return 'Le mot de passe doit faire au moins 8 caractères.'
+  if (/Password should be at least/i.test(msg)) return 'Le mot de passe doit faire au moins 12 caractères.'
+  if (/Password should contain|weak.?password|pwned|leaked/i.test(msg)) return 'Mot de passe trop faible ou déjà apparu dans une fuite de données. Choisis-en un autre.'
+  if (/Payload too large|exceeded the maximum allowed size/i.test(msg)) return 'Photo trop lourde (3 Mo au plus).'
+  if (/mime type|invalid_mime/i.test(msg)) return 'Format de photo non accepté (JPEG, PNG ou WebP).'
   const wait = msg.match(/after (\d+) seconds?/i)
   if (wait) return `Pour ta sécurité, patiente ${wait[1]} secondes avant de réessayer.`
   if (/rate limit|too many/i.test(msg)) return 'Trop de tentatives. Réessaie dans quelques minutes.'
@@ -371,11 +384,64 @@ export async function loadReviews(proId?: string, clientId?: string): Promise<Re
   if (proId) q = q.eq('pro_id', proId)
   if (clientId) q = q.eq('client_id', clientId)
   const { data } = await q
-  return (data ?? []).map(r => ({ bookingId: r.booking_id, proId: r.pro_id, clientId: r.client_id, stars: r.stars, body: r.body ?? '', date: r.created_at }))
+  return (data ?? []).map(r => ({
+    id: r.id, bookingId: r.booking_id, proId: r.pro_id, clientId: r.client_id, stars: r.stars, body: r.body ?? '', date: r.created_at,
+    reply: r.reply ?? '', replyDate: r.replied_at ?? '',
+  }))
 }
 
 export async function addReview(input: { bookingId: string, proId: string, clientId: string, stars: number, body: string }) {
   const { error } = await sb()!.from('reviews').insert({ booking_id: input.bookingId, pro_id: input.proId, client_id: input.clientId, stars: input.stars, body: input.body.trim() || null })
+  if (error) throw error
+}
+
+/** Réponse du prestataire à un avis (texte vide : réponse retirée). */
+export async function replyReview(id: string, reply: string) {
+  const { error } = await sb()!.from('reviews').update({ reply: reply.trim() || null }).eq('id', id)
+  if (error) throw error
+}
+
+// Photos des fiches -----------------------------------------------------------
+
+const BUCKET = 'pro-photos'
+
+export async function loadPhotos(proId: string): Promise<ProPhoto[]> {
+  const c = sb()
+  if (!c) return []
+  const { data } = await c.from('pro_photos').select('id, path, url, position').eq('pro_id', proId).order('position').order('created_at')
+  return (data ?? []) as ProPhoto[]
+}
+
+export async function uploadPhoto(proId: string, file: Blob, position: number): Promise<ProPhoto> {
+  const c = sb()!
+  const path = `${proId}/${crypto.randomUUID()}.jpg`
+  const up = await c.storage.from(BUCKET).upload(path, file, { contentType: 'image/jpeg', upsert: false })
+  if (up.error) throw up.error
+  const url = c.storage.from(BUCKET).getPublicUrl(path).data.publicUrl
+  const { data, error } = await c.from('pro_photos').insert({ pro_id: proId, path, url, position }).select('id, path, url, position').single()
+  if (error) {
+    await c.storage.from(BUCKET).remove([path])
+    throw error
+  }
+  return data as ProPhoto
+}
+
+export async function deletePhoto(photo: ProPhoto) {
+  const c = sb()!
+  const { error } = await c.from('pro_photos').delete().eq('id', photo.id)
+  if (error) throw error
+  await c.storage.from(BUCKET).remove([photo.path])
+}
+
+export async function setCover(proId: string, url: string | null) {
+  const { error } = await sb()!.from('pros').update({ photo_url: url }).eq('id', proId)
+  if (error) throw error
+}
+
+// Signalements ------------------------------------------------------------------
+
+export async function report(input: { proId?: string, reviewId?: string, reason: string }) {
+  const { error } = await sb()!.from('reports').insert({ pro_id: input.reviewId ? null : input.proId ?? null, review_id: input.reviewId ?? null, reason: input.reason.trim() })
   if (error) throw error
 }
 
@@ -433,4 +499,19 @@ export async function adminBookings(days: number): Promise<Record<string, unknow
   const { data, error } = await sb()!.rpc('admin_bookings', { p_days: days })
   if (error) throw error
   return data ?? []
+}
+
+export async function adminReports(status: 'ouvert' | 'traité' | null = 'ouvert'): Promise<AdminReport[]> {
+  const { data, error } = await sb()!.rpc('admin_reports', { p_status: status })
+  if (error) throw error
+  return (data ?? []).map((r: Record<string, unknown>) => ({
+    id: String(r.id), at: String(r.created_at), status: String(r.status), reason: String(r.reason ?? ''),
+    proId: String(r.pro_id ?? ''), proName: String(r.pro_name ?? ''), reviewBody: String(r.review_body ?? ''),
+    reviewStars: Number(r.review_stars ?? 0), reporter: String(r.reporter_name ?? ''),
+  }))
+}
+
+export async function adminCloseReport(id: string) {
+  const { error } = await sb()!.rpc('admin_close_report', { p_id: id })
+  if (error) throw error
 }

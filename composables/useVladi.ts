@@ -6,6 +6,8 @@ import { computed, reactive, ref, watch } from 'vue'
 import { DEMO_CLIENT, DEMO_PRO_ID, PROS, REVIEW_TEXTS, RULES, CLIENT_NAMES } from '~/data/pros'
 import { hash, rng } from '~/data/random'
 import type { Pro, Review, Service } from '~/data/pros'
+import { PHOTO_POOLS, pexels } from '~/utils/photos'
+import { shrinkImage } from '~/utils/image'
 import { addDays, ceil30, discounted, freeStarts, gaps, isClosed, simulatedAppointments, spansOverlap } from '~/utils/schedule'
 import type { Interval, Span } from '~/utils/schedule'
 import { allowedPlaces, proPlace, travelFee } from '~/utils/places'
@@ -124,6 +126,7 @@ const remote = reactive({
   slots: [] as Slot[],
   busy: {} as Record<string, Record<string, [number, number][]>>,
   reviews: {} as Record<string, RemoteReview[]>,
+  photos: {} as Record<string, api.ProPhoto[]>,
   reviewed: [] as string[],
   /** vrai quand la personne arrive depuis le lien de réinitialisation du mot de passe */
   recovery: false,
@@ -167,7 +170,7 @@ function baseReviews(p: Pro): Review[] {
 }
 
 function reviewsOf(p: Pro): Review[] {
-  if (p.real) return (remote.reviews[p.id] ?? []).map(r => ({ a: 'Avis vérifié', s: r.stars, t: r.body || 'Sans commentaire.' }))
+  if (p.real) return (remote.reviews[p.id] ?? []).map(r => ({ id: r.id, a: 'Avis vérifié', s: r.stars, t: r.body || 'Sans commentaire.', reply: r.reply || undefined }))
   return [...(state.reviews[p.id] ?? []), ...baseReviews(p)]
 }
 
@@ -182,6 +185,119 @@ function ratingOf(p: Pro): { rating: number, count: number } {
 async function loadReviewsFor(p: Pro) {
   if (!p.real || !remote.online) return
   remote.reviews[p.id] = await api.loadReviews(p.id)
+}
+
+/** Réponse du prestataire à un avis de sa fiche. */
+async function replyToReview(p: Pro, reviewId: string, text: string): Promise<boolean> {
+  try {
+    await api.replyReview(reviewId, text)
+    await loadReviewsFor(p)
+    toast(text.trim() ? 'Réponse publiée' : 'Réponse retirée')
+    return true
+  }
+  catch (e) {
+    toast(api.readable(e))
+    return false
+  }
+}
+
+// Photos des fiches -------------------------------------------------------------
+
+/** Galerie d'une fiche : photos déposées (fiches réelles) ou photos du métier (fiches de démonstration). */
+function photosOf(p: Pro): { id: string, url: string, thumb: string }[] {
+  if (p.real) return (remote.photos[p.id] ?? []).map(x => ({ id: x.id, url: x.url, thumb: x.url }))
+  const pool = PHOTO_POOLS[p.cats[0]] ?? []
+  const start = hash(`gal${p.id}`) % Math.max(pool.length, 1)
+  return Array.from({ length: Math.min(6, pool.length) }, (_, i) => pool[(start + i * 2) % pool.length])
+    .filter((x, i, all) => all.indexOf(x) === i)
+    .map(id => ({ id: String(id), url: pexels(id, 1200, 1200), thumb: pexels(id, 320, 320) }))
+}
+
+async function loadPhotosFor(p: Pro) {
+  if (!p.real || !remote.online) return
+  remote.photos[p.id] = await api.loadPhotos(p.id)
+}
+
+/** Ajoute des photos à la fiche du compte, réduites dans le navigateur (1600 px, JPEG, sans données de localisation). */
+async function addPhotos(files: File[]): Promise<number> {
+  const p = remote.myPro
+  if (!p) return 0
+  const list = remote.photos[p.id] ?? (remote.photos[p.id] = [])
+  let added = 0
+  for (const f of files) {
+    if (list.length >= 12) {
+      toast('Douze photos au plus par fiche')
+      break
+    }
+    if (!/^image\//.test(f.type)) continue
+    try {
+      const blob = await shrinkImage(f, 1600, 0.82)
+      const photo = await api.uploadPhoto(p.id, blob, list.length)
+      list.push(photo)
+      added++
+      if (!p.photo) {
+        await api.setCover(p.id, photo.url)
+        p.photo = photo.url
+      }
+    }
+    catch (e) {
+      toast(api.readable(e))
+      break
+    }
+  }
+  if (added) toast(added > 1 ? `${added} photos ajoutées` : 'Photo ajoutée')
+  return added
+}
+
+async function removePhoto(photo: api.ProPhoto) {
+  const p = remote.myPro
+  if (!p) return
+  try {
+    await api.deletePhoto(photo)
+    remote.photos[p.id] = (remote.photos[p.id] ?? []).filter(x => x.id !== photo.id)
+    if (p.photo === photo.url) {
+      const next = remote.photos[p.id][0]?.url ?? null
+      await api.setCover(p.id, next)
+      p.photo = next ?? undefined
+    }
+    toast('Photo retirée')
+  }
+  catch (e) {
+    toast(api.readable(e))
+  }
+}
+
+async function makeCover(photo: api.ProPhoto) {
+  const p = remote.myPro
+  if (!p) return
+  try {
+    await api.setCover(p.id, photo.url)
+    p.photo = photo.url
+    const live = remote.pros.find(x => x.id === p.id)
+    if (live) live.photo = photo.url
+    toast('Photo de couverture changée')
+  }
+  catch (e) {
+    toast(api.readable(e))
+  }
+}
+
+// Signalements -------------------------------------------------------------------
+
+async function reportContent(input: { proId?: string, reviewId?: string, reason: string }): Promise<boolean> {
+  if (!remote.online || !account.value) {
+    toast('Connecte-toi pour signaler un contenu')
+    return false
+  }
+  try {
+    await api.report(input)
+    toast('Merci, ton signalement a été transmis')
+    return true
+  }
+  catch (e) {
+    toast(api.readable(e))
+    return false
+  }
 }
 
 // Disponibilités ------------------------------------------------------------
@@ -698,6 +814,7 @@ async function refresh() {
       const [myPro, bookings, mine, admin] = await Promise.all([api.loadMyPro(profile.id), api.loadBookings(), api.loadReviews(undefined, profile.id), api.isAdmin()])
       remote.admin = admin
       remote.myPro = myPro
+      if (myPro) void api.loadPhotos(myPro.id).then((ph) => { remote.photos[myPro.id] = ph })
       remote.reviewed = mine.map(r => r.bookingId)
       remote.bookings = bookings.map(fromRemote)
     }
@@ -779,7 +896,8 @@ export function useVladi() {
   start()
   return {
     state, remote, today, nowMin, toastMessage,
-    pros: catalogue, pro, service, isMine, reviewsOf, ratingOf, loadReviewsFor,
+    pros: catalogue, pro, service, isMine, reviewsOf, ratingOf, loadReviewsFor, replyToReview,
+    photosOf, loadPhotosFor, addPhotos, removePhoto, makeCover, reportContent,
     starts, openSlots, isDone, refundable, minutesUntil, myBookings, findBooking,
     book, clashWith, cancel, addReview, toggleFav, placeLabel,
     km, setCommune, locate, currentPosition, nextSlots, openStatus,

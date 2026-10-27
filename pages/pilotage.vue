@@ -18,6 +18,17 @@ const kind = ref('')
 const limit = ref(60)
 const loading = ref(false)
 const error = ref('')
+const reports = ref<api.AdminReport[]>([])
+async function closeReport(id: string) {
+  try {
+    await api.adminCloseReport(id)
+    reports.value = reports.value.filter(r => r.id !== id)
+    toast('Signalement traité')
+  }
+  catch (e) {
+    toast(api.readable(e))
+  }
+}
 
 async function load() {
   if (!remote.admin) return
@@ -27,6 +38,8 @@ async function load() {
     const [s, e] = await Promise.all([api.adminStats(days.value), api.adminEvents(limit.value, kind.value || undefined)])
     stats.value = s
     events.value = e
+    // Les signalements arrivent avec le patch 006 : sans lui, la section reste simplement vide.
+    reports.value = await api.adminReports('ouvert').catch(() => [])
   }
   catch (e) {
     error.value = api.readable(e)
@@ -304,6 +317,20 @@ function back() {
         <p v-else class="meta mt8">Aucune réservation {{ periodText }}.</p>
       </section>
     </template>
+
+    <section class="section">
+      <h2 class="h2">Signalements à traiter <span v-if="reports.length" class="tag accent">{{ reports.length }}</span></h2>
+      <p v-if="!reports.length" class="meta mt8">Aucun signalement en attente.</p>
+      <div v-for="r in reports" :key="r.id" class="infobox mt12">
+        <div class="row between wrap gap8">
+          <span class="name">{{ r.reviewBody || r.reviewStars ? 'Avis' : 'Fiche' }} · <NuxtLink class="link" :to="`/pro/${r.proId}`">{{ r.proName || r.proId }}</NuxtLink></span>
+          <span class="tiny">{{ new Date(r.at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) }}{{ r.reporter ? ` · ${r.reporter}` : '' }}</span>
+        </div>
+        <p class="mt8">{{ r.reason }}</p>
+        <p v-if="r.reviewBody || r.reviewStars" class="meta">Avis {{ r.reviewStars }}/5 : « {{ r.reviewBody || 'sans commentaire' }} »</p>
+        <button type="button" class="btn sm soft mt8" @click="closeReport(r.id)">Marquer comme traité</button>
+      </div>
+    </section>
 
     <section class="section">
       <div class="row between wrap gap12">

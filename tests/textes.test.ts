@@ -45,3 +45,13 @@ describe('textes visibles', () => {
     })
   }
 })
+
+describe('nom des communes dans les phrases', () => {
+  it('met le bon article', async () => {
+    const { inCommune } = await import('../utils/format')
+    expect(inCommune('Les Abymes')).toBe('aux Abymes')
+    expect(inCommune('Le Gosier')).toBe('au Gosier')
+    expect(inCommune('La Désirade')).toBe('à La Désirade')
+    expect(inCommune('Baie-Mahault')).toBe('à Baie-Mahault')
+  })
+})

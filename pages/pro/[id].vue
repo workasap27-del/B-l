@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ChevronLeft, Clock, Heart, House, MapPin, Navigation, Pencil, Phone, Star, Store } from 'lucide-vue-next'
+import { ChevronLeft, Clock, Flag, Heart, House, MapPin, Navigation, Pencil, Phone, Share2, Star, Store } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
-const { pro, state, remote, toggleFav, openSlots, reviewsOf, ratingOf, km, openStatus, today, isMine, loadReviewsFor } = useVladi()
+const { pro, state, remote, toggleFav, openSlots, reviewsOf, ratingOf, km, openStatus, today, isMine, loadReviewsFor, photosOf, loadPhotosFor, replyToReview } = useVladi()
 const p = computed(() => pro(String(route.params.id)))
 const slots = computed(() => (p.value ? openSlots(p.value.id) : []))
 const tab = ref<'prestations' | 'avis' | 'infos'>('prestations')
@@ -14,7 +14,58 @@ const r = computed(() => (p.value ? ratingOf(p.value) : { rating: 0, count: 0 })
 const hero = computed(() => (p.value ? photoSrc(p.value, 800, 600) : { src: '', srcset: '' }))
 const todayIndex = computed(() => weekday(today.value))
 const days = [1, 2, 3, 4, 5, 6, 0]
-watch(p, (v) => { if (v) void loadReviewsFor(v) }, { immediate: true })
+watch(p, (v) => {
+  if (!v) return
+  void loadReviewsFor(v)
+  void loadPhotosFor(v)
+}, { immediate: true })
+const photos = computed(() => (p.value ? photosOf(p.value) : []))
+
+// Titre et description de la page, pour l'onglet du navigateur et les moteurs de recherche.
+useHead(() => {
+  const v = p.value
+  if (!v) return { title: 'VLADI' }
+  const what = CAT_SHORT[v.cats[0]] ?? 'Beauté'
+  const desc = `${v.name}, ${what.toLowerCase()} ${inCommune(v.commune)}. ${v.services.slice(0, 3).map(x => x.n).join(', ')}. Réserve en ligne sur VLADI.`
+  return {
+    title: `${v.name} · ${what} ${inCommune(v.commune)} · VLADI`,
+    meta: [{ name: 'description', content: desc }, { property: 'og:title', content: `${v.name} · ${what} ${inCommune(v.commune)}` }, { property: 'og:description', content: desc }],
+  }
+})
+
+// Partage de la fiche : feuille de partage du téléphone, sinon WhatsApp, SMS ou copie du lien.
+const shareOpen = ref(false)
+const shareUrl = computed(() => (p.value ? `${window.location.origin}/pro/${p.value.id}` : ''))
+async function share() {
+  const v = p.value
+  if (!v) return
+  const data = { title: v.name, text: `${v.name} sur VLADI`, url: shareUrl.value }
+  if (navigator.share) {
+    try {
+      await navigator.share(data)
+      return
+    }
+    catch (e) {
+      if ((e as Error).name === 'AbortError') return
+    }
+  }
+  shareOpen.value = true
+}
+
+// Signalement d'une fiche ou d'un avis.
+const reportOf = ref<{ proId?: string, reviewId?: string } | null>(null)
+
+// Réponse du prestataire à un avis.
+const editing = ref('')
+const draft = ref('')
+function startReply(id: string, current = '') {
+  editing.value = id
+  draft.value = current
+}
+async function saveReply(id: string) {
+  if (!p.value) return
+  if (await replyToReview(p.value, id, draft.value)) editing.value = ''
+}
 
 async function show(t: 'prestations' | 'avis' | 'infos') {
   tab.value = t
@@ -66,7 +117,10 @@ const bars = computed(() => {
       <button v-else @click="show('infos')"><MapPin :size="20" />Carte</button>
       <NuxtLink v-if="isMine(p)" to="/espace-pro/fiche"><Pencil :size="20" />Modifier</NuxtLink>
       <button v-else :aria-pressed="!!state.fav[p.id]" @click="toggleFav(p.id)"><Heart :size="20" :fill="state.fav[p.id] ? 'currentColor' : 'none'" />{{ state.fav[p.id] ? 'Enregistré' : 'Enregistrer' }}</button>
+      <button @click="share"><Share2 :size="20" />Partager</button>
     </div>
+
+    <ProGallery v-if="photos.length" :photos="photos" :name="p.name" />
 
     <section v-if="slots.length" class="section">
       <h2 class="h2">Libre aujourd'hui, prix réduit</h2>
@@ -99,9 +153,21 @@ const bars = computed(() => {
           <template v-for="b in bars" :key="b[0]"><span>{{ b[0] }}</span><i><b :style="{ width: b[1] + '%' }" /></i></template>
         </div>
       </div>
-      <div v-for="(rv, i) in reviewsOf(p)" :key="i" class="review">
+      <div v-for="(rv, i) in reviewsOf(p)" :key="rv.id ?? i" class="review">
         <div class="row between"><span class="name">{{ rv.a }}</span><span class="stars5"><Star v-for="n in rv.s" :key="n" :size="12" /></span></div>
         <span>{{ rv.t }}</span>
+        <div v-if="rv.reply && editing !== rv.id" class="reply"><b>Réponse de {{ p.name }}</b>{{ rv.reply }}</div>
+        <div v-if="rv.id && editing === rv.id" class="col gap8 mt8">
+          <textarea v-model="draft" class="input" rows="3" maxlength="1000" :aria-label="`Réponse à l'avis ${i + 1}`" placeholder="Merci pour ton avis…" />
+          <div class="row gap8">
+            <button type="button" class="btn sm" @click="saveReply(rv.id)">Publier</button>
+            <button type="button" class="btn sm soft" @click="editing = ''">Annuler</button>
+          </div>
+        </div>
+        <div v-else-if="rv.id" class="rv-tools">
+          <button v-if="isMine(p)" type="button" @click="startReply(rv.id, rv.reply)">{{ rv.reply ? 'Modifier la réponse' : 'Répondre' }}</button>
+          <button v-else type="button" @click="reportOf = { reviewId: rv.id }">Signaler</button>
+        </div>
       </div>
       <p v-if="!reviewsOf(p).length" class="empty">Pas encore d'avis. Les avis sont publiés après un rendez-vous effectué.</p>
     </div>
@@ -123,12 +189,15 @@ const bars = computed(() => {
           </template>
         </div>
       </div>
+      <button v-if="p.real && !isMine(p)" type="button" class="textbtn row gap8" style="align-self:flex-start" @click="reportOf = { proId: p.id }"><Flag :size="15" />Signaler cette fiche</button>
       <p v-if="!p.real" class="tiny">Établissement de démonstration, présenté à titre d'illustration.</p>
       <p v-else class="tiny">
         <template v-if="p.siren">Entreprise immatriculée, SIREN {{ p.siren.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3') }}.</template>
         <template v-if="!p.photo"> Photo d'illustration.</template>
       </p>
     </div>
+    <ShareSheet v-if="shareOpen" :title="p.name" :text="`${p.name} sur VLADI`" :url="shareUrl" @close="shareOpen = false" />
+    <ReportSheet v-if="reportOf" v-bind="reportOf" @close="reportOf = null" />
   </template>
   <div v-else-if="remote.loading" class="empty" style="padding-top:96px">Chargement…</div>
   <div v-else class="empty" style="padding-top:96px">

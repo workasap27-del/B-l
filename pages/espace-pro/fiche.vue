@@ -1,11 +1,24 @@
 <script setup lang="ts">
-import { ChevronLeft, LocateFixed, Plus, X } from 'lucide-vue-next'
+import { ChevronLeft, Image as ImageIcon, LocateFixed, Plus, Trash2, X } from 'lucide-vue-next'
 import type { Category, Pro } from '~/data/pros'
 import { suggestedServices } from '~/data/generate'
 import { cleanSiren, validSiren } from '~/utils/siren'
 
 const router = useRouter()
-const { account, remote, saveMyPro, checkSiren, currentPosition, toast } = useVladi()
+const { account, remote, saveMyPro, checkSiren, currentPosition, toast, addPhotos, removePhoto, makeCover } = useVladi()
+
+// Photos de la fiche.
+const myPhotos = computed(() => (remote.myPro ? remote.photos[remote.myPro.id] ?? [] : []))
+const uploading = ref(false)
+async function pick(e: Event) {
+  const input = e.target as HTMLInputElement
+  const files = [...(input.files ?? [])]
+  input.value = ''
+  if (!files.length) return
+  uploading.value = true
+  await addPhotos(files)
+  uploading.value = false
+}
 
 const KINDS: Pro['kind'][] = ['Indépendante', 'Salon', 'Institut', 'Studio', 'Spa', 'Hôtel']
 const AT_HOME: Record<Pro['kind'], string> = { 'Salon': 'Au salon', 'Institut': 'À l\'institut', 'Studio': 'Au studio', 'Spa': 'Au spa', 'Hôtel': 'À l\'hôtel', 'Indépendante': 'Chez le/la pro', 'Indépendant': 'Chez le/la pro' }
@@ -208,6 +221,28 @@ async function save() {
           <button v-for="d in DAYS" :key="d" type="button" class="chip" :aria-pressed="f.closed.includes(d)" @click="toggleDay(d)">{{ WEEK[d].slice(0, 3) }}</button>
         </div>
       </div>
+    </div>
+
+    <div class="fieldset">
+      <span class="h3">Photos de tes réalisations <span class="help">(12 au plus)</span></span>
+      <p v-if="!f.id" class="meta">Publie d'abord ta fiche, puis reviens ici pour ajouter tes photos.</p>
+      <template v-else>
+        <div class="photo-grid">
+          <div v-for="ph in myPhotos" :key="ph.id" class="ph">
+            <img :src="ph.url" alt="">
+            <span v-if="remote.myPro?.photo === ph.url" class="cover-tag">Couverture</span>
+            <div class="ph-tools">
+              <button v-if="remote.myPro?.photo !== ph.url" type="button" aria-label="Mettre en couverture" title="Mettre en couverture" @click="makeCover(ph)"><ImageIcon :size="15" /></button>
+              <button type="button" aria-label="Retirer la photo" title="Retirer" @click="removePhoto(ph)"><Trash2 :size="15" /></button>
+            </div>
+          </div>
+          <label v-if="myPhotos.length < 12" class="add" :aria-busy="uploading">
+            <input type="file" accept="image/jpeg,image/png,image/webp" multiple hidden :disabled="uploading" @change="pick">
+            <Plus :size="22" />{{ uploading ? 'Envoi…' : 'Ajouter' }}
+          </label>
+        </div>
+        <p class="tiny">Montre ton travail : ce sont les photos qui font réserver. Les photos sont réduites avant l'envoi et leurs données de localisation sont retirées.</p>
+      </template>
     </div>
 
     <div class="fieldset">

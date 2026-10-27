@@ -19,6 +19,10 @@ export interface Review {
   a: string
   s: number
   t: string
+  /** identifiant de l'avis dans la base (fiches réelles) */
+  id?: string
+  /** réponse du prestataire */
+  reply?: string
 }
 
 export interface Pro {

@@ -555,3 +555,37 @@ svg.lucide { flex: 0 0 auto; }
 .why-item p { margin: 2px 0 0; color: var(--ink2); }
 @media (min-width: 700px) { .why { grid-template-columns: 1fr 1fr; gap: 20px 28px; } }
 .legal ol { list-style: decimal; }
+
+/* Galerie, partage, signalement ------------------------------------------------ */
+.gallery { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 20px calc(-1 * var(--gutter)) 0; padding: 0 var(--gutter); scrollbar-width: none; }
+.gallery::-webkit-scrollbar { display: none; }
+.gal-thumb { flex: 0 0 auto; width: 104px; height: 104px; padding: 0; border: 0; border-radius: 12px; overflow: hidden; background: var(--surface2); scroll-snap-align: start; cursor: zoom-in; }
+.gal-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lightbox { position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center; background: rgb(0 0 0 / .9); padding: 56px 12px; }
+.lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; }
+.lightbox .icon-btn { position: absolute; background: rgb(255 255 255 / .14); color: #fff; }
+.lb-close { top: 12px; right: 12px; }
+.lb-prev { left: 12px; top: 50%; transform: translateY(-50%); }
+.lb-next { right: 12px; top: 50%; transform: translateY(-50%); }
+.lb-count { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 13px; }
+.share-sheet { display: flex; flex-direction: column; padding: 0 var(--gutter, 20px) 20px; }
+.share-sheet .h3 { margin: 0; }
+.share-sheet .meta { margin: 2px 0 10px; }
+.share-row { display: flex; align-items: center; gap: 12px; padding: 9px 0; background: none; border: 0; font: inherit; font-size: 15px; color: var(--ink); text-decoration: none; cursor: pointer; text-align: left; }
+.radio-row { display: flex; align-items: center; gap: 10px; font-size: 15px; }
+.radio-row input { width: 18px; height: 18px; accent-color: var(--ink); }
+.review .reply { margin-top: 8px; padding: 10px 12px; border-left: 3px solid var(--line); background: var(--surface2); border-radius: 0 10px 10px 0; font-size: 14px; }
+.review .reply b { display: block; font-size: 12px; margin-bottom: 2px; }
+.review .rv-tools { display: flex; gap: 14px; margin-top: 6px; }
+.review .rv-tools button { background: none; border: 0; padding: 0; font: inherit; font-size: 12.5px; color: var(--muted); cursor: pointer; text-decoration: underline; }
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.photo-grid .ph { position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: var(--surface2); }
+.photo-grid .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-grid .ph .cover-tag { position: absolute; left: 6px; top: 6px; background: var(--ink); color: var(--bg); font-size: 11px; padding: 2px 7px; border-radius: 8px; }
+.photo-grid .ph .ph-tools { position: absolute; right: 4px; bottom: 4px; display: flex; gap: 4px; }
+.photo-grid .ph .ph-tools button { width: 30px; height: 30px; border-radius: 15px; border: 0; background: rgb(0 0 0 / .55); color: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.photo-grid .add { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; aspect-ratio: 1; border: 1.5px dashed var(--line); border-radius: 12px; color: var(--muted); font-size: 12.5px; cursor: pointer; }
+@media (min-width: 700px) {
+  .gal-thumb { width: 140px; height: 140px; }
+  .photo-grid { grid-template-columns: repeat(4, 1fr); }
+}

@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /pilotage
+Disallow: /espace-pro
+Disallow: /reserver
+Disallow: /confirmation
+Sitemap: https://bel-manzel.vercel.app/sitemap.xml

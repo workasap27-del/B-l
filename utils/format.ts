@@ -19,3 +19,10 @@ export function kindLabel(kind: string): string {
 export function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
+
+/** « à Baie-Mahault », « au Gosier », « aux Abymes ». */
+export function inCommune(commune: string): string {
+  if (commune.startsWith('Les ')) return `aux ${commune.slice(4)}`
+  if (commune.startsWith('Le ')) return `au ${commune.slice(3)}`
+  return `à ${commune}`
+}

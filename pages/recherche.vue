@@ -31,6 +31,11 @@ watch(() => [route.query.cat, route.query.lieu], ([c, l]) => {
 })
 watch([q, cat, place, kind, maxKm, todayOnly, sort, day], () => { shown.value = 12; selected.value = '' })
 
+useHead(() => {
+  const label = CATEGORIES.find(c => c[0] === cat.value && c[0] !== 'all')?.[1]
+  return { title: label ? `${label} en Guadeloupe · VLADI` : 'Rechercher une prestation · VLADI' }
+})
+
 const SUGGESTIONS = ['Pose gel', 'Box braids', 'Extensions de cils', 'Dégradé', 'Massage', 'Tatouage', 'Piercing', 'Pédicure', 'Brushing', 'Maquillage mariée', 'Épilation', 'Microblading']
 const minPrice = (p: Pro) => Math.min(...p.services.map(s => s.p))
 const freeToday = (p: Pro) => p.services.some(s => starts(p, today.value, s.d).length > 0)

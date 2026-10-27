@@ -2,6 +2,8 @@
 import { passwordError } from '~/utils/password'
 import { ChevronLeft, Eye, EyeOff, Scissors, Sparkles } from 'lucide-vue-next'
 
+useHead({ title: 'Connexion · VLADI' })
+
 const route = useRoute()
 const router = useRouter()
 const { register, login, forgotPassword, account, remote, toast } = useVladi()
