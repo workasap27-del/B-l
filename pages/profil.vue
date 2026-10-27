@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RULES } from '~/data/pros'
+import { LOYALTY, RULES } from '~/data/pros'
 import type { Reliability } from '~/utils/reliability'
 import { BarChart3, ChevronRight, FileText, Heart, LogOut, Mail, MapPin, Settings2, Shield, Store, UserRound } from 'lucide-vue-next'
 import { LEGAL } from '~/data/legal'
@@ -42,6 +42,18 @@ async function out() {
 const { myReliability } = useVladi()
 const trust = ref<Reliability | null>(null)
 watch(() => account.value?.id, async (id) => { trust.value = id ? await myReliability() : null }, { immediate: true })
+
+// Fidélité et parrainage : visibles quand le programme est ouvert, ou en mode présentation avec des chiffres d'illustration.
+const { myLoyalty } = useVladi()
+const loyalty = ref<{ visits: number, referrals: number, code: string } | null>(null)
+watch(() => account.value?.id, async (id) => {
+  if (state.demo && !LOYALTY.enabled) loyalty.value = { visits: 3, referrals: 1, code: 'KREYOL' }
+  else loyalty.value = id && LOYALTY.enabled ? await myLoyalty() : null
+}, { immediate: true })
+const loyal = computed(() => (loyalty.value ? loyaltyState(loyalty.value.visits, loyalty.value.referrals) : null))
+const code = computed(() => loyalty.value?.code ?? '')
+const inviteOpen = ref(false)
+const inviteUrl = computed(() => `${window.location.origin}/?parrain=${code.value}`)
 </script>
 
 <template>
@@ -111,6 +123,21 @@ watch(() => account.value?.id, async (id) => { trust.value = id ? await myReliab
       </div>
     </section>
   </template>
+
+  <section v-if="loyal" class="section">
+    <h2 class="h2">Fidélité et parrainage</h2>
+    <div class="loyal mt12">
+      <div class="loyal-bar" role="progressbar" :aria-valuenow="loyal.inCycle" aria-valuemin="0" :aria-valuemax="loyal.cycle"><i :style="{ width: `${(loyal.inCycle / loyal.cycle) * 100}%` }" /></div>
+      <p class="mt8"><b>{{ loyal.visits }} rendez-vous honoré{{ loyal.visits > 1 ? 's' : '' }}</b> · encore {{ loyal.next.left }} avant {{ euro(loyal.next.credit) }} de crédit</p>
+      <p class="meta">Crédit cumulé : {{ euro(loyal.earned) }}<template v-if="!RULES.onlinePayment">, utilisable dès l'ouverture du paiement en ligne</template>.</p>
+    </div>
+    <div v-if="code" class="infobox mt16">
+      <span class="h3">Invite tes proches</span>
+      <p class="mt8">{{ euro(LOYALTY.referralCredit) }} pour toi et {{ euro(LOYALTY.referralCredit) }} pour la personne invitée après son premier rendez-vous. Ton code : <b>{{ code }}</b></p>
+      <button type="button" class="btn sm soft mt8" @click="inviteOpen = true">Partager mon lien</button>
+    </div>
+    <ShareSheet v-if="inviteOpen" title="Invitation VLADI" :text="`Je réserve mes rendez-vous beauté sur VLADI. Inscris-toi avec mon lien :`" :url="inviteUrl" @close="inviteOpen = false" />
+  </section>
 
   <section v-if="trust" class="section">
     <h2 class="h2">Ma fiabilité</h2>

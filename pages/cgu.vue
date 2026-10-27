@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ChevronLeft } from 'lucide-vue-next'
 import { LEGAL } from '~/data/legal'
-import { RULES } from '~/data/pros'
+import { LOYALTY, RULES } from '~/data/pros'
 import { DISPUTE_HOURS, TOLERANCE } from '~/utils/arrival'
 
 useHead({ title: 'Conditions générales d\'utilisation · VLADI' })
@@ -94,6 +94,10 @@ function back() {
 
     <h2 id="konyela">8. Créneaux Konyéla</h2>
     <p>Un Prestataire peut proposer, le jour même, un créneau resté libre avec une remise qu'il fixe lui-même. Le prix barré correspond au tarif habituel affiché sur sa Fiche. Un Créneau Konyéla est attribué à la première personne qui le réserve. Comme il est pris au dernier moment, il ne bénéficie pas de l'annulation sans frais prévue à l'article 7.</p>
+
+    <template v-if="LOYALTY.enabled">
+      <p><b>Fidélité et parrainage.</b> Chaque rendez-vous honoré, réservé et réalisé via VLADI, rapproche le Client d'un palier : {{ LOYALTY.tiers.map(t => `${t.credit} € au ${t.visits}e rendez-vous`).join(', ') }}, puis le cycle recommence. Un Client qui invite une personne reçoit {{ LOYALTY.referralCredit }} €, comme la personne invitée, après le premier rendez-vous honoré de celle-ci. Le crédit est financé par VLADI, n'est ni remboursable ni échangeable contre de l'argent, et se déduit d'un paiement en ligne. Les absences et les rendez-vous annulés ne comptent pas. VLADI peut retirer un crédit obtenu de façon frauduleuse.</p>
+    </template>
 
     <h2 id="clients">9. Engagements des clients</h2>
     <p>Le Client s'engage à se présenter à l'heure, à prévenir en cas d'empêchement, à donner une adresse exacte pour une prestation à domicile et à garantir au Prestataire des conditions d'accueil correctes et sûres. Il s'engage à signaler au Prestataire toute information utile à la bonne réalisation de la prestation.</p>

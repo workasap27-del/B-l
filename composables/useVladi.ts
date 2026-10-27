@@ -755,9 +755,32 @@ const account = computed(() => remote.profile)
 const needsFiche = computed(() => !remote.myPro && !state.demo)
 const firstName = computed(() => (remote.profile?.name ?? DEMO_CLIENT.firstName).split(' ')[0])
 
+/** Code de parrainage reçu par lien (?parrain=CODE), gardé le temps de l'inscription. */
+function referralCode(): string {
+  try {
+    return sessionStorage.getItem('vladi-parrain') ?? ''
+  }
+  catch {
+    return ''
+  }
+}
+function keepReferral(code: string) {
+  const c = code.trim().toUpperCase()
+  if (!/^[A-Z0-9]{6}$/.test(c)) return
+  try {
+    sessionStorage.setItem('vladi-parrain', c)
+  }
+  catch { /* navigation privée */ }
+}
+
+async function myLoyalty() {
+  if (!remote.online || !account.value) return null
+  return await api.myLoyalty()
+}
+
 async function register(input: { email: string, password: string, name: string, role: 'client' | 'pro', phone?: string }): Promise<string | null> {
   try {
-    await api.signUp(input)
+    await api.signUp({ ...input, referral: referralCode() })
     await refresh()
     return null
   }
@@ -960,6 +983,7 @@ export function useVladi() {
     pros: catalogue, pro, service, isMine, reviewsOf, ratingOf, loadReviewsFor, replyToReview,
     photosOf, loadPhotosFor, addPhotos, removePhoto, makeCover, reportContent,
     reliabilityFor, myReliability, blocked, loadBlocked, setBlocked, countView,
+    referralCode, keepReferral, myLoyalty,
     starts, openSlots, isDone, refundable, minutesUntil, myBookings, findBooking,
     book, clashWith, cancel, addReview, toggleFav, placeLabel,
     km, setCommune, locate, currentPosition, nextSlots, openStatus,

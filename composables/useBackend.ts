@@ -112,12 +112,12 @@ export function readable(e: unknown): string {
 
 // Comptes -------------------------------------------------------------------
 
-export async function signUp(input: { email: string, password: string, name: string, role: 'client' | 'pro', phone?: string }) {
+export async function signUp(input: { email: string, password: string, name: string, role: 'client' | 'pro', phone?: string, referral?: string }) {
   const c = sb()!
   const { data, error } = await c.auth.signUp({
     email: input.email.trim(),
     password: input.password,
-    options: { data: { display_name: input.name.trim(), role: input.role, phone: input.phone?.trim() ?? '' } },
+    options: { data: { display_name: input.name.trim(), role: input.role, phone: input.phone?.trim() ?? '', referral: input.referral?.trim().toUpperCase() ?? '' } },
   })
   if (error) throw error
   if (!data.session) throw new Error('Compte créé. Vérifie tes e-mails pour l\'activer, puis connecte-toi.')
@@ -437,6 +437,12 @@ export async function deletePhoto(photo: ProPhoto) {
 export async function setCover(proId: string, url: string | null) {
   const { error } = await sb()!.from('pros').update({ photo_url: url }).eq('id', proId)
   if (error) throw error
+}
+
+export async function myLoyalty(): Promise<{ visits: number, referrals: number, code: string } | null> {
+  const { data, error } = await sb()!.rpc('my_loyalty')
+  if (error) return null
+  return { visits: Number(data?.visits) || 0, referrals: Number(data?.referrals) || 0, code: String(data?.code ?? '') }
 }
 
 // E-mails de service -------------------------------------------------------------

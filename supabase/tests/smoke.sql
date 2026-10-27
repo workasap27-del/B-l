@@ -352,4 +352,25 @@ do $$ begin
   exception when insufficient_privilege then null; end;
 end $$;
 reset role;
+-- 19. Parrainage et fidélité (patch 009).
+insert into auth.users (id, email, raw_user_meta_data)
+  select '00000000-0000-0000-0000-0000000000a3', 'filleule@test.gp', jsonb_build_object('display_name', 'Filleule', 'referral', lower(referral_code))
+  from profiles where id = '00000000-0000-0000-0000-0000000000a1';
+do $$ begin
+  if (select referred_by from profiles where id = '00000000-0000-0000-0000-0000000000a3') <> '00000000-0000-0000-0000-0000000000a1' then raise exception 'parrainage non enregistré'; end if;
+  if (select referral_code from profiles where id = '00000000-0000-0000-0000-0000000000a3') !~ '^[A-HJ-NP-Z2-9]{6}$' then raise exception 'code de parrainage mal formé'; end if;
+end $$;
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a3', false);
+do $$ declare l jsonb;
+begin
+  begin
+    update profiles set referred_by = '00000000-0000-0000-0000-0000000000a2' where id = auth.uid();
+    raise exception 'un compte change son parrain';
+  exception when insufficient_privilege then null; end;
+  update profiles set phone = '0690 12 34 56' where id = auth.uid();
+  l := my_loyalty();
+  if (l ->> 'visits')::int <> 0 or (l ->> 'referrals')::int <> 0 then raise exception 'fidélité mal comptée : %', l; end if;
+end $$;
+reset role;
 select 'tous les contrôles passent' as resultat;

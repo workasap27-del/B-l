@@ -33,6 +33,7 @@ function back() {
       <li><b>Blocage</b> : un Prestataire peut empêcher une personne de réserver à nouveau chez lui. Seul ce Prestataire le sait.</li>
       <li><b>Photos des Fiches</b> : photos déposées par les Prestataires pour montrer leur travail. Elles sont réduites et leurs données de localisation retirées avant l'envoi. Elles sont publiques.</li>
       <li><b>Signalements</b> : raison du signalement d'une Fiche ou d'un avis, rattachée au compte qui l'a envoyé. Lus uniquement par l'équipe de VLADI.</li>
+      <li><b>Parrainage</b> : votre code personnel et, si vous vous êtes inscrit avec le lien d'une autre personne, le lien entre vos deux comptes. La personne qui vous a invité voit seulement le nombre de personnes invitées qui ont honoré un rendez-vous, jamais leur nom.</li>
       <li><b>Visites des Fiches</b> : nombre de visites par Fiche et par jour, sans aucune information sur les visiteurs.</li>
       <li><b>Journal d'activité</b> : trace des actions effectuées sur le service (inscription, publication ou modification d'une fiche, réservation, annulation, avis), avec leur date.</li>
       <li><b>Sur votre appareil uniquement</b> : position utilisée pour calculer les distances, favoris, choix des couleurs et session de connexion. Votre position n'est pas envoyée à nos serveurs, sauf si un Prestataire choisit de l'enregistrer comme adresse de sa Fiche.</li>

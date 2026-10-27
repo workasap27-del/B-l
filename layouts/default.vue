@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { CalendarDays, House, Search, User, Zap } from 'lucide-vue-next'
 
-const { state, toastMessage, account, remote, firstName } = useVladi()
+const { state, toastMessage, account, remote, firstName, keepReferral } = useVladi()
 const route = useRoute()
+// Lien de parrainage : le code est gardé jusqu'à l'inscription.
+onMounted(() => { if (typeof route.query.parrain === 'string') keepReferral(route.query.parrain) })
 const router = useRouter()
 // Lien « mot de passe oublié » ouvert : on propose de choisir un nouveau mot de passe.
 watch(() => remote.recovery, (v) => { if (v && route.path !== '/nouveau-mot-de-passe') router.push('/nouveau-mot-de-passe') })

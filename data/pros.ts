@@ -242,3 +242,16 @@ export const DEMO_CLIENT = { name: 'Inès A.', firstName: 'Inès', commune: 'Les
 
 /** Règles commerciales. onlinePayment reste faux tant que le paiement en ligne n'est pas branché : tout se règle sur place. */
 export const RULES = { depositRate: 0.2, commissionRate: 0.12, freeCancelHours: 24, onlinePayment: false }
+
+/**
+ * Fidélité et parrainage. Désactivé tant que les montants ne sont pas validés et que le paiement en ligne n'existe pas :
+ * le crédit est financé par VLADI et ne peut être déduit qu'au moment d'un paiement en ligne.
+ * En mode présentation (?demo=1), la section s'affiche avec des chiffres d'illustration.
+ */
+export const LOYALTY = {
+  enabled: false,
+  /** paliers d'un cycle : au 5e rendez-vous honoré, puis au 10e, et le cycle recommence */
+  tiers: [{ visits: 5, credit: 5 }, { visits: 10, credit: 10 }],
+  /** crédit pour la marraine ou le parrain et pour la personne invitée, après son premier rendez-vous honoré */
+  referralCredit: 5,
+}
