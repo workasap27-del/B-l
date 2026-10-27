@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import * as api from '~/composables/useBackend'
 import { passwordError } from '~/utils/password'
 import { ChevronLeft, Eye, EyeOff, Scissors, Sparkles } from 'lucide-vue-next'
 
@@ -61,6 +62,17 @@ async function forgot() {
   if (e) error.value = e
   else info.value = 'Si un compte existe, un e-mail de réinitialisation vient d\'être envoyé.'
 }
+// Connexion avec Google ou Apple, si elle est configurée.
+const providers = String(useRuntimeConfig().public.oauthProviders ?? '').split(',').map(x => x.trim()).filter((x): x is 'google' | 'apple' => x === 'google' || x === 'apple')
+async function oauth(p: 'google' | 'apple') {
+  error.value = ''
+  try {
+    await api.signInWith(p, String(route.query.retour ?? '/'))
+  }
+  catch (e) {
+    error.value = api.readable(e)
+  }
+}
 function back() {
   if (window.history.length > 1) router.back()
   else router.push('/')
@@ -77,6 +89,11 @@ function back() {
   <div class="col gap8 mt16">
     <h1 class="title">{{ mode === 'inscription' ? 'Créer un compte' : 'Se connecter' }}</h1>
     <p class="meta">{{ mode === 'inscription' ? 'Gratuit, en une minute.' : 'Avec l\'e-mail utilisé à l\'inscription.' }}</p>
+  </div>
+
+  <div v-if="providers.length && role !== 'pro'" class="col gap8 mt24">
+    <button v-for="p in providers" :key="p" type="button" class="btn block line" @click="oauth(p)">Continuer avec {{ p === 'google' ? 'Google' : 'Apple' }}</button>
+    <p class="tiny" style="text-align:center">ou avec ton e-mail</p>
   </div>
 
   <div class="seg mt24">

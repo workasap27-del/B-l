@@ -434,4 +434,9 @@ begin
 end $$;
 select set_config('request.jwt.claims', '', false);
 reset role;
+-- 22. Inscription par Google : le prénom vient du compte Google (patch 012).
+insert into auth.users (id, email, raw_user_meta_data) values ('00000000-0000-0000-0000-0000000000a4', 'marie.dupont@gmail.com', '{"full_name":"Marie Dupont","provider":"google"}');
+do $$ begin
+  if (select display_name from profiles where id = '00000000-0000-0000-0000-0000000000a4') <> 'Marie' then raise exception 'prénom Google non repris'; end if;
+end $$;
 select 'tous les contrôles passent' as resultat;

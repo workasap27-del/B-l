@@ -130,6 +130,12 @@ export async function signIn(email: string, password: string, captcha?: string) 
   if (error) throw error
 }
 
+/** Connexion avec Google ou Apple : la page part chez le fournisseur et revient sur l'appli. */
+export async function signInWith(provider: 'google' | 'apple', back = '/') {
+  const { error } = await sb()!.auth.signInWithOAuth({ provider, options: { redirectTo: `${location.origin}${back}` } })
+  if (error) throw error
+}
+
 export async function signOut(everywhere = false) {
   await sb()?.auth.signOut({ scope: everywhere ? 'global' : 'local' })
 }

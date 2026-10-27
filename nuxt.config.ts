@@ -75,6 +75,11 @@ export default defineNuxtConfig({
       // Clé publique Cloudflare Turnstile (anti-robots). Vide : pas de vérification. À activer en même temps
       // que la protection CAPTCHA de Supabase (Authentication > Attack Protection), avec la clé secrète correspondante.
       turnstileSiteKey: '',
+      // Connexion avec Google ou Apple : liste séparée par des virgules (« google,apple »), une fois les fournisseurs
+      // configurés dans Supabase (Authentication > Providers). Vide : connexion par e-mail seulement.
+      oauthProviders: '',
+      // Mesure d'audience Vercel Web Analytics (sans cookie). À activer aussi dans le tableau de bord Vercel.
+      analytics: false,
     },
   },
 })

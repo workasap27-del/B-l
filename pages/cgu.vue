@@ -61,7 +61,7 @@ function back() {
     <p>Les informations d'une Fiche sont fournies par le Prestataire. Nous vérifions à la création de la Fiche que son numéro SIREN correspond à une entreprise active au répertoire officiel des entreprises. Nous ne contrôlons pas les diplômes, les assurances ni les conditions d'hygiène.</p>
 
     <h2 id="compte">4. Accès et compte</h2>
-    <p>La consultation des Fiches est libre et gratuite. Réserver ou publier une Fiche nécessite un compte, créé avec une adresse e-mail valide et un mot de passe personnel. L'adresse e-mail est confirmée par un lien envoyé à l'inscription.</p>
+    <p>La consultation des Fiches est libre et gratuite. Réserver ou publier une Fiche nécessite un compte, créé avec une adresse e-mail valide et un mot de passe personnel, ou avec un compte Google ou Apple lorsque cette option est proposée. L'adresse e-mail est confirmée par un lien envoyé à l'inscription.</p>
     <p>Le compte est réservé aux personnes majeures. Un mineur ne peut l'utiliser qu'avec l'autorisation et sous la responsabilité de son représentant légal.</p>
     <p>Vous vous engagez à fournir des informations exactes et à les tenir à jour, en particulier votre numéro de téléphone, qui permet au Prestataire de vous joindre. Vos identifiants sont personnels : vous êtes responsable de leur confidentialité et de toute utilisation de votre compte. En cas d'usage frauduleux, prévenez-nous sans délai à {{ LEGAL.contactEmail }}.</p>
     <p>Un compte Prestataire correspond à une seule Fiche. Un Prestataire ne peut pas réserver ses propres prestations.</p>

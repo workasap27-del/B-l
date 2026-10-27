@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const analytics = !!useRuntimeConfig().public.analytics
 import { ChevronLeft } from 'lucide-vue-next'
 import { LEGAL } from '~/data/legal'
 
@@ -25,7 +26,7 @@ function back() {
 
     <h2>Les données que nous traitons</h2>
     <ul>
-      <li><b>Compte</b> : adresse e-mail, mot de passe (conservé sous forme chiffrée, jamais lisible), prénom, profil client ou prestataire, téléphone.</li>
+      <li><b>Compte</b> : adresse e-mail, mot de passe (conservé sous forme chiffrée, jamais lisible), prénom, profil client ou prestataire, téléphone. Si vous vous connectez avec Google ou Apple, nous recevons seulement votre adresse e-mail et votre nom.</li>
       <li><b>Réservations</b> : prestation, date et heure, lieu, adresse pour une prestation à domicile, message laissé au Prestataire, suivi du rendez-vous (arrivée, retard, absence, contestation), annulation.</li>
       <li><b>Fiche prestataire</b> : nom commercial, prénom s'il est indiqué, statut, SIREN, téléphone professionnel, commune, quartier, position, prestations, tarifs, horaires, présentation. Ces informations sont publiques, c'est leur raison d'être.</li>
       <li><b>Avis</b> : note et commentaire, rattachés à la réservation concernée. Ils sont publiés sans votre nom. Le Prestataire peut y répondre publiquement.</li>
@@ -48,7 +49,7 @@ function back() {
       <li><b>Prévenir les abus, traiter les contestations, assurer la sécurité du service, établir des statistiques internes</b> à partir du journal d'activité : intérêt légitime à faire fonctionner un service sûr et à l'améliorer.</li>
       <li><b>Conserver certaines traces</b> lorsque la loi l'impose : obligation légale.</li>
     </ul>
-    <p>Nous ne faisons pas de publicité ciblée, n'utilisons aucun outil de mesure d'audience tiers et ne prenons aucune décision automatisée produisant des effets juridiques à votre égard.</p>
+    <p>Nous ne faisons pas de publicité ciblée et ne prenons aucune décision automatisée produisant des effets juridiques à votre égard.<template v-if="analytics"> Nous mesurons la fréquentation avec Vercel Web Analytics, sans cookie et sans identifiant personnel : seules des statistiques globales (pages vues, pays, type d'appareil) sont conservées.</template><template v-else> Nous n'utilisons aucun outil de mesure d'audience.</template></p>
 
     <h2>Qui y a accès</h2>
     <ul>
