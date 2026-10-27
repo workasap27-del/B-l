@@ -28,6 +28,10 @@ function next() {
 // Déjà connecté : pas besoin de rester ici.
 watch(account, (a) => { if (a && !busy.value) next() }, { immediate: true })
 
+// Vérification anti-robots (si elle est configurée).
+const captcha = ref('')
+const captchaBox = ref<{ reset: () => void } | null>(null)
+
 async function submit() {
   error.value = ''
   info.value = ''
@@ -40,9 +44,11 @@ async function submit() {
   if (mode.value === 'inscription' && name.value.trim().length < 2) return (error.value = 'Indique ton prénom.')
   busy.value = true
   const e = mode.value === 'inscription'
-    ? await register({ email: email.value, password: password.value, name: name.value, role: role.value, phone: phone.value })
-    : await login(email.value, password.value)
+    ? await register({ email: email.value, password: password.value, name: name.value, role: role.value, phone: phone.value, captcha: captcha.value })
+    : await login(email.value, password.value, captcha.value)
   busy.value = false
+  // Un jeton anti-robots ne sert qu'une fois.
+  captchaBox.value?.reset()
   if (e) return (error.value = e)
   toast(mode.value === 'inscription' ? 'Compte créé, bienvenue !' : 'Te revoilà !')
   next()
@@ -50,7 +56,8 @@ async function submit() {
 async function forgot() {
   error.value = ''
   if (!/^\S+@\S+\.\S+$/.test(email.value.trim())) return (error.value = 'Indique ton e-mail ci-dessus, puis appuie à nouveau.')
-  const e = await forgotPassword(email.value)
+  const e = await forgotPassword(email.value, captcha.value)
+  captchaBox.value?.reset()
   if (e) error.value = e
   else info.value = 'Si un compte existe, un e-mail de réinitialisation vient d\'être envoyé.'
 }
@@ -104,6 +111,7 @@ function back() {
       </div>
     </label>
     <PasswordRules v-if="mode === 'inscription' && password" :value="password" :email="email" />
+    <TurnstileBox ref="captchaBox" @token="t => (captcha = t)" />
     <p v-if="error" class="error">{{ error }}</p>
     <p v-if="info" class="notice">{{ info }}</p>
     <button class="btn block" type="submit" :disabled="busy || !remote.online">{{ busy ? 'Un instant…' : mode === 'inscription' ? 'Créer mon compte' : 'Se connecter' }}</button>

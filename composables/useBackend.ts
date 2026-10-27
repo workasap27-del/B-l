@@ -106,34 +106,36 @@ export function readable(e: unknown): string {
   if (/Réservation impossible chez ce prestataire/i.test(msg)) return 'Ce prestataire ne prend plus de réservation de ta part. Choisis-en un autre.'
   if (/pros_one_per_owner/i.test(msg)) return 'Ton compte a déjà une fiche.'
   if (/siren/i.test(msg)) return 'Le numéro SIREN doit faire 9 chiffres.'
+  if (/Invalid TOTP|invalid.*code|mfa_verification_failed/i.test(msg)) return 'Code incorrect ou expiré. Prends le code affiché maintenant dans ton appli.'
+  if (/captcha/i.test(msg)) return 'Vérification anti-robots échouée. Patiente une seconde et réessaie.'
   if (/Failed to fetch|NetworkError/i.test(msg)) return 'Pas de connexion. Vérifie ton réseau et réessaie.'
   return msg
 }
 
 // Comptes -------------------------------------------------------------------
 
-export async function signUp(input: { email: string, password: string, name: string, role: 'client' | 'pro', phone?: string, referral?: string }) {
+export async function signUp(input: { email: string, password: string, name: string, role: 'client' | 'pro', phone?: string, referral?: string, captcha?: string }) {
   const c = sb()!
   const { data, error } = await c.auth.signUp({
     email: input.email.trim(),
     password: input.password,
-    options: { data: { display_name: input.name.trim(), role: input.role, phone: input.phone?.trim() ?? '', referral: input.referral?.trim().toUpperCase() ?? '' } },
+    options: { captchaToken: input.captcha || undefined, data: { display_name: input.name.trim(), role: input.role, phone: input.phone?.trim() ?? '', referral: input.referral?.trim().toUpperCase() ?? '' } },
   })
   if (error) throw error
   if (!data.session) throw new Error('Compte créé. Vérifie tes e-mails pour l\'activer, puis connecte-toi.')
 }
 
-export async function signIn(email: string, password: string) {
-  const { error } = await sb()!.auth.signInWithPassword({ email: email.trim(), password })
+export async function signIn(email: string, password: string, captcha?: string) {
+  const { error } = await sb()!.auth.signInWithPassword({ email: email.trim(), password, options: { captchaToken: captcha || undefined } })
   if (error) throw error
 }
 
-export async function signOut() {
-  await sb()?.auth.signOut()
+export async function signOut(everywhere = false) {
+  await sb()?.auth.signOut({ scope: everywhere ? 'global' : 'local' })
 }
 
-export async function resetPassword(email: string) {
-  const { error } = await sb()!.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${location.origin}/nouveau-mot-de-passe` })
+export async function resetPassword(email: string, captcha?: string) {
+  const { error } = await sb()!.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${location.origin}/nouveau-mot-de-passe`, captchaToken: captcha || undefined })
   if (error) throw error
 }
 
@@ -445,6 +447,17 @@ export async function myLoyalty(): Promise<{ visits: number, referrals: number, 
   return { visits: Number(data?.visits) || 0, referrals: Number(data?.referrals) || 0, code: String(data?.code ?? '') }
 }
 
+/** Supprime le compte connecté (rendez-vous à venir annulés, fiche retirée). */
+export async function deleteAccount(): Promise<void> {
+  const { data } = await sb()!.auth.getSession()
+  const token = data.session?.access_token
+  if (!token) throw new Error('Ta session a expiré. Reconnecte-toi.')
+  const res = await fetch('/api/account/delete', { method: 'POST', headers: { Authorization: `Bearer ${token}` } })
+  if (res.status === 503) throw new Error('indisponible')
+  if (!res.ok) throw new Error('La suppression n\'a pas abouti. Réessaie ou écris-nous.')
+  await sb()!.auth.signOut({ scope: 'local' })
+}
+
 // E-mails de service -------------------------------------------------------------
 
 /** Demande l'envoi immédiat des e-mails d'une réservation (confirmation, annulation). Sans effet si les e-mails ne sont pas configurés. */
@@ -542,6 +555,37 @@ export async function isAdmin(): Promise<boolean> {
   if (!c) return false
   const { data, error } = await c.rpc('is_admin')
   return !error && data === true
+}
+
+/** Propriétaire connecté sans double authentification : le pilotage demande le code. */
+export async function adminNeedsMfa(): Promise<boolean> {
+  const c = sb()
+  if (!c) return false
+  const { data, error } = await c.rpc('admin_needs_mfa')
+  return !error && data === true
+}
+
+/** Facteur d'authentification déjà validé (appli d'authentification), s'il existe. */
+export async function mfaFactor(): Promise<{ id: string } | null> {
+  const { data } = await sb()!.auth.mfa.listFactors()
+  const f = data?.totp?.find(x => x.status === 'verified')
+  return f ? { id: f.id } : null
+}
+
+/** Nouveau facteur : QR code à scanner avec l'appli d'authentification. */
+export async function mfaEnroll(): Promise<{ id: string, qr: string, secret: string }> {
+  const c = sb()!
+  // Les essais d'inscription non terminés sont retirés pour repartir proprement.
+  const { data: list } = await c.auth.mfa.listFactors()
+  for (const f of list?.all ?? []) if (f.status !== 'verified') await c.auth.mfa.unenroll({ factorId: f.id })
+  const { data, error } = await c.auth.mfa.enroll({ factorType: 'totp', friendlyName: `VLADI ${new Date().toISOString().slice(0, 10)}` })
+  if (error) throw error
+  return { id: data.id, qr: data.totp.qr_code, secret: data.totp.secret }
+}
+
+export async function mfaVerify(factorId: string, code: string) {
+  const { error } = await sb()!.auth.mfa.challengeAndVerify({ factorId, code: code.replace(/\s/g, '') })
+  if (error) throw error
 }
 
 export async function adminStats(days: number): Promise<AdminStats> {

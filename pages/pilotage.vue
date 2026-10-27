@@ -179,6 +179,7 @@ function back() {
     <b>Connexion requise</b>
     <NuxtLink class="btn sm" to="/connexion?retour=/pilotage">Se connecter</NuxtLink>
   </div>
+  <AdminMfa v-else-if="remote.adminMfa" />
   <div v-else-if="!remote.admin" class="empty">
     <b>Accès réservé</b>
     <span>Cette page est réservée aux propriétaires de VLADI.</span>

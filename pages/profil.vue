@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { LOYALTY, RULES } from '~/data/pros'
 import type { Reliability } from '~/utils/reliability'
-import { BarChart3, ChevronRight, FileText, Heart, LogOut, Mail, MapPin, Settings2, Shield, Store, UserRound } from 'lucide-vue-next'
+import { BarChart3, ChevronRight, FileText, Heart, LogOut, Mail, MapPin, Settings2, Shield, Store, Trash2, UserRound } from 'lucide-vue-next'
 import { LEGAL } from '~/data/legal'
 
 useHead({ title: 'Mon compte · VLADI' })
@@ -33,9 +33,27 @@ async function save() {
     toast('Informations enregistrées')
   }
 }
-async function out() {
-  await logout()
-  toast('Déconnexion effectuée')
+async function out(everywhere = false) {
+  await logout(everywhere)
+  toast(everywhere ? 'Déconnecté·e de tous tes appareils' : 'Déconnexion effectuée')
+}
+
+// Suppression du compte.
+const { deleteAccount } = useVladi()
+const delOpen = ref(false)
+const delWord = ref('')
+const delBusy = ref(false)
+const delError = ref('')
+async function confirmDelete() {
+  delError.value = ''
+  if (delWord.value.trim().toUpperCase() !== 'SUPPRIMER') return (delError.value = 'Écris SUPPRIMER pour confirmer.')
+  delBusy.value = true
+  const e = await deleteAccount()
+  delBusy.value = false
+  if (e === 'indisponible') return (delError.value = `La suppression automatique n'est pas encore ouverte. Écris-nous à ${LEGAL.contactEmail} depuis l'adresse de ton compte : il sera supprimé sous trente jours.`)
+  if (e) return (delError.value = e)
+  delOpen.value = false
+  toast('Ton compte a été supprimé')
 }
 
 // Indicateur de fiabilité de la personne connectée.
@@ -78,7 +96,7 @@ const inviteUrl = computed(() => `${window.location.origin}/?parrain=${code.valu
       </div>
     </section>
 
-    <section v-if="remote.admin" class="section">
+    <section v-if="remote.admin || remote.adminMfa" class="section">
       <h2 class="h2">Administration</h2>
       <div class="list">
         <NuxtLink to="/pilotage"><BarChart3 :size="20" />Pilotage<span class="sub">Indicateurs et journal<ChevronRight :size="18" /></span></NuxtLink>
@@ -91,7 +109,9 @@ const inviteUrl = computed(() => `${window.location.origin}/?parrain=${code.valu
         <button @click="openEdit"><UserRound :size="20" />Mes informations<span class="sub">{{ account.phone || 'Ajouter un téléphone' }}<ChevronRight :size="18" /></span></button>
         <button @click="locOpen = true"><MapPin :size="20" />Ma position<span class="sub">{{ state.pos.label }}<ChevronRight :size="18" /></span></button>
         <button @click="settingsOpen = true"><Settings2 :size="20" />Réglages<span class="sub"><ChevronRight :size="18" /></span></button>
-        <button @click="out"><LogOut :size="20" />Se déconnecter</button>
+        <button @click="out()"><LogOut :size="20" />Se déconnecter</button>
+        <button @click="out(true)"><LogOut :size="20" />Se déconnecter de tous les appareils</button>
+        <button class="danger-row" @click="delOpen = true; delWord = ''; delError = ''"><Trash2 :size="20" />Supprimer mon compte</button>
       </div>
     </section>
   </template>
@@ -167,6 +187,14 @@ const inviteUrl = computed(() => `${window.location.origin}/?parrain=${code.valu
     <label class="field" for="p-phone"><span>Téléphone <span class="help">(transmis aux prestataires chez qui tu réserves)</span></span><input id="p-phone" v-model="phone" class="input" type="tel" autocomplete="tel" placeholder="0690 00 00 00"></label>
     <p v-if="error" class="error">{{ error }}</p>
     <button class="btn block" @click="save">Enregistrer</button>
+  </BottomSheet>
+  <BottomSheet v-if="delOpen" @close="delOpen = false">
+    <h2 class="h2">Supprimer ton compte ?</h2>
+    <p>C'est définitif. Tes rendez-vous à venir seront annulés et les prestataires prévenus. Ton historique, tes favoris et tes avis seront supprimés.<template v-if="remote.myPro"> Ta fiche « {{ remote.myPro.name }} », ses photos et ses rendez-vous à venir seront aussi supprimés, et les client·e·s prévenu·e·s.</template></p>
+    <label class="field" for="del-w"><span>Écris SUPPRIMER pour confirmer</span><input id="del-w" v-model="delWord" class="input" autocomplete="off" autocapitalize="characters"></label>
+    <p v-if="delError" class="error">{{ delError }}</p>
+    <button class="btn block danger" :disabled="delBusy" @click="confirmDelete">{{ delBusy ? 'Suppression…' : 'Supprimer définitivement' }}</button>
+    <button class="btn block" @click="delOpen = false">Garder mon compte</button>
   </BottomSheet>
   <LocationSheet v-if="locOpen" @close="locOpen = false" />
   <SettingsSheet v-if="settingsOpen" @close="settingsOpen = false" />

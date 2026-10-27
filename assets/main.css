@@ -537,11 +537,15 @@ svg.lucide { flex: 0 0 auto; }
 .site-foot a:hover { color: var(--ink); text-decoration: underline; }
 .site-foot .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 20px; }
 .site-foot .cats { grid-column: 1 / -1; }
-.site-foot .cats ul { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 20px; }
+.site-foot .cats ul { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 20px; margin-top: 10px; }
+.foot-toggle { display: inline-flex; align-items: center; gap: 6px; padding: 0; background: none; border: 0; font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); cursor: pointer; }
+.foot-toggle svg { transition: transform .2s; }
+.foot-toggle svg.flip { transform: rotate(180deg); }
 .site-foot .copy { margin: 28px 0 0; font-size: 12px; }
 @media (min-width: 700px) {
-  .site-foot .cols { grid-template-columns: 2fr 1fr 1fr; }
+  .site-foot .cols { grid-template-columns: 1fr 1fr 1fr; }
   .site-foot .cats { grid-column: auto; }
+  .site-foot .cats ul { grid-template-columns: 1fr; }
 }
 
 /* Questions fréquentes et pages d'information ------------------------------ */
@@ -599,3 +603,4 @@ svg.lucide { flex: 0 0 auto; }
 /* Fidélité --------------------------------------------------------------------- */
 .loyal-bar { height: 10px; border-radius: 5px; background: var(--surface2); overflow: hidden; }
 .loyal-bar i { display: block; height: 100%; border-radius: 5px; background: var(--accent, var(--ink)); }
+.list .danger-row { color: var(--warn); }

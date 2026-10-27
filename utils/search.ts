@@ -83,3 +83,37 @@ export function searchPros(pros: Pro[], query: string, distance: (p: Pro) => num
   }
   return hits.sort((a, b) => b.score - a.score || distance(a.pro) - distance(b.pro))
 }
+
+/** Reconnaît, au nom d'une prestation, la catégorie à laquelle elle appartient (sans accents, en minuscules). */
+const SERVICE_PATTERNS: Record<Category, RegExp> = {
+  visage: /\bvisage\b|nettoyage de peau|hydrafacial|soin eclat/,
+  maquillage: /maquillage(?! permanent)|make ?up/,
+  epilation: /epilation|\bcire\b/,
+  cils: /\bcils?\b|sourcil|\blash|rehaussement|\bbrow/,
+  coiffure: /brushing|coupe femme|coloration|\bmeches\b|balayage|lissage|tresse|braids|vanille|nattes|chignon|defrisage|perruque|tissage|coiffure|boucles|wash and go|shampoing/,
+  barbier: /\bbarbe\b|degrade|coupe homme|rasage|contours/,
+  locks: /\blocks?\b|retwist|dread/,
+  ongles: /\bongle|pose gel|remplissage gel|capsule|manucure|nail|semi permanent mains|baby boomer|\bfrench\b/,
+  pieds: /\bpieds?\b|pedicure|talon/,
+  corps: /gommage|enveloppement|hammam|sauna|soin du corps|\bcorps\b|\bspa\b|bain a remous/,
+  massage: /massage|reflexologie/,
+  minceur: /minceur|palper|cellulite|drainage|silhouette|sculptant|cryolipolyse/,
+  bronzage: /bronzage|autobronzant|spray tan/,
+  dermo: /microblading|sourcils poudres|maquillage permanent|eye liner permanent|dermopigmentation|micropigmentation/,
+  tatouage: /tatouage|tattoo|cover up|flash/,
+  piercing: /piercing|percage/,
+  medecine: /injection|botox|hyaluronique|mesotherapie|peeling medical|laser|detatouage/,
+  evenements: /mariee|mariage|ceremonie|bapteme|demoiselle|invitee|evenement|carnaval/,
+  formations: /atelier|formation|\bcours\b|initiation|consultation (colorimetrie|routine)/,
+}
+
+/** Prestations d'une fiche qui relèvent d'une catégorie, même si la fiche n'est pas rangée dans cette catégorie. */
+export function servicesInCat(p: Pro, cat: Category): Service[] {
+  const re = SERVICE_PATTERNS[cat]
+  return re ? p.services.filter(s => re.test(normalize(s.n))) : []
+}
+
+/** Une fiche fait partie d'une catégorie si elle y est rangée, ou si elle propose au moins une prestation de cette catégorie. */
+export function inCategory(p: Pro, cat: Category): boolean {
+  return p.cats.includes(cat) || servicesInCat(p, cat).length > 0
+}

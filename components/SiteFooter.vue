@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ChevronDown } from 'lucide-vue-next'
 import { CATEGORIES } from '~/data/pros'
 import { LEGAL } from '~/data/legal'
 
@@ -6,14 +7,26 @@ import { LEGAL } from '~/data/legal'
 const cats = CATEGORIES.filter(c => c[0] !== 'all')
 const { account } = useVladi()
 const year = new Date().getFullYear()
+// Liste des catégories repliée : elle s'ouvre au clic, ou au survol sur ordinateur.
+const open = ref(false)
+const canHover = ref(false)
+onMounted(() => { canHover.value = window.matchMedia('(hover: hover) and (min-width: 1000px)').matches })
+let timer: ReturnType<typeof setTimeout> | undefined
+function hover(on: boolean) {
+  if (!canHover.value) return
+  clearTimeout(timer)
+  timer = setTimeout(() => { open.value = on }, on ? 80 : 250)
+}
 </script>
 
 <template>
   <footer class="site-foot">
     <div class="cols">
-      <nav class="cats" aria-label="Catégories">
-        <h2>Catégories</h2>
-        <ul>
+      <nav class="cats" aria-label="Catégories" @mouseenter="hover(true)" @mouseleave="hover(false)">
+        <button type="button" class="foot-toggle" :aria-expanded="open" @click="open = !open">
+          Catégories <ChevronDown :size="15" :class="{ flip: open }" />
+        </button>
+        <ul v-if="open">
           <li v-for="[c, label] in cats" :key="c"><NuxtLink :to="`/recherche?cat=${c}`">{{ label }}</NuxtLink></li>
         </ul>
       </nav>

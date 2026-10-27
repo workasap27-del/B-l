@@ -17,3 +17,6 @@ create function storage.foldername(name text) returns text[] language sql immuta
 grant usage on schema storage to anon, authenticated;
 grant select on storage.objects to anon, authenticated;
 grant insert, delete on storage.objects to authenticated;
+
+-- Jeton de la session (niveau d'authentification « aal »), comme auth.jwt() de Supabase.
+create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;

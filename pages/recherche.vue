@@ -43,8 +43,10 @@ const freeToday = (p: Pro) => p.services.some(s => starts(p, today.value, s.d).l
 const browsing = computed(() => !q.value.trim() && cat.value === 'all' && place.value === 'all')
 
 const list = computed(() => {
+  const c = cat.value === 'all' ? null : cat.value as Category
   const hits = searchPros(pros.value, q.value, km).filter(({ pro: p }) => {
-    if (cat.value !== 'all' && !p.cats.includes(cat.value as Category)) return false
+    // La catégorie compte les prestations proposées, pas seulement le métier affiché (un barbier qui fait les sourcils apparaît dans Cils).
+    if (c && !inCategory(p, c)) return false
     if (place.value === 'client' && !goesToClient(p)) return false
     if (place.value === 'pro' && !proPlace(p)) return false
     if (kind.value === 'salon' && p.kind.startsWith('Indépendant')) return false
@@ -53,6 +55,11 @@ const list = computed(() => {
     if (todayOnly.value && !freeToday(p)) return false
     if (day.value && !p.services.some(s => starts(p, day.value, s.d).length > 0)) return false
     return true
+  }).map((h) => {
+    // Sans texte tapé, on pointe sur la carte les prestations de la catégorie choisie.
+    if (!c || h.services.length) return h
+    const own = servicesInCat(h.pro, c)
+    return own.length ? { ...h, services: own.slice(0, 3) } : h
   })
   if (sort.value === 'dist') hits.sort((a, b) => km(a.pro) - km(b.pro))
   if (sort.value === 'note') hits.sort((a, b) => ratingOf(b.pro).rating - ratingOf(a.pro).rating || km(a.pro) - km(b.pro))

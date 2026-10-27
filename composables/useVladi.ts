@@ -134,6 +134,8 @@ const remote = reactive({
   recovery: false,
   /** compte propriétaire de l'appli : accès au pilotage */
   admin: false,
+  /** compte propriétaire connecté sans double authentification */
+  adminMfa: false,
 })
 
 const clock = ref(new Date())
@@ -778,7 +780,7 @@ async function myLoyalty() {
   return await api.myLoyalty()
 }
 
-async function register(input: { email: string, password: string, name: string, role: 'client' | 'pro', phone?: string }): Promise<string | null> {
+async function register(input: { email: string, password: string, name: string, role: 'client' | 'pro', phone?: string, captcha?: string }): Promise<string | null> {
   try {
     await api.signUp({ ...input, referral: referralCode() })
     await refresh()
@@ -789,9 +791,9 @@ async function register(input: { email: string, password: string, name: string, 
   }
 }
 
-async function login(email: string, password: string): Promise<string | null> {
+async function login(email: string, password: string, captcha?: string): Promise<string | null> {
   try {
-    await api.signIn(email, password)
+    await api.signIn(email, password, captcha)
     await refresh()
     return null
   }
@@ -800,13 +802,30 @@ async function login(email: string, password: string): Promise<string | null> {
   }
 }
 
-async function logout() {
-  await api.signOut()
+/** Supprime le compte connecté. Renvoie un message d'erreur, « indisponible » si le serveur n'est pas configuré, ou null. */
+async function deleteAccount(): Promise<string | null> {
+  try {
+    await api.deleteAccount()
+    remote.profile = null
+    remote.myPro = null
+    remote.bookings = []
+    remote.reviewed = []
+    remote.admin = false
+    return null
+  }
+  catch (e) {
+    return (e as Error).message
+  }
+}
+
+async function logout(everywhere = false) {
+  await api.signOut(everywhere)
   remote.profile = null
   remote.myPro = null
   remote.bookings = []
   remote.reviewed = []
   remote.admin = false
+  remote.adminMfa = false
 }
 
 async function newPassword(password: string): Promise<string | null> {
@@ -820,9 +839,9 @@ async function newPassword(password: string): Promise<string | null> {
   }
 }
 
-async function forgotPassword(email: string): Promise<string | null> {
+async function forgotPassword(email: string, captcha?: string): Promise<string | null> {
   try {
-    await api.resetPassword(email)
+    await api.resetPassword(email, captcha)
     return null
   }
   catch (e) {
@@ -895,8 +914,9 @@ async function refresh() {
     remote.pros = catalogueData.pros
     remote.ratings = catalogueData.ratings
     if (profile) {
-      const [myPro, bookings, mine, admin] = await Promise.all([api.loadMyPro(profile.id), api.loadBookings(), api.loadReviews(undefined, profile.id), api.isAdmin()])
+      const [myPro, bookings, mine, admin, mfa] = await Promise.all([api.loadMyPro(profile.id), api.loadBookings(), api.loadReviews(undefined, profile.id), api.isAdmin(), api.adminNeedsMfa()])
       remote.admin = admin
+      remote.adminMfa = mfa
       remote.myPro = myPro
       if (myPro) void api.loadPhotos(myPro.id).then((ph) => { remote.photos[myPro.id] = ph })
       remote.reviewed = mine.map(r => r.bookingId)
@@ -983,7 +1003,7 @@ export function useVladi() {
     pros: catalogue, pro, service, isMine, reviewsOf, ratingOf, loadReviewsFor, replyToReview,
     photosOf, loadPhotosFor, addPhotos, removePhoto, makeCover, reportContent,
     reliabilityFor, myReliability, blocked, loadBlocked, setBlocked, countView,
-    referralCode, keepReferral, myLoyalty,
+    referralCode, keepReferral, myLoyalty, deleteAccount,
     starts, openSlots, isDone, refundable, minutesUntil, myBookings, findBooking,
     book, clashWith, cancel, addReview, toggleFav, placeLabel,
     km, setCommune, locate, currentPosition, nextSlots, openStatus,

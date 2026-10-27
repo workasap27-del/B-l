@@ -31,7 +31,7 @@ const QA: { group: string, items: { q: string, a: string }[] }[] = [
   { group: 'Avis et sécurité', items: [
     { q: 'Les avis sont-ils fiables ?', a: 'Seules les personnes qui ont réservé et dont le rendez-vous est passé peuvent laisser un avis, une seule fois par rendez-vous. Le ou la prestataire ne peut ni les modifier ni les supprimer.' },
     { q: 'Les prestataires sont-ils déclarés ?', a: 'Oui. Un numéro SIREN valide est demandé pour publier une fiche, et il est vérifié dans le registre officiel.' },
-    { q: 'Comment supprimer mon compte ?', a: `Écris-nous à ${LEGAL.contactEmail} depuis l'adresse de ton compte. Il est supprimé dans les trente jours.` },
+    { q: 'Comment supprimer mon compte ?', a: `Depuis l'onglet Compte, « Supprimer mon compte ». Tes rendez-vous à venir sont annulés et les prestataires prévenus. Un souci ? Écris-nous à ${LEGAL.contactEmail}.` },
   ] },
   { group: 'Prestataires', items: [
     { q: 'Combien ça coûte de publier sa fiche ?', a: 'L\'inscription et la publication d\'une fiche sont gratuites. Toute évolution tarifaire serait annoncée au moins trente jours à l\'avance.' },

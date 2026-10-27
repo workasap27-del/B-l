@@ -64,7 +64,7 @@ function back() {
 
     <h2>Combien de temps</h2>
     <ul>
-      <li><b>Compte et Fiche</b> : tant que le compte est ouvert, puis supprimés dans les trente jours suivant sa fermeture. Un compte inactif depuis trois ans est supprimé après un message de prévenance.</li>
+      <li><b>Compte et Fiche</b> : tant que le compte est ouvert. La suppression depuis l'onglet Compte est immédiate : les rendez-vous à venir sont annulés, la Fiche et ses photos supprimées ; une demande par e-mail est traitée dans les trente jours. Un compte inactif depuis trois ans est supprimé après un message de prévenance.</li>
       <li><b>Réservations</b> : trois ans après la date du rendez-vous, pour répondre aux réclamations et contestations.</li>
       <li><b>Avis</b> : tant que la Fiche concernée est publiée.</li>
       <li><b>Journal d'activité</b> : vingt-quatre mois.</li>
@@ -73,7 +73,7 @@ function back() {
     </ul>
 
     <h2>Vos droits</h2>
-    <p>Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité de vos données, ainsi que du droit de définir des directives sur leur sort après votre décès. Votre prénom et votre téléphone se modifient directement depuis l'onglet Compte. Pour tout le reste, écrivez à {{ LEGAL.contactEmail }} depuis l'adresse liée à votre compte ; nous répondons dans un délai d'un mois.</p>
+    <p>Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité de vos données, ainsi que du droit de définir des directives sur leur sort après votre décès. Votre prénom et votre téléphone se modifient directement depuis l'onglet Compte, d'où vous pouvez aussi supprimer votre compte. Pour tout le reste, écrivez à {{ LEGAL.contactEmail }} depuis l'adresse liée à votre compte ; nous répondons dans un délai d'un mois.</p>
     <p>Si vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à la CNIL (<a class="link" href="https://www.cnil.fr" target="_blank" rel="noopener">cnil.fr</a>).</p>
 
     <h2>Stockage sur votre appareil</h2>

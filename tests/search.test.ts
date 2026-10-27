@@ -82,3 +82,33 @@ describe('distances', () => {
     for (let i = 1; i < hits.length; i++) expect(dist(hits[i].pro)).toBeGreaterThanOrEqual(dist(hits[i - 1].pro))
   })
 })
+
+describe('catégories par prestation', () => {
+  it('un barbier qui fait les sourcils apparaît dans Cils, avec la prestation pointée', async () => {
+    const { inCategory, servicesInCat } = await import('../utils/search')
+    const { PROS } = await import('../data/pros')
+    const barber = { ...PROS.find(p => p.cats[0] === 'barbier')!, services: [{ id: 'a', n: 'Dégradé + contours', d: 30, p: 20 }, { id: 'b', n: 'Restructuration sourcils', d: 30, p: 15 }] }
+    expect(inCategory(barber, 'cils')).toBe(true)
+    expect(servicesInCat(barber, 'cils').map(s => s.n)).toEqual(['Restructuration sourcils'])
+    expect(inCategory(barber, 'ongles')).toBe(false)
+  })
+  it('chercher « cil » trouve une fiche au nom sans rapport, avec sa prestation', async () => {
+    const { searchPros } = await import('../utils/search')
+    const { PROS } = await import('../data/pros')
+    const minoda = { ...PROS.find(p => p.cats[0] === 'barbier')!, id: 'minoda', name: 'Minoda', tags: [], services: [{ id: 'a', n: 'Extension de cils', d: 90, p: 60 }] }
+    const hit = searchPros([minoda], 'cil')[0]
+    expect(hit.pro.name).toBe('Minoda')
+    expect(hit.services.map(s => s.n)).toEqual(['Extension de cils'])
+  })
+  it('les motifs reconnaissent les prestations courantes de chaque métier', async () => {
+    const { servicesInCat } = await import('../utils/search')
+    const { suggestedServices } = await import('../data/generate')
+    const { CATEGORIES } = await import('../data/pros')
+    for (const [c] of CATEGORIES) {
+      if (c === 'all') continue
+      const list = suggestedServices(c).map((s, i) => ({ id: String(i), ...s }))
+      const fake = { id: 'x', cats: [], services: list } as never
+      expect(servicesInCat(fake, c).length, c).toBeGreaterThan(0)
+    }
+  })
+})

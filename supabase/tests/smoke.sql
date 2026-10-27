@@ -166,6 +166,7 @@ reset role;
 insert into admins (user_id) values ('00000000-0000-0000-0000-0000000000a2');
 set role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a2', false);
+select set_config('request.jwt.claims', '{"aal":"aal2"}', false);
 do $$
 declare s jsonb;
 begin
@@ -254,6 +255,7 @@ do $$ begin
   end;
 end $$;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a2', false);
+select set_config('request.jwt.claims', '{"aal":"aal2"}', false);
 do $$ begin
   update reviews set reply = 'piratage' where id = '00000000-0000-0000-0000-00000000e016';
   if (select reply from reviews where id = '00000000-0000-0000-0000-00000000e016') <> 'Merci beaucoup !' then raise exception 'une autre personne répond à la place du prestataire'; end if;
@@ -373,4 +375,35 @@ begin
   if (l ->> 'visits')::int <> 0 or (l ->> 'referrals')::int <> 0 then raise exception 'fidélité mal comptée : %', l; end if;
 end $$;
 reset role;
+-- 20. Pilotage sous double authentification, fermeture de compte (patch 010).
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a2', false);
+select set_config('request.jwt.claims', '{"aal":"aal1"}', false);
+do $$ begin
+  if is_admin() then raise exception 'pilotage ouvert sans double authentification'; end if;
+  if not admin_needs_mfa() then raise exception 'double authentification non demandée'; end if;
+  begin
+    perform admin_stats(30);
+    raise exception 'statistiques lisibles sans double authentification';
+  exception when raise_exception then
+    if sqlerrm not like 'Accès réservé%' then raise; end if;
+  end;
+  begin
+    perform * from close_account_prepare(auth.uid());
+    raise exception 'un compte appelle la fermeture d''un autre';
+  exception when insufficient_privilege then null; end;
+end $$;
+select set_config('request.jwt.claims', '', false);
+reset role;
+-- La propriétaire de Kaz a Zong ferme son compte : ses rendez-vous à venir sont annulés par « pro », sa fiche disparaît.
+do $$ declare ids uuid[]; p int;
+begin
+  select array_agg(booking_id) into ids from close_account_prepare('00000000-0000-0000-0000-0000000000b1');
+  if coalesce(array_length(ids, 1), 0) < 1 then raise exception 'aucun rendez-vous annulé à la fermeture'; end if;
+  if exists (select 1 from bookings where pro_id = 'kaz' and status = 'confirmed' and starts_at > now()) then raise exception 'rendez-vous à venir restants'; end if;
+  if exists (select 1 from bookings where id = any (ids) and cancelled_by <> 'pro') then raise exception 'auteur de l''annulation faux'; end if;
+  select count(*) into p from close_account_finish('00000000-0000-0000-0000-0000000000b1');
+  if p <> 12 then raise exception 'photos à retirer mal listées : %', p; end if;
+  if exists (select 1 from pros where id = 'kaz') then raise exception 'fiche non supprimée'; end if;
+end $$;
 select 'tous les contrôles passent' as resultat;

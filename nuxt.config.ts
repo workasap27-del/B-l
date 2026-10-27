@@ -72,6 +72,9 @@ export default defineNuxtConfig({
       // mettre une valeur vide pour faire tourner l'appli sans base.
       supabaseUrl: 'https://dkvqloksvlbniztqdywb.supabase.co',
       supabaseKey: 'sb_publishable_-pjzbL8kdTPiiiB0pq5m7Q_fHgLMLrB',
+      // Clé publique Cloudflare Turnstile (anti-robots). Vide : pas de vérification. À activer en même temps
+      // que la protection CAPTCHA de Supabase (Authentication > Attack Protection), avec la clé secrète correspondante.
+      turnstileSiteKey: '',
     },
   },
 })
