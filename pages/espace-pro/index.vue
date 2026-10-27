@@ -3,7 +3,8 @@ import { Phone } from 'lucide-vue-next'
 import type { AgendaItem } from '~/composables/useVladi'
 import { RULES } from '~/data/pros'
 
-const { today, nowMin, agenda, earliestIn, publishSlot, removeSlot, toast, findBooking, workPro, needsFiche } = useVladi()
+const { today, nowMin, agenda, earliestIn, publishSlot, removeSlot, toast, findBooking, workPro, needsFiche, loadBlocked } = useVladi()
+onMounted(() => { void loadBlocked() })
 const p = computed(() => workPro.value.pro)
 const days = computed(() => Array.from({ length: 5 }, (_, i) => addDays(today.value, i)))
 const date = ref(today.value)
@@ -84,6 +85,7 @@ async function publish() {
           <span class="meta">{{ e.what }} · {{ euro(e.price ?? 0) }}<template v-if="e.kind === 'app' && RULES.onlinePayment"> · acompte {{ euro(e.deposit ?? 0) }}</template></span>
           <span v-if="e.kind === 'app'" class="meta">{{ e.place === 'client' ? `À domicile : ${e.address}` : 'Chez toi' }}</span>
           <span v-if="e.note" class="meta">« {{ e.note }} »</span>
+          <ClientTrust v-if="e.kind === 'app' && e.bookingId && findBooking(e.bookingId)" :booking="findBooking(e.bookingId)!" />
           <a v-if="e.phone" class="link meta" :href="`tel:${e.phone.replace(/\s/g, '')}`"><Phone :size="13" style="vertical-align:-2px" /> {{ e.phone }}</a>
         </div>
         <ArrivalBox v-if="e.kind === 'app' && e.bookingId && findBooking(e.bookingId)" :booking="findBooking(e.bookingId)!" side="pro" />

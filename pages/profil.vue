@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { RULES } from '~/data/pros'
+import type { Reliability } from '~/utils/reliability'
 import { BarChart3, ChevronRight, FileText, Heart, LogOut, Mail, MapPin, Settings2, Shield, Store, UserRound } from 'lucide-vue-next'
 import { LEGAL } from '~/data/legal'
 
@@ -35,6 +37,11 @@ async function out() {
   await logout()
   toast('Déconnexion effectuée')
 }
+
+// Indicateur de fiabilité de la personne connectée.
+const { myReliability } = useVladi()
+const trust = ref<Reliability | null>(null)
+watch(() => account.value?.id, async (id) => { trust.value = id ? await myReliability() : null }, { immediate: true })
 </script>
 
 <template>
@@ -104,6 +111,12 @@ async function out() {
       </div>
     </section>
   </template>
+
+  <section v-if="trust" class="section">
+    <h2 class="h2">Ma fiabilité</h2>
+    <p class="mt8"><b>{{ reliabilityText(trust) }}</b></p>
+    <p class="tiny mt8">Calculée sur douze mois : rendez-vous honorés, absences et annulations à moins de {{ RULES.freeCancelHours }} h. Seuls les prestataires chez qui tu réserves la voient, jamais le public. Prévenir quand tu ne peux pas venir la garde au vert.</p>
+  </section>
 
   <section class="section">
     <h2 class="h2"><Heart :size="18" style="vertical-align:-2px" /> Mes favoris</h2>

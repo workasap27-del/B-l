@@ -89,6 +89,9 @@ function back() {
     <p><b>Retard.</b> Le jour du rendez-vous, la personne qui se déplace peut signaler son arrivée ou un retard depuis l'application. Un retard de {{ TOLERANCE }} minutes au plus est toléré. Au-delà, le Prestataire peut écourter la prestation ou la reporter.</p>
     <p><b>Absence.</b> Si l'une des parties ne se présente pas, l'autre peut déclarer son absence dans l'application. La personne concernée peut contester cette déclaration dans un délai de {{ DISPUTE_HOURS }} heures ; VLADI prend alors contact avec les deux parties pour établir les faits.<template v-if="RULES.onlinePayment"> En cas d'absence du Client, l'acompte reste acquis au Prestataire ; en cas d'absence du Prestataire, il est remboursé au Client.</template></p>
 
+    <p><b>Fiabilité.</b> Pour chaque Client, VLADI calcule sur douze mois le nombre de rendez-vous honorés, d'absences non contestées et d'annulations à moins de {{ RULES.freeCancelHours }} heures. Cet indicateur n'est montré qu'aux Prestataires chez qui le Client a réservé, et au Client lui-même. Il ne comporte ni note ni commentaire.</p>
+    <p><b>Blocage.</b> Un Prestataire peut empêcher un Client de réserver à nouveau chez lui, notamment après des absences répétées. Le blocage ne vaut que pour ce Prestataire ; les rendez-vous déjà pris restent valables tant qu'il ne les annule pas.</p>
+
     <h2 id="konyela">8. Créneaux Konyéla</h2>
     <p>Un Prestataire peut proposer, le jour même, un créneau resté libre avec une remise qu'il fixe lui-même. Le prix barré correspond au tarif habituel affiché sur sa Fiche. Un Créneau Konyéla est attribué à la première personne qui le réserve. Comme il est pris au dernier moment, il ne bénéficie pas de l'annulation sans frais prévue à l'article 7.</p>
 
@@ -115,8 +118,8 @@ function back() {
     <p>Par défaut, les résultats sont classés selon leur correspondance avec la recherche (la prestation recherchée, puis le métier, puis le nom), et à pertinence égale selon la distance depuis la position choisie par l'Utilisateur. L'Utilisateur peut à tout moment trier les résultats par distance, par note ou par prix, et les filtrer par lieu, type d'établissement, distance et disponibilité du jour. Les Créneaux Konyéla sont présentés du plus proche dans le temps au plus éloigné.</p>
 
     <h2 id="avis">12. Avis</h2>
-    <p>Seul un Client qui a réservé par VLADI peut publier un avis, une seule fois par Réservation et après l'heure de fin du rendez-vous. Les avis sont donc tous liés à une Réservation réelle. Ils ne sont ni achetés ni rémunérés, et le Prestataire ne peut ni les modifier ni les supprimer.</p>
-    <p>Les avis sont publiés sans contrôle préalable et affichés du plus récent au plus ancien. La note d'une Fiche est la moyenne de tous ses avis. Nous retirons un avis qui contient des propos injurieux, diffamatoires, discriminatoires ou des données personnelles, ou qui ne se rapporte pas à la prestation. Pour signaler un avis, écrivez-nous à {{ LEGAL.contactEmail }}.</p>
+    <p>Seul un Client qui a réservé par VLADI peut publier un avis, une seule fois par Réservation et après l'heure de fin du rendez-vous. Les avis sont donc tous liés à une Réservation réelle. Ils ne sont ni achetés ni rémunérés, et le Prestataire ne peut ni les modifier ni les supprimer. Il peut y répondre une fois, publiquement, et modifier sa réponse.</p>
+    <p>Les avis sont publiés sans contrôle préalable et affichés du plus récent au plus ancien. La note d'une Fiche est la moyenne de tous ses avis. Nous retirons un avis qui contient des propos injurieux, diffamatoires, discriminatoires ou des données personnelles, ou qui ne se rapporte pas à la prestation. Pour signaler un avis ou une Fiche, utilisez le lien « Signaler » présent sur la Fiche, ou écrivez-nous à {{ LEGAL.contactEmail }}.</p>
 
     <h2 id="suspension">13. Suspension et fermeture de compte</h2>
     <p>Vous pouvez fermer votre compte à tout moment en nous écrivant à {{ LEGAL.contactEmail }}. Les Réservations à venir sont alors annulées et les Prestataires concernés prévenus.</p>

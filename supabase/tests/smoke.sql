@@ -271,4 +271,58 @@ do $$ begin
   if (select count(*) from admin_reports('ouvert')) <> 0 then raise exception 'signalement non clôturé'; end if;
 end $$;
 reset role;
+-- 17. Fiabilité, annulations tardives, blocage et vues (patch 007).
+-- Une absence et une annulation tardive de la cliente A chez Kaz a Zong.
+update bookings set no_show = 'client' where id = '00000000-0000-0000-0000-00000000d016';
+insert into bookings (id, pro_id, service_id, client_id, starts_at, ends_at, price_eur, deposit_eur)
+  select '00000000-0000-0000-0000-00000000d017', 'kaz', id, '00000000-0000-0000-0000-0000000000a1', now() + interval '40 days', now() + interval '40 days 30 minutes', 0, 0
+  from services where pro_id = 'kaz' and code = 'f';
+update bookings set starts_at = now() + interval '5 hours', ends_at = now() + interval '5 hours 30 minutes' where id = '00000000-0000-0000-0000-00000000d017';
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false);
+update bookings set status = 'cancelled' where id = '00000000-0000-0000-0000-00000000d017';
+do $$ declare r jsonb;
+begin
+  if (select cancelled_by from bookings where id = '00000000-0000-0000-0000-00000000d017') <> 'client' then raise exception 'auteur de l''annulation non enregistré'; end if;
+  r := my_reliability();
+  if (r ->> 'noShows')::int <> 1 or (r ->> 'lateCancels')::int <> 1 then raise exception 'fiabilité mal calculée : %', r; end if;
+  begin
+    perform client_reliability('00000000-0000-0000-0000-00000000d016');
+    raise exception 'une cliente lit la fiabilité via le prestataire';
+  exception when raise_exception then
+    if sqlerrm <> 'Accès refusé' then raise; end if;
+  end;
+  perform track_view('kaz');
+  perform track_view('kaz');
+end $$;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b1', false);
+do $$ declare r jsonb;
+begin
+  r := client_reliability('00000000-0000-0000-0000-00000000d016');
+  if (r ->> 'noShows')::int <> 1 then raise exception 'le prestataire ne voit pas la fiabilité : %', r; end if;
+  -- Ses propres visites ne comptent pas.
+  perform track_view('kaz');
+  insert into pro_blocks (pro_id, client_id) values ('kaz', '00000000-0000-0000-0000-0000000000a1');
+  begin
+    insert into pro_blocks (pro_id, client_id) values ('g001', '00000000-0000-0000-0000-0000000000a2');
+    raise exception 'blocage chez la fiche d''un autre';
+  exception when insufficient_privilege then null; end;
+end $$;
+reset role;
+do $$ begin
+  if (select views from pro_views where pro_id = 'kaz') <> 2 then raise exception 'vues mal comptées'; end if;
+end $$;
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false);
+do $$ begin
+  begin
+    insert into bookings (pro_id, service_id, client_id, starts_at, ends_at, price_eur, deposit_eur)
+      select 'kaz', id, auth.uid(), now() + interval '50 days', now() + interval '50 days 30 minutes', 0, 0 from services where pro_id = 'kaz' and code = 'f';
+    raise exception 'une cliente bloquée réserve';
+  exception when raise_exception then
+    if sqlerrm <> 'Réservation impossible chez ce prestataire' then raise; end if;
+  end;
+  if (select count(*) from pro_blocks) <> 0 then raise exception 'la cliente voit les blocages'; end if;
+end $$;
+reset role;
 select 'tous les contrôles passent' as resultat;

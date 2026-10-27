@@ -36,6 +36,7 @@ const sv = computed(() => (p.value && b.value ? service(p.value, b.value.sid) : 
     </div>
     <div class="col gap12">
       <NuxtLink class="btn block" to="/rdv">Voir mes rendez-vous</NuxtLink>
+      <AddToCalendar :booking="b" class="block" />
       <a v-if="b.place === 'pro'" class="btn block line" :href="directionsUrl(p)" target="_blank" rel="noopener"><Navigation :size="18" />Itinéraire</a>
     </div>
     <p v-if="p.id === DEMO_PRO_ID" class="tiny" style="text-align:center">Ce rendez-vous apparaît aussi dans l'espace prestataire de démonstration.</p>

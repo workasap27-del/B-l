@@ -28,7 +28,12 @@ function back() {
       <li><b>Compte</b> : adresse e-mail, mot de passe (conservé sous forme chiffrée, jamais lisible), prénom, profil client ou prestataire, téléphone.</li>
       <li><b>Réservations</b> : prestation, date et heure, lieu, adresse pour une prestation à domicile, message laissé au Prestataire, suivi du rendez-vous (arrivée, retard, absence, contestation), annulation.</li>
       <li><b>Fiche prestataire</b> : nom commercial, prénom s'il est indiqué, statut, SIREN, téléphone professionnel, commune, quartier, position, prestations, tarifs, horaires, présentation. Ces informations sont publiques, c'est leur raison d'être.</li>
-      <li><b>Avis</b> : note et commentaire, rattachés à la réservation concernée. Ils sont publiés sans votre nom.</li>
+      <li><b>Avis</b> : note et commentaire, rattachés à la réservation concernée. Ils sont publiés sans votre nom. Le Prestataire peut y répondre publiquement.</li>
+      <li><b>Indicateur de fiabilité</b> : nombre de rendez-vous honorés, d'absences et d'annulations tardives sur les douze derniers mois, calculé à partir de vos réservations. Il n'est montré qu'aux Prestataires chez qui vous avez réservé, et à vous dans l'onglet Compte. Il ne contient aucune note ni aucun commentaire.</li>
+      <li><b>Blocage</b> : un Prestataire peut empêcher une personne de réserver à nouveau chez lui. Seul ce Prestataire le sait.</li>
+      <li><b>Photos des Fiches</b> : photos déposées par les Prestataires pour montrer leur travail. Elles sont réduites et leurs données de localisation retirées avant l'envoi. Elles sont publiques.</li>
+      <li><b>Signalements</b> : raison du signalement d'une Fiche ou d'un avis, rattachée au compte qui l'a envoyé. Lus uniquement par l'équipe de VLADI.</li>
+      <li><b>Visites des Fiches</b> : nombre de visites par Fiche et par jour, sans aucune information sur les visiteurs.</li>
       <li><b>Journal d'activité</b> : trace des actions effectuées sur le service (inscription, publication ou modification d'une fiche, réservation, annulation, avis), avec leur date.</li>
       <li><b>Sur votre appareil uniquement</b> : position utilisée pour calculer les distances, favoris, choix des couleurs et session de connexion. Votre position n'est pas envoyée à nos serveurs, sauf si un Prestataire choisit de l'enregistrer comme adresse de sa Fiche.</li>
     </ul>
@@ -62,6 +67,8 @@ function back() {
       <li><b>Réservations</b> : trois ans après la date du rendez-vous, pour répondre aux réclamations et contestations.</li>
       <li><b>Avis</b> : tant que la Fiche concernée est publiée.</li>
       <li><b>Journal d'activité</b> : vingt-quatre mois.</li>
+      <li><b>Signalements</b> : un an après leur traitement.</li>
+      <li><b>Blocages</b> : jusqu'à ce que le Prestataire les lève ou ferme son compte.</li>
     </ul>
 
     <h2>Vos droits</h2>

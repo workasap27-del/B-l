@@ -103,6 +103,7 @@ export function readable(e: unknown): string {
   if (/session.*missing|not authenticated|JWT/i.test(msg)) return 'Ta session a expiré. Reconnecte-toi.'
   if (/bookings_client_no_overlap/i.test(msg)) return 'Tu as déjà un rendez-vous à cette heure.'
   if (/bookings_no_overlap|exclusion/i.test(msg)) return 'Ce créneau vient d\'être pris. Choisis-en un autre.'
+  if (/Réservation impossible chez ce prestataire/i.test(msg)) return 'Ce prestataire ne prend plus de réservation de ta part. Choisis-en un autre.'
   if (/pros_one_per_owner/i.test(msg)) return 'Ton compte a déjà une fiche.'
   if (/siren/i.test(msg)) return 'Le numéro SIREN doit faire 9 chiffres.'
   if (/Failed to fetch|NetworkError/i.test(msg)) return 'Pas de connexion. Vérifie ton réseau et réessaie.'
@@ -436,6 +437,49 @@ export async function deletePhoto(photo: ProPhoto) {
 export async function setCover(proId: string, url: string | null) {
   const { error } = await sb()!.from('pros').update({ photo_url: url }).eq('id', proId)
   if (error) throw error
+}
+
+// Fiabilité, blocage et vues -----------------------------------------------------
+
+export async function clientReliability(bookingId: string): Promise<unknown> {
+  const { data, error } = await sb()!.rpc('client_reliability', { p_booking: bookingId })
+  if (error) throw error
+  return data
+}
+
+export async function myReliability(): Promise<unknown> {
+  const { data, error } = await sb()!.rpc('my_reliability')
+  if (error) throw error
+  return data
+}
+
+export async function loadBlocks(proId: string): Promise<string[]> {
+  const c = sb()
+  if (!c) return []
+  const { data } = await c.from('pro_blocks').select('client_id').eq('pro_id', proId)
+  return (data ?? []).map(r => r.client_id as string)
+}
+
+export async function blockClient(proId: string, clientId: string) {
+  const { error } = await sb()!.from('pro_blocks').insert({ pro_id: proId, client_id: clientId })
+  if (error && !/duplicate/i.test(error.message)) throw error
+}
+
+export async function unblockClient(proId: string, clientId: string) {
+  const { error } = await sb()!.from('pro_blocks').delete().eq('pro_id', proId).eq('client_id', clientId)
+  if (error) throw error
+}
+
+export async function trackView(proId: string) {
+  await sb()?.rpc('track_view', { p_pro: proId })
+}
+
+export async function loadViews(proId: string, days = 30): Promise<{ day: string, views: number }[]> {
+  const c = sb()
+  if (!c) return []
+  const since = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10)
+  const { data } = await c.from('pro_views').select('day, views').eq('pro_id', proId).gte('day', since).order('day')
+  return (data ?? []) as { day: string, views: number }[]
 }
 
 // Signalements ------------------------------------------------------------------

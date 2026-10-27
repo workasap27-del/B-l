@@ -73,6 +73,7 @@ async function sendReview() {
         <div class="row wrap gap8">
           <template v-if="tab === 'next'">
             <a v-if="b.place === 'pro'" class="btn sm soft" :href="directionsUrl(pro(b.proId)!)" target="_blank" rel="noopener"><Navigation :size="15" />Itinéraire</a>
+            <AddToCalendar :booking="b" />
             <button v-if="b.arrivedAt === undefined" class="btn sm line" @click="toCancel = b">Annuler</button>
           </template>
           <template v-else>

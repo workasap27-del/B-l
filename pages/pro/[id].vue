@@ -3,7 +3,7 @@ import { ChevronLeft, Clock, Flag, Heart, House, MapPin, Navigation, Pencil, Pho
 
 const route = useRoute()
 const router = useRouter()
-const { pro, state, remote, toggleFav, openSlots, reviewsOf, ratingOf, km, openStatus, today, isMine, loadReviewsFor, photosOf, loadPhotosFor, replyToReview } = useVladi()
+const { pro, state, remote, toggleFav, openSlots, reviewsOf, ratingOf, km, openStatus, today, isMine, loadReviewsFor, photosOf, loadPhotosFor, replyToReview, countView } = useVladi()
 const p = computed(() => pro(String(route.params.id)))
 const slots = computed(() => (p.value ? openSlots(p.value.id) : []))
 const tab = ref<'prestations' | 'avis' | 'infos'>('prestations')
@@ -18,6 +18,7 @@ watch(p, (v) => {
   if (!v) return
   void loadReviewsFor(v)
   void loadPhotosFor(v)
+  countView(v)
 }, { immediate: true })
 const photos = computed(() => (p.value ? photosOf(p.value) : []))
 

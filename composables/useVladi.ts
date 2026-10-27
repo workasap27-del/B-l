@@ -8,6 +8,8 @@ import { hash, rng } from '~/data/random'
 import type { Pro, Review, Service } from '~/data/pros'
 import { PHOTO_POOLS, pexels } from '~/utils/photos'
 import { shrinkImage } from '~/utils/image'
+import { readReliability } from '~/utils/reliability'
+import type { Reliability } from '~/utils/reliability'
 import { addDays, ceil30, discounted, freeStarts, gaps, isClosed, simulatedAppointments, spansOverlap } from '~/utils/schedule'
 import type { Interval, Span } from '~/utils/schedule'
 import { allowedPlaces, proPlace, travelFee } from '~/utils/places'
@@ -280,6 +282,63 @@ async function makeCover(photo: api.ProPhoto) {
   catch (e) {
     toast(api.readable(e))
   }
+}
+
+// Fiabilité et blocage ---------------------------------------------------------------
+
+const trustCache = reactive<Record<string, Reliability>>({})
+
+/** Fiabilité de la personne qui a fait une réservation reçue par le prestataire. */
+async function reliabilityFor(b: Booking): Promise<Reliability | null> {
+  if (!b.real) return null
+  if (trustCache[b.id]) return trustCache[b.id]
+  try {
+    trustCache[b.id] = readReliability(await api.clientReliability(b.id))
+    return trustCache[b.id]
+  }
+  catch {
+    return null
+  }
+}
+
+async function myReliability(): Promise<Reliability | null> {
+  if (!remote.online || !account.value) return null
+  try {
+    return readReliability(await api.myReliability())
+  }
+  catch {
+    return null
+  }
+}
+
+const blocked = ref<string[]>([])
+async function loadBlocked() {
+  blocked.value = remote.myPro ? await api.loadBlocks(remote.myPro.id) : []
+}
+async function setBlocked(clientId: string, on: boolean) {
+  const p = remote.myPro
+  if (!p) return
+  try {
+    if (on) await api.blockClient(p.id, clientId)
+    else await api.unblockClient(p.id, clientId)
+    blocked.value = on ? [...new Set([...blocked.value, clientId])] : blocked.value.filter(x => x !== clientId)
+    toast(on ? 'Cette personne ne pourra plus réserver chez toi' : 'Blocage levé')
+  }
+  catch (e) {
+    toast(api.readable(e))
+  }
+}
+
+/** Compte une visite de fiche, une fois par session et par fiche. */
+function countView(p: Pro) {
+  if (!p.real || !remote.online) return
+  const key = `vladi-vue-${p.id}`
+  try {
+    if (sessionStorage.getItem(key)) return
+    sessionStorage.setItem(key, '1')
+  }
+  catch { /* navigation privée : on compte quand même */ }
+  void api.trackView(p.id)
 }
 
 // Signalements -------------------------------------------------------------------
@@ -898,6 +957,7 @@ export function useVladi() {
     state, remote, today, nowMin, toastMessage,
     pros: catalogue, pro, service, isMine, reviewsOf, ratingOf, loadReviewsFor, replyToReview,
     photosOf, loadPhotosFor, addPhotos, removePhoto, makeCover, reportContent,
+    reliabilityFor, myReliability, blocked, loadBlocked, setBlocked, countView,
     starts, openSlots, isDone, refundable, minutesUntil, myBookings, findBooking,
     book, clashWith, cancel, addReview, toggleFav, placeLabel,
     km, setCommune, locate, currentPosition, nextSlots, openStatus,
