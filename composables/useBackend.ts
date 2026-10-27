@@ -516,6 +516,27 @@ export async function loadViews(proId: string, days = 30): Promise<{ day: string
   return (data ?? []) as { day: string, views: number }[]
 }
 
+// Mise en avant ------------------------------------------------------------------
+
+export interface Promotion { id: string, proId: string, placement: 'resultats' | 'accueil', endsAt: string }
+
+export async function loadPromotions(): Promise<Promotion[]> {
+  const c = sb()
+  if (!c) return []
+  const { data } = await c.from('promotions').select('id, pro_id, placement, ends_at').gt('ends_at', new Date().toISOString()).lte('starts_at', new Date().toISOString())
+  return (data ?? []).map(r => ({ id: r.id, proId: r.pro_id, placement: r.placement, endsAt: r.ends_at }))
+}
+
+export async function adminPromote(proId: string, placement: 'resultats' | 'accueil', days: number) {
+  const { error } = await sb()!.rpc('admin_promote', { p_pro: proId, p_placement: placement, p_days: days })
+  if (error) throw error
+}
+
+export async function adminEndPromotion(id: string) {
+  const { error } = await sb()!.rpc('admin_end_promotion', { p_id: id })
+  if (error) throw error
+}
+
 // Signalements ------------------------------------------------------------------
 
 export async function report(input: { proId?: string, reviewId?: string, reason: string }) {

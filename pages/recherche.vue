@@ -2,9 +2,10 @@
 import { ChevronDown, List, Map as MapIcon, MapPin, Search, SearchX, SlidersHorizontal, X } from 'lucide-vue-next'
 import { CATEGORIES } from '~/data/pros'
 import type { Category, Pro } from '~/data/pros'
+import type { SearchHit } from '~/utils/search'
 
 const route = useRoute()
-const { pros, km, ratingOf, starts, today, state } = useVladi()
+const { pros, km, ratingOf, starts, today, state, sponsoredIds } = useVladi()
 
 const q = ref(String(route.query.q ?? ''))
 const cat = ref(String(route.query.cat ?? 'all'))
@@ -42,7 +43,7 @@ const freeToday = (p: Pro) => p.services.some(s => starts(p, today.value, s.d).l
 /** Tant que rien n'est cherché ni choisi, on montre d'abord les catégories. */
 const browsing = computed(() => !q.value.trim() && cat.value === 'all' && place.value === 'all')
 
-const list = computed(() => {
+const list = computed<(SearchHit & { sponsored?: boolean })[]>(() => {
   const c = cat.value === 'all' ? null : cat.value as Category
   const hits = searchPros(pros.value, q.value, km).filter(({ pro: p }) => {
     // La catégorie compte les prestations proposées, pas seulement le métier affiché (un barbier qui fait les sourcils apparaît dans Cils).
@@ -64,7 +65,8 @@ const list = computed(() => {
   if (sort.value === 'dist') hits.sort((a, b) => km(a.pro) - km(b.pro))
   if (sort.value === 'note') hits.sort((a, b) => ratingOf(b.pro).rating - ratingOf(a.pro).rating || km(a.pro) - km(b.pro))
   if (sort.value === 'prix') hits.sort((a, b) => minPrice(a.pro) - minPrice(b.pro))
-  return hits
+  // Mise en avant : seulement avec le classement par pertinence, et parmi les fiches qui correspondent déjà.
+  return sort.value === 'auto' ? withSponsored(hits, sponsoredIds('resultats')) : hits
 })
 const activeFilters = computed(() => [place.value !== 'all', kind.value !== 'all', maxKm.value > 0, todayOnly.value, sort.value !== 'auto'].filter(Boolean).length)
 const mapItems = computed(() => list.value.slice(0, 80).map(h => ({ id: h.pro.id, lat: h.pro.lat, lng: h.pro.lng, label: `${minPrice(h.pro)} €` })))
@@ -123,7 +125,7 @@ function resetFilters() {
   </div>
 
   <div v-else-if="view === 'list'" class="col mt16 results">
-    <ProResult v-for="h in list.slice(0, shown)" :key="h.pro.id" :pro="h.pro" :services="h.services" />
+    <ProResult v-for="h in list.slice(0, shown)" :key="h.pro.id" :pro="h.pro" :services="h.services" :sponsored="h.sponsored" />
     <button v-if="list.length > shown" class="btn block soft" @click="shown += 12">Voir plus de résultats</button>
   </div>
 

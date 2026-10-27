@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ChevronDown } from 'lucide-vue-next'
 import { CATEGORIES } from '~/data/pros'
+import type { Category } from '~/data/pros'
 import { LEGAL } from '~/data/legal'
 
 // Pied de page commun : catégories, informations sur VLADI et pages légales.
@@ -27,7 +28,7 @@ function hover(on: boolean) {
           Catégories <ChevronDown :size="15" :class="{ flip: open }" />
         </button>
         <ul v-if="open">
-          <li v-for="[c, label] in cats" :key="c"><NuxtLink :to="`/recherche?cat=${c}`">{{ label }}</NuxtLink></li>
+          <li v-for="[c] in cats" :key="c"><NuxtLink :to="`/recherche?cat=${c}`">{{ CAT_SHORT[c as Category] }}</NuxtLink></li>
         </ul>
       </nav>
       <nav aria-label="VLADI">

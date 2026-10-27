@@ -120,6 +120,7 @@ function back() {
     <h2 id="classement">11. Référencement et classement</h2>
     <p>Toute entreprise qui remplit les conditions de l'article 10 peut publier une Fiche. Aucun Prestataire ne paie pour être mieux placé.</p>
     <p>Par défaut, les résultats sont classés selon leur correspondance avec la recherche (la prestation recherchée, puis le métier, puis le nom), et à pertinence égale selon la distance depuis la position choisie par l'Utilisateur. L'Utilisateur peut à tout moment trier les résultats par distance, par note ou par prix, et les filtrer par lieu, type d'établissement, distance et disponibilité du jour. Les Créneaux Konyéla sont présentés du plus proche dans le temps au plus éloigné.</p>
+    <p v-if="RULES.sponsored">Certaines Fiches peuvent être mises en avant contre paiement, dans les résultats (deux au plus, parmi celles qui correspondent à la recherche, en première et quatrième position, avec le classement par pertinence) et sur l'accueil. Elles portent la mention « Sponsorisé ». La mise en avant ne change ni la note ni les avis, et elle est refusée aux Fiches mal notées ou dont le Prestataire a manqué des rendez-vous.</p>
 
     <h2 id="avis">12. Avis</h2>
     <p>Seul un Client qui a réservé par VLADI peut publier un avis, une seule fois par Réservation et après l'heure de fin du rendez-vous. Les avis sont donc tous liés à une Réservation réelle. Ils ne sont ni achetés ni rémunérés, et le Prestataire ne peut ni les modifier ni les supprimer. Il peut y répondre une fois, publiquement, et modifier sa réponse.</p>

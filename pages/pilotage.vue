@@ -2,6 +2,7 @@
 import { ChevronLeft, Download, RefreshCw, TrendingDown, TrendingUp } from 'lucide-vue-next'
 import type { Category } from '~/data/pros'
 import * as api from '~/composables/useBackend'
+import { RULES } from '~/data/pros'
 import type { AdminEvent, AdminStats } from '~/utils/admin'
 import { EVENT_KINDS, eventText, rate, toCsv, trend } from '~/utils/admin'
 
@@ -19,6 +20,35 @@ const limit = ref(60)
 const loading = ref(false)
 const error = ref('')
 const reports = ref<api.AdminReport[]>([])
+
+// Mises en avant payantes (quand RULES.sponsored est vrai).
+const promos = ref<api.Promotion[]>([])
+const promo = reactive({ proId: '', placement: 'resultats' as 'resultats' | 'accueil', days: 7 })
+const realPros = computed(() => remote.pros.filter(p => p.real).sort((a, b) => a.name.localeCompare(b.name, 'fr')))
+const proName = (id: string) => remote.pros.find(p => p.id === id)?.name ?? id
+async function loadPromotions() {
+  if (RULES.sponsored) promos.value = await api.loadPromotions().catch(() => [])
+}
+async function addPromotion() {
+  if (!promo.proId) return toast('Choisis une fiche')
+  try {
+    await api.adminPromote(promo.proId, promo.placement, promo.days)
+    toast('Mise en avant créée')
+    await loadPromotions()
+  }
+  catch (e) {
+    toast(api.readable(e))
+  }
+}
+async function endPromotion(id: string) {
+  try {
+    await api.adminEndPromotion(id)
+    await loadPromotions()
+  }
+  catch (e) {
+    toast(api.readable(e))
+  }
+}
 async function closeReport(id: string) {
   try {
     await api.adminCloseReport(id)
@@ -40,6 +70,7 @@ async function load() {
     events.value = e
     // Les signalements arrivent avec le patch 006 : sans lui, la section reste simplement vide.
     reports.value = await api.adminReports('ouvert').catch(() => [])
+    await loadPromotions()
   }
   catch (e) {
     error.value = api.readable(e)
@@ -318,6 +349,27 @@ function back() {
         <p v-else class="meta mt8">Aucune réservation {{ periodText }}.</p>
       </section>
     </template>
+
+    <section v-if="RULES.sponsored" class="section">
+      <h2 class="h2">Mises en avant</h2>
+      <div class="col gap12 mt12">
+        <select v-model="promo.proId" class="select" aria-label="Fiche à mettre en avant">
+          <option value="">Choisir une fiche…</option>
+          <option v-for="p in realPros" :key="p.id" :value="p.id">{{ p.name }} · {{ p.commune }}</option>
+        </select>
+        <div class="row gap8 wrap">
+          <button v-for="o in [['resultats', 'Résultats de recherche'], ['accueil', 'Accueil']]" :key="o[0]" type="button" class="chip" :aria-pressed="promo.placement === o[0]" @click="promo.placement = o[0] as 'resultats' | 'accueil'">{{ o[1] }}</button>
+        </div>
+        <div class="row gap8 wrap">
+          <button v-for="d in [7, 14, 30]" :key="d" type="button" class="chip" :aria-pressed="promo.days === d" @click="promo.days = d">{{ d }} jours</button>
+        </div>
+        <button type="button" class="btn sm" style="align-self:flex-start" @click="addPromotion">Mettre en avant</button>
+      </div>
+      <div v-for="x in promos" :key="x.id" class="svc mt8">
+        <span class="grow"><b>{{ proName(x.proId) }}</b> · {{ x.placement === 'accueil' ? 'Accueil' : 'Résultats' }} · jusqu'au {{ new Date(x.endsAt).toLocaleDateString('fr-FR') }}</span>
+        <button type="button" class="btn sm line" @click="endPromotion(x.id)">Arrêter</button>
+      </div>
+    </section>
 
     <section class="section">
       <h2 class="h2">Signalements à traiter <span v-if="reports.length" class="tag accent">{{ reports.length }}</span></h2>

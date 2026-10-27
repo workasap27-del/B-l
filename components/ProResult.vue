@@ -3,7 +3,7 @@ import { Heart, Star } from 'lucide-vue-next'
 import type { Pro, Service } from '~/data/pros'
 
 // Résultat de recherche : la photo, l'essentiel du prestataire, la prestation trouvée et ses prochains créneaux.
-const props = defineProps<{ pro: Pro, services?: Service[] }>()
+const props = defineProps<{ pro: Pro, services?: Service[], sponsored?: boolean }>()
 const { state, openSlots, ratingOf, km, nextSlots, today, toggleFav, isMine } = useVladi()
 const slot = computed(() => openSlots(props.pro.id)[0])
 const main = computed(() => props.services?.[0] ?? props.pro.services[0])
@@ -28,7 +28,8 @@ const r = computed(() => ratingOf(props.pro))
           <span v-else class="tag">Nouveau</span>
         </div>
         <span class="meta">{{ pro.commune }} · {{ formatKm(km(pro)) }} · {{ kindLabel(pro.kind) }}</span>
-        <div v-if="isMine(pro) || goesToClient(pro)" class="tags mt8">
+        <div v-if="sponsored || isMine(pro) || goesToClient(pro)" class="tags mt8">
+          <span v-if="sponsored" class="tag" title="Ce prestataire a payé pour être mis en avant. La note et les avis ne sont pas concernés.">Sponsorisé</span>
           <span v-if="isMine(pro)" class="tag accent">Votre entreprise</span>
           <span v-if="goesToClient(pro)" class="tag">Se déplace à domicile</span>
         </div>

@@ -406,4 +406,32 @@ begin
   if p <> 12 then raise exception 'photos à retirer mal listées : %', p; end if;
   if exists (select 1 from pros where id = 'kaz') then raise exception 'fiche non supprimée'; end if;
 end $$;
+-- 21. Mise en avant (patch 011) : réservée au pilotage, refusée aux fiches de démonstration.
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false);
+do $$ begin
+  begin
+    insert into promotions (pro_id, placement, ends_at) values ('g001', 'accueil', now() + interval '7 days');
+    raise exception 'une cliente crée une mise en avant';
+  exception when insufficient_privilege then null; end;
+  begin
+    perform admin_promote('g001', 'accueil', 7);
+    raise exception 'mise en avant sans être propriétaire de l''appli';
+  exception when raise_exception then
+    if sqlerrm not like 'Accès réservé%' then raise; end if;
+  end;
+end $$;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a2', false);
+select set_config('request.jwt.claims', '{"aal":"aal2"}', false);
+do $$ declare v uuid;
+begin
+  begin
+    perform admin_promote('g001', 'accueil', 7);
+    raise exception 'fiche de démonstration mise en avant';
+  exception when raise_exception then
+    if sqlerrm <> 'Fiche inconnue' then raise; end if;
+  end;
+end $$;
+select set_config('request.jwt.claims', '', false);
+reset role;
 select 'tous les contrôles passent' as resultat;

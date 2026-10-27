@@ -129,6 +129,7 @@ const remote = reactive({
   busy: {} as Record<string, Record<string, [number, number][]>>,
   reviews: {} as Record<string, RemoteReview[]>,
   photos: {} as Record<string, api.ProPhoto[]>,
+  promos: [] as api.Promotion[],
   reviewed: [] as string[],
   /** vrai quand la personne arrive depuis le lien de réinitialisation du mot de passe */
   recovery: false,
@@ -284,6 +285,20 @@ async function makeCover(photo: api.ProPhoto) {
   catch (e) {
     toast(api.readable(e))
   }
+}
+
+// Mise en avant -----------------------------------------------------------------------
+
+/** Fiches mises en avant pour un emplacement. En mode présentation, deux fiches d'illustration. */
+function sponsoredIds(placement: 'resultats' | 'accueil'): Set<string> {
+  if (state.demo && !RULES.sponsored) return new Set(placement === 'accueil' ? ['col', 'reg', 'h003'] : ['zom', 'glo', 'loc', 'fle'])
+  if (!RULES.sponsored) return new Set()
+  return new Set(remote.promos.filter(x => x.placement === placement).map(x => x.proId))
+}
+
+async function loadPromos() {
+  if (!RULES.sponsored || !remote.online) return
+  remote.promos = await api.loadPromotions()
 }
 
 // Fiabilité et blocage ---------------------------------------------------------------
@@ -913,6 +928,7 @@ async function refresh() {
     remote.profile = profile
     remote.pros = catalogueData.pros
     remote.ratings = catalogueData.ratings
+    void loadPromos()
     if (profile) {
       const [myPro, bookings, mine, admin, mfa] = await Promise.all([api.loadMyPro(profile.id), api.loadBookings(), api.loadReviews(undefined, profile.id), api.isAdmin(), api.adminNeedsMfa()])
       remote.admin = admin
@@ -1003,7 +1019,7 @@ export function useVladi() {
     pros: catalogue, pro, service, isMine, reviewsOf, ratingOf, loadReviewsFor, replyToReview,
     photosOf, loadPhotosFor, addPhotos, removePhoto, makeCover, reportContent,
     reliabilityFor, myReliability, blocked, loadBlocked, setBlocked, countView,
-    referralCode, keepReferral, myLoyalty, deleteAccount,
+    referralCode, keepReferral, myLoyalty, deleteAccount, sponsoredIds, loadPromos,
     starts, openSlots, isDone, refundable, minutesUntil, myBookings, findBooking,
     book, clashWith, cancel, addReview, toggleFav, placeLabel,
     km, setCommune, locate, currentPosition, nextSlots, openStatus,

@@ -20,6 +20,13 @@ const nextPro = computed(() => (nextBooking.value ? pro(nextBooking.value.proId)
 const isPro = computed(() => !!remote.myPro || account.value?.role === 'pro')
 const proToday = computed(() => (remote.myPro ? agenda(today.value).filter(e => e.kind === 'app').length : 0))
 const initial = computed(() => (account.value?.name ?? '').trim().charAt(0).toUpperCase())
+
+// Fiches mises en avant sur l'accueil (quand la mise en avant est ouverte), les plus proches d'abord.
+const { sponsoredIds } = useVladi()
+const featured = computed(() => {
+  const ids = sponsoredIds('accueil')
+  return pros.value.filter(p => ids.has(p.id)).sort((a, b) => km(a) - km(b)).slice(0, 6)
+})
 </script>
 
 <template>
@@ -111,6 +118,11 @@ const initial = computed(() => (account.value?.name ?? '').trim().charAt(0).toUp
       <span>De nouveaux prestataires rejoignent VLADI chaque semaine. Change de commune pour voir plus loin.</span>
       <button class="btn sm soft" @click="locOpen = true">Changer de commune</button>
     </div>
+  </section>
+
+  <section v-if="featured.length" class="section">
+    <div class="row between"><h2 class="h2">À découvrir</h2><span class="tag" title="Fiches mises en avant contre paiement. La note et les avis ne sont pas concernés.">Sponsorisé</span></div>
+    <div class="carousel"><ProCard v-for="p in featured" :key="p.id" :pro="p" /></div>
   </section>
 
   <section v-if="near.length" class="section">
