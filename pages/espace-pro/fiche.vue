@@ -170,8 +170,8 @@ async function save() {
       <div class="chips" style="flex-wrap:wrap;margin:0;padding:0">
         <button v-for="c in CATS" :key="c" type="button" class="chip" :aria-pressed="f.cats.includes(c)" @click="toggleCat(c)">{{ CAT_SHORT[c] }}</button>
       </div>
-      <p v-if="f.cats.includes('tatouage') || f.cats.includes('piercing')" class="notice">Tatouage et piercing : la formation à l'hygiène et à la salubrité est obligatoire, et l'activité doit être déclarée auprès de l'ARS (préfecture). Pour les mineurs, l'autorisation d'un parent est exigée. Tu restes seul·e responsable du respect de ces obligations.</p>
-      <p v-if="f.cats.includes('hotel')" class="notice">Les hôtels proposent sur VLADI des prestations à la journée : chambre en day use, accès piscine, brunch, soins. La réservation de nuitées n'est pas proposée.</p>
+      <p v-if="f.cats.includes('tatouage') || f.cats.includes('piercing') || f.cats.includes('dermo')" class="notice">Tatouage, piercing et maquillage permanent : la formation à l'hygiène et à la salubrité est obligatoire, et l'activité doit être déclarée auprès de l'ARS (préfecture). Pour les mineurs, l'autorisation d'un parent est exigée. Tu restes seul·e responsable du respect de ces obligations.</p>
+      <p v-if="f.cats.includes('medecine')" class="notice">Les actes de médecine esthétique (injections, laser, peelings médicaux) sont réservés aux professionnel·les de santé habilité·es. Tu restes seul·e responsable du respect de ces obligations.</p>
       <div v-for="(s, i) in f.services" :key="i" class="svc-edit">
         <input v-model="s.n" class="input" :aria-label="`Prestation ${i + 1}`" placeholder="Nom de la prestation">
         <select v-model.number="s.d" class="select" :aria-label="`Durée ${i + 1}`"><option v-for="d in DURATIONS" :key="d" :value="d">{{ duration(d) }}</option></select>

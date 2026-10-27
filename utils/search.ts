@@ -3,18 +3,25 @@ import type { Category, Pro, Service } from '~/data/pros'
 
 /** Mots que les gens tapent pour chaque métier, même s'ils ne figurent dans aucun nom de prestation. */
 const KEYWORDS: Record<Category, string> = {
-  ongles: 'ongles ongle manucure pédicure vernis gel nails onglerie mains pieds capsules french',
+  visage: 'soins visage soin visage peau nettoyage hydrafacial gommage masque anti-age éclat esthétique esthéticienne institut beauté',
+  maquillage: 'maquillage make-up makeup maquilleuse mariée teint soirée shooting mise en beauté',
+  epilation: 'épilation epilation cire cire tiède jambes maillot aisselles sourcils fil lumière pulsée laser',
   cils: 'cils cil extensions faux-cils lash regard sourcils rehaussement brow',
-  coiffure: 'coiffure coiffeur coiffeuse cheveux coupe brushing couleur coloration lissage mèches boucles',
-  tresses: 'tresses nattes braids locks dreadlocks vanilles tissage perruque',
-  maquillage: 'maquillage make-up makeup maquilleuse mariée teint',
-  soins: 'soins visage épilation cire massage gommage esthétique esthéticienne spa',
-  barbier: 'barbier barbe barber homme dégradé rasage',
+  coiffure: 'coiffure coiffeur coiffeuse cheveux coupe brushing couleur coloration lissage mèches boucles tresses nattes braids box braids vanilles tissage perruque défrisage chignon femme',
+  barbier: 'barbier barbe barber homme hommes dégradé rasage coupe homme contours',
+  locks: 'locks dreadlocks retwist départ de locks microlocks entretien locks cheveux crépus naturels',
+  ongles: 'ongles ongle manucure vernis gel nails onglerie mains capsules french nail art semi-permanent',
+  pieds: 'pieds pédicure pedicure beauté des pieds vernis talons ongles des pieds soin des pieds podologie',
+  corps: 'soins du corps corps gommage enveloppement hammam spa sauna jacuzzi bain balnéo bien-être esthétique corporelle',
+  massage: 'massage masseur masseuse relaxation détente réflexologie pierres chaudes californien prénatal dos sportif bien-être',
+  minceur: 'minceur amincissement palper-rouler cellulite drainage lymphatique modelage silhouette cryolipolyse sculptant',
+  bronzage: 'bronzage bronzer solaire autobronzant spray tan cabine uv hâle beauté solaire',
+  dermo: 'maquillage permanent dermopigmentation microblading micropigmentation sourcils lèvres eye-liner pigmentation',
   tatouage: 'tatouage tatouages tatoo tattoo tatoueur tatoueuse encre ink flash lettrage cover-up fine-line',
   piercing: 'piercing percing perçage perceur bijou oreille nez septum nombril cartilage hélix',
-  massage: 'massage masseur masseuse relaxation détente réflexologie pierres chaudes californien prénatal dos',
-  spa: 'spa hammam sauna jacuzzi balnéo bain bien-être détente soin duo',
-  hotel: 'hôtel hotel chambre séjour piscine resort villa gîte brunch day-use séminaire',
+  medecine: 'médecine esthétique medecine injections botox acide hyaluronique peeling mésothérapie détatouage laser consultation médecin',
+  evenements: 'mariage mariée évènement événement soirée baptême cérémonie invitée demoiselles d\'honneur coiffure maquillage à domicile',
+  formations: 'formation atelier cours consultation conseil auto-maquillage stage initiation apprendre',
 }
 
 export interface SearchHit {

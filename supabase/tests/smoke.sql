@@ -202,4 +202,16 @@ begin
     values (v_p2, v_s2, auth.uid(), now() + interval '9 days 60 minutes', now() + interval '9 days 120 minutes', 0, 0);
 end $$;
 reset role;
+-- 15. Les fiches créées avec les anciennes catégories sont converties, sans doublon et sans toucher aux autres.
+insert into pros (id, name, kind, places, commune, lat, lng, categories, opens_at, closes_at, hue, is_demo)
+  values ('old-cat', 'Ancienne fiche', 'Salon', array['Au salon']::text[], 'Les Abymes', 16.27, -61.5, array['tresses', 'coiffure', 'soins', 'ongles']::text[], 540, 1080, 10, true);
+\ir ../patch-005-categories.sql
+do $$
+declare v text[];
+begin
+  select categories into v from pros where id = 'old-cat';
+  if v is distinct from array['coiffure', 'locks', 'visage', 'epilation', 'ongles']::text[] then raise exception 'conversion des catégories incorrecte : %', v; end if;
+  if exists (select 1 from pros where categories && array['tresses', 'soins', 'spa', 'hotel']) then raise exception 'anciennes catégories restantes'; end if;
+end $$;
+delete from pros where id = 'old-cat';
 select 'tous les contrôles passent' as resultat;

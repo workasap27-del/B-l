@@ -27,7 +27,7 @@ describe('suggestions de soins', () => {
 
 describe('suggestions de catégories', () => {
   it('reconnaît le nom affiché', () => {
-    expect(suggestCats('tat', [['tatouage', 'Tatouage'], ['spa', 'Spa']])).toEqual(['tatouage'])
-    expect(suggestCats('hot', [['hotel', 'Hôtels']])).toEqual(['hotel'])
+    expect(suggestCats('tat', [['tatouage', 'Tatouage'], ['massage', 'Massage']])).toEqual(['tatouage'])
+    expect(suggestCats('barb', [['barbier', 'Cheveux hommes et barber'], ['coiffure', 'Cheveux femmes']])).toEqual(['barbier'])
   })
 })

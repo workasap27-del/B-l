@@ -3,7 +3,7 @@ import { generatePros } from './generate'
 import { hash, rng } from './random'
 import { COMMUNE_COORDS } from '../utils/geo'
 
-export type Category = 'ongles' | 'cils' | 'coiffure' | 'tresses' | 'maquillage' | 'soins' | 'barbier' | 'tatouage' | 'piercing' | 'massage' | 'spa' | 'hotel'
+export type Category = 'visage' | 'maquillage' | 'epilation' | 'cils' | 'coiffure' | 'barbier' | 'locks' | 'ongles' | 'pieds' | 'corps' | 'massage' | 'minceur' | 'bronzage' | 'dermo' | 'tatouage' | 'piercing' | 'medecine' | 'evenements' | 'formations'
 
 export interface Service {
   id: string
@@ -63,18 +63,25 @@ export interface Pro {
 
 export const CATEGORIES: [Category | 'all', string][] = [
   ['all', 'Tout'],
-  ['ongles', 'Ongles'],
-  ['cils', 'Cils & sourcils'],
-  ['coiffure', 'Coiffure'],
-  ['tresses', 'Tresses & locks'],
-  ['maquillage', 'Maquillage'],
-  ['soins', 'Soins & épilation'],
-  ['barbier', 'Barbier'],
-  ['tatouage', 'Tatouage'],
-  ['piercing', 'Piercing'],
-  ['massage', 'Massage'],
-  ['spa', 'Spa & bien-être'],
-  ['hotel', 'Hôtels'],
+  ['visage', 'Soins du visage et corps'],
+  ['maquillage', 'Maquillage et mise en beauté'],
+  ['epilation', 'Épilations'],
+  ['cils', 'Cils et sourcils'],
+  ['coiffure', 'Cheveux femmes'],
+  ['barbier', 'Cheveux hommes et barber'],
+  ['locks', 'Locks'],
+  ['ongles', 'Onglerie et manucure'],
+  ['pieds', 'Pédicure et beauté des pieds'],
+  ['corps', 'Soins du corps et esthétique corporelle'],
+  ['massage', 'Massage et relaxation'],
+  ['minceur', 'Minceur esthétique et modelage de la silhouette'],
+  ['bronzage', 'Bronzage et beauté solaire'],
+  ['dermo', 'Maquillage permanent et dermopigmentation'],
+  ['tatouage', 'Tatouage esthétique et artistique'],
+  ['piercing', 'Piercings'],
+  ['medecine', 'Médecine esthétique et actes spécialisés'],
+  ['evenements', 'Prestations beauté, mariages et autres évènements'],
+  ['formations', 'Formations, ateliers et consultations beauté'],
 ]
 
 const s = (id: string, n: string, d: number, p: number): Service => ({ id, n, d, p })
@@ -104,14 +111,14 @@ const HAND_MADE: Omit<Pro, 'lat' | 'lng'>[] = [
   },
   {
     id: 'nai', name: 'Nail Bar Bas-du-Fort', kind: 'Salon', where: ['Au salon'],
-    commune: 'Le Gosier', quartier: 'Bas-du-Fort', cats: ['ongles'], tags: ['Pose gel', 'Beauté des pieds'],
+    commune: 'Le Gosier', quartier: 'Bas-du-Fort', cats: ['ongles', 'pieds'], tags: ['Pose gel', 'Beauté des pieds'],
     rating: 4.5, nrev: 98, open: 570, close: 1110, closed: [0], fill: 0.5, h: 300,
     about: 'Bar à ongles près de la marina, quatre postes. Idéal entre midi et deux.',
     services: [s('a', 'Pose gel', 90, 60), s('b', 'Remplissage', 60, 42), s('c', 'Semi-permanent', 60, 30), s('d', 'Beauté des pieds + vernis', 60, 38)],
   },
   {
     id: 'tre', name: 'Tresses Lokal', owner: 'Sandrine D.', kind: 'Indépendante', where: ['À domicile'], travel: 8,
-    commune: 'Le Gosier', quartier: 'Mare-Gaillard', cats: ['tresses', 'coiffure'], tags: ['Box braids', 'Vanilles', 'Locks'],
+    commune: 'Le Gosier', quartier: 'Mare-Gaillard', cats: ['coiffure', 'locks'], tags: ['Box braids', 'Vanilles', 'Locks'],
     rating: 4.8, nrev: 63, open: 480, close: 1080, closed: [0], fill: 0.45, h: 25,
     about: 'Tresseuse à domicile sur toute la Riviera du Levant. Mèches fournies sur demande, comptées en supplément.',
     services: [s('a', 'Box braids mi-longues', 240, 110), s('b', 'Vanilles', 120, 60), s('c', 'Nattes collées', 90, 45), s('d', 'Retwist locks', 90, 50), s('e', 'Départ de locks', 180, 90)],
@@ -132,7 +139,7 @@ const HAND_MADE: Omit<Pro, 'lat' | 'lng'>[] = [
   },
   {
     id: 'fle', name: 'Institut Fleur de Canne', kind: 'Institut', where: ["À l'institut"],
-    commune: 'Petit-Bourg', quartier: 'Bourg', cats: ['soins'], tags: ['Soin visage', 'Épilation', 'Massage'],
+    commune: 'Petit-Bourg', quartier: 'Bourg', cats: ['visage', 'epilation'], tags: ['Soin visage', 'Épilation', 'Massage'],
     rating: 4.7, nrev: 120, open: 540, close: 1080, closed: [0], fill: 0.5, h: 120,
     about: 'Soins du visage et du corps, cire tiède. Cabine climatisée.',
     services: [s('a', 'Soin visage hydratant', 60, 50), s('b', 'Gommage corps', 60, 45), s('c', 'Épilation demi-jambes', 30, 18), s('d', 'Épilation aisselles', 30, 10), s('e', 'Massage dos', 30, 35)],
@@ -146,7 +153,7 @@ const HAND_MADE: Omit<Pro, 'lat' | 'lng'>[] = [
   },
   {
     id: 'mad', name: 'Atelier Madras Beauté', kind: 'Institut', where: ["À l'institut", 'À domicile'], travel: 10,
-    commune: 'Sainte-Anne', quartier: 'Bourg', cats: ['soins', 'maquillage'], tags: ['Soin éclat', 'Maquillage', 'Épilation'],
+    commune: 'Sainte-Anne', quartier: 'Bourg', cats: ['visage', 'epilation', 'maquillage'], tags: ['Soin éclat', 'Maquillage', 'Épilation'],
     rating: 4.5, nrev: 89, open: 540, close: 1080, closed: [0], fill: 0.45, h: 5,
     about: 'À deux rues de la plage du bourg. Soins, épilation et maquillage sur rendez-vous.',
     services: [s('a', 'Soin visage éclat', 60, 55), s('b', 'Épilation jambes complètes', 60, 30), s('c', 'Épilation maillot', 30, 18), s('d', 'Maquillage jour', 60, 40), s('e', 'Massage relaxant', 60, 60)],
@@ -174,7 +181,7 @@ const HAND_MADE: Omit<Pro, 'lat' | 'lng'>[] = [
   },
   {
     id: 'loc', name: 'Locks & Nature', kind: 'Salon', where: ['Au salon'],
-    commune: 'Basse-Terre', quartier: 'Centre', cats: ['tresses'], tags: ['Locks', 'Soins naturels'],
+    commune: 'Basse-Terre', quartier: 'Centre', cats: ['locks'], tags: ['Locks', 'Soins naturels'],
     rating: 4.8, nrev: 95, open: 540, close: 1080, closed: [0, 1], fill: 0.5, h: 95,
     about: 'Entretien et création de locks, soins à base de plantes locales.',
     services: [s('a', 'Retwist', 90, 45), s('b', 'Entretien locks + soin', 120, 60), s('c', 'Départ de locks', 180, 85), s('d', 'Coiffage locks', 60, 35)],
@@ -204,15 +211,22 @@ export const REVIEW_TEXTS: Record<Category, string[]> = {
   ongles: ['Pose impeccable, ça tient trois semaines sans bouger.', "Très minutieuse, et elle respecte l'heure.", "Le nail art est exactement ce que j'avais montré en photo.", 'Mes ongles naturels ne sont pas abîmés, enfin.', 'Un peu de retard mais le résultat vaut le coup.', 'Grand choix de couleurs, je reviendrai.', 'Travail propre, cuticules nickel.', 'Rapide et pas chère pour la qualité.'],
   cils: ['Regard naturel, comme demandé. Aucune gêne après la pose.', 'Douce et précise, je me suis endormie pendant la pose.', 'Le rehaussement tient encore six semaines après.', 'Sourcils parfaitement symétriques.', 'Très bonne tenue, même avec la mer et la piscine.', 'Elle prend le temps de conseiller la bonne courbure.', 'Remplissage rapide, rien à redire.', 'Un peu cher mais le travail est soigné.'],
   coiffure: ["Enfin quelqu'un qui sait coiffer mes boucles.", "Brushing qui tient malgré l'humidité, bravo.", "Accueil chaleureux et pas d'attente.", 'La couleur est exactement celle que je voulais.', 'Bons conseils pour entretenir mes cheveux à la maison.', 'Coupe fraîche, je me sens légère.', 'Salon propre et climatisé.', "J'ai attendu vingt minutes mais le résultat est top."],
-  tresses: ['Tresses fines et régulières, pas trop serrées.', "Rapide et soignée, elle est venue à l'heure à la maison.", "Mes locks n'ont jamais été aussi propres.", 'Ma fille a adoré, et ça a tenu un mois.', 'Aucune douleur au cuir chevelu, enfin.', 'Finitions propres, les raccords ne se voient pas.', 'Très patiente, six heures de travail sans se plaindre.', 'Prix honnête pour la longueur.'],
+  locks: ['Tresses fines et régulières, pas trop serrées.', "Rapide et soignée, elle est venue à l'heure à la maison.", "Mes locks n'ont jamais été aussi propres.", 'Ma fille a adoré, et ça a tenu un mois.', 'Aucune douleur au cuir chevelu, enfin.', 'Finitions propres, les raccords ne se voient pas.', 'Très patiente, six heures de travail sans se plaindre.', 'Prix honnête pour la longueur.'],
   maquillage: ['Teint parfait toute la soirée, même en dansant.', 'Elle a su trouver la bonne teinte du premier coup.', 'Maquillage léger et lumineux, exactement mon style.', "Tout a tenu jusqu'à la fin du mariage.", "L'essai m'a rassurée, le jour J était parfait.", 'Ponctuelle et très douce.', 'Rendu magnifique en photo.', 'Elle écoute vraiment ce qu\'on veut.'],
-  soins: ['Moment de détente, peau toute douce en sortant.', 'Épilation rapide et presque sans douleur.', 'Cabine propre et fraîche, je reviendrai.', 'Massage excellent, mes épaules la remercient.', 'Le soin visage a vraiment éclairci mon teint.', 'Accueil souriant et tisane offerte.', 'Très pro, elle explique chaque étape.', 'Bon rapport qualité-prix.'],
+  visage: ['Moment de détente, peau toute douce en sortant.', 'Épilation rapide et presque sans douleur.', 'Cabine propre et fraîche, je reviendrai.', 'Massage excellent, mes épaules la remercient.', 'Le soin visage a vraiment éclairci mon teint.', 'Accueil souriant et tisane offerte.', 'Très pro, elle explique chaque étape.', 'Bon rapport qualité-prix.'],
+  epilation: ['Épilation rapide et presque sans douleur.', 'Cire tiède, peau douce pendant des semaines.', 'Cabine propre, matériel à usage unique.', "Elle explique tout avant de commencer, c'est rassurant.", 'Résultat net, aucune irritation après.', 'Ponctuelle et très professionnelle.', 'Prix clair, pas de supplément surprise.', 'Je reviens tous les mois, toujours aussi bien.'],
   tatouage: ['Le dessin est exactement celui que j\'imaginais, trait très net.', 'Hygiène irréprochable, tout le matériel est ouvert devant moi.', 'Explique bien les soins après la séance, cicatrisation parfaite.', 'Très à l\'écoute pour adapter le dessin à mon bras.', 'Séance longue mais on prend des pauses quand il faut.', 'Retouche offerte, super accueil.', 'Un vrai artiste, je reviens pour mon deuxième.', 'Prix annoncé au devis, aucune surprise.'],
   piercing: ['Rapide, précis et presque indolore.', 'Matériel stérile et bijou en titane, rien à redire.', 'On m\'a bien expliqué comment nettoyer pendant la cicatrisation.', 'Placement parfait, très bons conseils sur le bijou.', 'Accueil rassurant pour une première fois.', 'Cartilage cicatrisé sans souci après deux mois.', 'Studio propre et choix de bijoux sympa.', 'Je recommande les yeux fermés.'],
   massage: ['Un vrai lâcher-prise, mon dos me dit merci.', 'Pression juste comme il faut, très bon massage.', 'Ambiance calme, huiles chaudes, je me suis endormi.', 'Parfait après une semaine de travail debout.', 'Le massage prénatal m\'a fait un bien fou.', 'Ponctuel et à l\'écoute de ce qui fait mal.', 'Cabine propre et silencieuse.', 'Le meilleur massage que j\'aie fait sur l\'île.'],
-  spa: ['Hammam et jacuzzi sans foule, vraie parenthèse.', 'Personnel discret et attentionné.', 'Le rituel visage et corps vaut le détour.', 'Très propre, serviettes et peignoirs de qualité.', 'On est venus à deux, soin duo parfait.', 'Un cadre calme, on oublie tout.', 'Bon rapport qualité-prix pour la demi-journée.', 'Réservation simple, aucune attente à l\'arrivée.'],
-  hotel: ['Chambre propre et calme, le day use est une super idée.', 'Piscine agréable et personnel très accueillant.', 'Brunch copieux, vue superbe sur la mer.', 'Réservation facile, pas de mauvaise surprise sur le prix.', 'Idéal pour une demi-journée de détente en famille.', 'Cadre soigné et climatisation efficace.', 'Salle de séminaire bien équipée.', 'On reviendra pour un week-end.'],
   barbier: ['Dégradé net, rien à redire.', 'Bon coup de ciseaux et bonne ambiance.', 'Mon fils ne veut plus aller ailleurs.', 'Contours au cordeau.', "Ponctuel, pas d'attente interminable.", 'Barbe bien taillée, il prend son temps.', 'Le meilleur dégradé du secteur.', 'Salon propre, matériel désinfecté.'],
+  pieds: ['Pieds tout doux, vernis impeccable.', 'Soin des pieds très complet, un vrai moment de détente.', 'Elle a su traiter mes talons secs sans me faire mal.', 'Matériel bien désinfecté, rien à redire.', 'Pose de vernis semi-permanent qui tient trois semaines.', 'Accueil souriant et fauteuil confortable.', 'Parfait avant les vacances à la plage.', 'Très minutieuse sur les ongles incarnés.'],
+  corps: ['Hammam et jacuzzi sans foule, vraie parenthèse.', 'Personnel discret et attentionné.', 'Le rituel visage et corps vaut le détour.', 'Très propre, serviettes et peignoirs de qualité.', 'On est venus à deux, soin duo parfait.', 'Un cadre calme, on oublie tout.', 'Bon rapport qualité-prix pour la demi-journée.', 'Réservation simple, aucune attente à l\'arrivée.'],
+  minceur: ['Séances agréables, je vois la différence sur mes cuisses.', 'Programme clair et suivi sérieux à chaque rendez-vous.', 'Aucun désagrément, juste un peu de fatigue après.', 'Elle ne promet pas de miracle, et ça rassure.', 'Bons conseils pour compléter à la maison.', 'Cabine propre et ambiance calme.', 'Résultat visible après quelques séances.', 'Tarif au forfait honnête.'],
+  bronzage: ['Un teint doré uniforme, sans traces.', 'Très bons conseils pour préparer la peau avant.', 'Rapide, propre, et le résultat tient plusieurs jours.', 'Couleur naturelle, exactement ce que je voulais.', 'Cabine propre, produits agréables.', 'Parfait avant un mariage.', 'Accueil chaleureux et pas d\'attente.', 'Ma peau est restée douce.'],
+  dermo: ['Sourcils très naturels, je me réveille maquillée.', 'Elle prend le temps de dessiner avant de commencer.', 'Cicatrisation parfaite, retouche offerte.', 'Pigments choisis selon ma carnation, rendu magnifique.', 'Hygiène irréprochable, matériel à usage unique.', 'Explications claires sur les soins après la séance.', 'Très douce, presque aucune douleur.', 'Je recommande pour un résultat qui dure.'],
+  medecine: ['Consultation sérieuse, on m\'explique tout avant de décider.', 'Cabinet très propre et équipe rassurante.', 'Résultat discret et naturel, comme convenu.', 'Prise en charge attentive, suivi après la séance.', 'Devis donné à l\'avance, aucune surprise.', 'Elle a su me dire quand ce n\'était pas utile, ça rassure.', 'Ponctuel et à l\'écoute.', 'Je recommande pour une première consultation.'],
+  evenements: ['Venue à l\'heure le jour du mariage, tout était parfait.', 'Coiffure et maquillage ont tenu jusqu\'à la fin de la soirée.', 'Essai fait avant, aucune mauvaise surprise le jour J.', 'Elle s\'est occupée de toute la famille sans stress.', 'Très pro, matériel et lumière apportés.', 'Équipe discrète et efficace.', 'Devis clair et respecté.', 'Photos magnifiques, merci !'],
+  formations: ['Atelier très clair, j\'ai appris plus en deux heures qu\'en vidéo.', 'Petit groupe, chacune a pu pratiquer.', 'Consultation personnalisée, des conseils vraiment adaptés à ma peau.', 'Pédagogue et patiente, je recommande.', 'Matériel fourni, rien à acheter avant.', 'Bonne ambiance, on repart avec un vrai savoir-faire.', 'Cours d\'auto-maquillage très utile.', 'Support remis à la fin, pratique pour réviser.'],
 }
 
 export const CLIENT_NAMES = ['Laurine M.', 'Cindy B.', 'Aurélie T.', 'Mélissa R.', 'Jade K.', 'Sarah-Lyne P.', 'Ludivine G.', 'Anaëlle F.', 'Yoan D.', 'Stessy V.', 'Coralie N.', 'Maïté B.']

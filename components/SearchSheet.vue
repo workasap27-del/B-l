@@ -19,9 +19,9 @@ onMounted(() => nextTick(() => input.value?.focus()))
 
 const LABELS = CATEGORIES.filter(c => c[0] !== 'all') as [Category, string][]
 const POPULAR: SoinSuggestion[] = [
-  { name: 'Pose gel', cat: 'ongles' }, { name: 'Extension de cils', cat: 'cils' }, { name: 'Box braids', cat: 'tresses' },
-  { name: 'Dégradé', cat: 'barbier' }, { name: 'Massage relaxant', cat: 'massage' }, { name: 'Soin du visage', cat: 'soins' },
-  { name: 'Day use avec piscine', cat: 'hotel' },
+  { name: 'Pose gel', cat: 'ongles' }, { name: 'Extension de cils', cat: 'cils' }, { name: 'Box braids', cat: 'coiffure' },
+  { name: 'Dégradé', cat: 'barbier' }, { name: 'Massage relaxant', cat: 'massage' }, { name: 'Soin du visage', cat: 'visage' },
+  { name: 'Épilation jambes', cat: 'epilation' }, { name: 'Maquillage mariée', cat: 'evenements' },
 ]
 // Tous les soins connus : ceux des fiches visibles et les prestations courantes de chaque métier.
 const soins = computed<SoinSuggestion[]>(() => [

@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Category, Pro, Service } from '~/data/pros'
 import { fromIso, toIso } from '~/utils/time'
+import { readCategories } from '~/utils/cats'
 import type { AdminEvent, AdminStats } from '~/utils/admin'
 
 let client: SupabaseClient | null = null
@@ -163,7 +164,7 @@ function mapPro(r: ProRow): Pro {
   return {
     id: r.id, name: r.name, owner: r.owner_name ?? undefined, kind: r.kind, where: r.places, travel: Number(r.travel_fee_eur) || 0,
     commune: r.commune, quartier: r.quartier ?? '', lat: r.lat, lng: r.lng,
-    cats: (r.categories.length ? r.categories : ['soins']) as Category[], tags: r.tags ?? [],
+    cats: readCategories(r.categories ?? []), tags: r.tags ?? [],
     rating: 0, nrev: 0, open: r.opens_at, close: r.closes_at, closed: r.closed_weekdays ?? [], fill: 0, h: r.hue,
     about: r.about ?? '', services, real: true, ownerId: r.owner_id ?? undefined, photo: r.photo_url ?? undefined,
     phone: r.phone ?? undefined, siren: r.siren ?? undefined,

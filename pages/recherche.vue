@@ -25,7 +25,7 @@ const input = ref<HTMLInputElement | null>(null)
 onMounted(() => { if (route.query.saisie) input.value?.focus() })
 watch([q, cat, place, kind, maxKm, todayOnly, sort, day], () => { shown.value = 12; selected.value = '' })
 
-const SUGGESTIONS = ['Pose gel', 'Box braids', 'Extensions de cils', 'Dégradé', 'Massage', 'Tatouage', 'Piercing', 'Spa', 'Hôtel piscine', 'Brushing', 'Maquillage mariée', 'Épilation']
+const SUGGESTIONS = ['Pose gel', 'Box braids', 'Extensions de cils', 'Dégradé', 'Massage', 'Tatouage', 'Piercing', 'Pédicure', 'Brushing', 'Maquillage mariée', 'Épilation', 'Microblading']
 const minPrice = (p: Pro) => Math.min(...p.services.map(s => s.p))
 const freeToday = (p: Pro) => p.services.some(s => starts(p, today.value, s.d).length > 0)
 /** Tant que rien n'est cherché ni choisi, on montre d'abord les catégories. */

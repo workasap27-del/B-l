@@ -1,6 +1,6 @@
 # VLADI
 
-Appli web de réservation beauté et bien-être en Guadeloupe : ongles, cils, coiffure, tresses, maquillage, soins, barbier, tatouage, piercing, massage, spa et hôtels (chambre à la journée, piscine, brunch). Elle s'adapte au téléphone, à la tablette et à l'ordinateur.
+Appli web de réservation beauté et bien-être en Guadeloupe : soins du visage et du corps, maquillage, épilations, cils et sourcils, cheveux femmes et hommes, locks, ongles, pieds, massage, minceur, bronzage, dermopigmentation, tatouage, piercings, médecine esthétique, évènements, formations et ateliers. Elle s'adapte au téléphone, à la tablette et à l'ordinateur.
 Deux façons de réserver : à l'avance (classique) ou tout de suite sur un créneau qui se libère (Konyéla, avec remise).
 
 **État actuel : comptes réels, catalogue mixte.** Les personnes qui réservent et les prestataires peuvent créer un compte (Supabase).

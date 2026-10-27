@@ -82,10 +82,10 @@ const TRADES: Trade[] = [
     about: ['Salon mixte, conseils personnalisés et produits adaptés à tous les types de cheveux.', 'Équipe de trois coiffeuses, spécialiste couleur et soins profonds.', 'Le salon de quartier où on entre aussi sans rendez-vous quand il y a de la place.'],
     soloAbout: ['Coiffeuse diplômée, elle se déplace avec tout son matériel.', 'Spécialiste des cheveux naturels et des boucles, soins sur mesure.', "Coiffe à la maison pour les familles, enfants compris."],
     menu: [['Shampoing + brushing', 60, 30], ['Coupe + brushing', 60, 45], ['Coloration', 90, 65], ['Mèches et balayage', 150, 95], ['Lissage brésilien', 180, 160], ['Soin profond + coiffage boucles', 60, 40], ['Défrisage + soin', 120, 70], ['Coiffure événement', 60, 55], ['Coupe enfant', 30, 15], ['Wash and go', 60, 35]],
-    extra: 'tresses',
+    extra: 'locks',
   },
   {
-    cat: 'tresses', share: 14, indep: 0.75, shop: 'Salon',
+    cat: 'locks', share: 14, indep: 0.75, shop: 'Salon',
     shopNames: ['{m} Braids', 'Tresses {m}', 'Locks {m}', 'Natural {m}'],
     soloNames: ['Tresses by {p}', '{p} Braids', 'Les Nattes de {p}', '{p} Locks', 'Ti Très a {p}'],
     tags: ['Box braids', 'Knotless', 'Vanilles', 'Nattes collées', 'Locks', 'Crochet braids', 'Enfants'],
@@ -104,7 +104,7 @@ const TRADES: Trade[] = [
     extra: 'ongles',
   },
   {
-    cat: 'soins', share: 12, indep: 0.3, shop: 'Institut',
+    cat: 'visage', share: 12, indep: 0.3, shop: 'Institut',
     shopNames: ['Institut {m}', 'Spa {m}', '{m} Beauté', 'Escale {m}'],
     soloNames: ['{p} Bien-être', 'Les Soins de {p}', '{p} Esthétique'],
     tags: ['Soin visage', 'Épilation', 'Massage', 'Gommage', 'Cire tiède', 'Soin éclat'],
@@ -161,10 +161,10 @@ const NEW_TRADES: Trade[] = [
     about: ['Cabines calmes et climatisées, huiles chaudes et massages sur mesure.', 'Massages bien-être et sportifs, sur rendez-vous.'],
     soloAbout: ['Praticien ou praticienne en massage bien-être, table et huiles apportées à domicile.', 'Massages relaxants et sportifs, à l\'écoute de ce qui fait du bien.'],
     menu: [['Massage relaxant 1 h', 60, 60], ['Massage relaxant 30 min', 30, 38], ['Massage californien', 60, 65], ['Massage aux pierres chaudes', 90, 90], ['Massage dos et nuque', 30, 35], ['Massage prénatal', 60, 65], ['Massage sportif', 60, 70], ['Réflexologie plantaire', 45, 45], ['Massage à quatre mains', 60, 140]],
-    extra: 'spa',
+    extra: 'corps',
   },
   {
-    cat: 'spa', share: 14, indep: 0, shop: 'Spa', mixed: true,
+    cat: 'corps', share: 14, indep: 0, shop: 'Spa', mixed: true,
     shopNames: ['Spa {m}', '{m} Spa', 'Escale {m} Spa', 'Maison de Bien-être {m}'],
     soloNames: ['{p} Spa'],
     tags: ['Hammam', 'Jacuzzi', 'Sauna', 'Soin duo', 'Gommage', 'Détente'],
@@ -174,23 +174,80 @@ const NEW_TRADES: Trade[] = [
     extra: 'massage',
   },
   {
-    cat: 'hotel', share: 10, indep: 0, shop: 'Hôtel', mixed: true,
-    shopNames: ['Hôtel {m}', '{m} Resort', 'Villa {m}', 'Habitation {m}', 'Hôtel Le {m}'],
-    soloNames: ['Villa {p}'],
-    tags: ['Piscine', 'Vue mer', 'Day use', 'Brunch', 'Séminaire', 'Détente'],
-    about: ['Hôtel avec piscine : chambre à la journée, brunch et soins sur place.', 'Établissement de charme, accès piscine et plage ouvert aux non-résidents.'],
-    soloAbout: [''],
-    menu: [['Chambre à la demi-journée (4 h)', 240, 70], ['Chambre à la journée (day use, 8 h)', 480, 110], ['Accès piscine et plage (journée)', 360, 35], ['Brunch en bord de piscine', 120, 38], ['Pack détente : chambre et massage', 300, 160], ['Salle de séminaire (demi-journée)', 240, 220], ['Dîner au restaurant', 120, 45]],
-    extra: 'spa',
+    cat: 'pieds', share: 12, indep: 0.55, shop: 'Institut',
+    shopNames: ['Pieds {m}', '{m} Pédicure', 'Institut {m} Pieds', 'Escale {m} Pédicure'],
+    soloNames: ['{p} Pédicure', 'Pieds by {p}', 'Les Pieds de {p}'],
+    tags: ['Pédicure', 'Semi-permanent', 'Soin des talons', 'Vernis', 'Beauté des pieds'],
+    about: ['Institut dédié aux pieds : pédicure, soin des talons et vernis.', 'Fauteuils confortables, matériel stérilisé à chaque personne.'],
+    soloAbout: ['Pédicure à domicile, matériel stérilisé apporté chez toi.', 'Soin des pieds complet, talons et ongles, dans un espace calme.'],
+    menu: [['Pédicure complète', 60, 40], ['Semi-permanent pieds', 45, 30], ['Soin des talons', 45, 28], ['Gommage et massage des pieds', 30, 25], ['Pose de vernis', 30, 15], ['Pédicure spa', 75, 50]],
+    extra: 'ongles',
+  },
+  {
+    cat: 'minceur', share: 8, indep: 0.35, shop: 'Institut', mixed: true,
+    shopNames: ['Minceur {m}', '{m} Silhouette', 'Institut {m} Minceur', 'Escale {m} Silhouette'],
+    soloNames: ['{p} Silhouette', 'Minceur by {p}', 'Modelage {p}'],
+    tags: ['Palper-rouler', 'Drainage', 'Cellulite', 'Modelage', 'Forfait'],
+    about: ['Institut spécialisé dans le modelage de la silhouette, suivi à chaque séance.', 'Programmes minceur sur mesure, séances de 45 minutes à une heure.'],
+    soloAbout: ['Modelages et drainage, table et matériel apportés à domicile.', 'Suivi personnalisé, séances courtes et régulières.'],
+    menu: [['Séance palper-rouler', 45, 45], ['Drainage lymphatique', 60, 60], ['Modelage anti-cellulite', 60, 55], ['Modelage sculptant jambes', 45, 50], ['Forfait 5 séances minceur', 60, 220], ['Bilan silhouette', 30, 25]],
+  },
+  {
+    cat: 'bronzage', share: 6, indep: 0.25, shop: 'Institut', mixed: true,
+    shopNames: ['Bronz {m}', '{m} Sun', 'Sun Institut {m}', 'Teint {m}'],
+    soloNames: ['{p} Sun', 'Teint hâlé by {p}', 'Bronzage {p}'],
+    tags: ['Spray tan', 'Autobronzant', 'Gommage', 'Hâle naturel'],
+    about: ['Bronzage par pulvérisation, hâle uniforme sans exposition au soleil.', 'Cabine propre, produits adaptés à toutes les carnations.'],
+    soloAbout: ['Autobronzant à domicile, essai possible avant un événement.'],
+    menu: [['Bronzage par pulvérisation', 30, 35], ['Gommage + autobronzant', 60, 50], ['Autobronzant mariée (essai)', 60, 60], ['Bronzage visage et décolleté', 20, 22], ['Pack soleil : gommage et hydratation', 60, 45]],
+    extra: 'corps',
+  },
+  {
+    cat: 'dermo', share: 8, indep: 0.6, shop: 'Studio', mixed: true,
+    shopNames: ['{m} Brows', 'Studio {m} Pigment', 'Atelier {m} Dermo', '{m} Beauty Pigment'],
+    soloNames: ['Brows by {p}', '{p} Dermopigmentation', '{p} Microblading'],
+    tags: ['Microblading', 'Sourcils poudrés', 'Lèvres', 'Eye-liner', 'Retouche'],
+    about: ['Studio de maquillage permanent : sourcils, lèvres et regard, matériel à usage unique.', 'Étude de la forme avant chaque séance, retouche prévue.'],
+    soloAbout: ['Dermopigmentation des sourcils, pigments choisis selon ta carnation.', 'Reçoit dans un espace dédié, étude de forme avant la pose.'],
+    menu: [['Microblading sourcils', 120, 220], ['Sourcils poudrés', 120, 230], ['Retouche à six semaines', 60, 70], ['Eye-liner permanent', 120, 200], ['Dermopigmentation des lèvres', 120, 230], ['Étude de forme', 30, 20]],
+    extra: 'cils',
+  },
+  {
+    cat: 'medecine', share: 6, indep: 0.15, shop: 'Institut', mixed: true,
+    shopNames: ['Institut {m} Médecine esthétique', 'Cabinet {m} Esthétique', '{m} Esthétique médicale'],
+    soloNames: ['Consultation esthétique {p}'],
+    tags: ['Consultation', 'Peeling', 'Mésothérapie', 'Injections', 'Laser'],
+    about: ['Actes de médecine esthétique sur rendez-vous, consultation préalable systématique.', 'Cabinet calme, devis remis avant chaque acte.'],
+    soloAbout: ['Consultation puis actes sur rendez-vous, devis remis à l\'avance.'],
+    menu: [['Consultation initiale', 30, 60], ['Peeling médical', 45, 90], ['Mésothérapie visage', 45, 120], ['Injections acide hyaluronique', 45, 250], ['Détatouage laser (séance)', 30, 120], ['Épilation laser (zone)', 30, 60], ['Soin hydratant profond', 60, 110]],
+  },
+  {
+    cat: 'evenements', share: 10, indep: 0.8, shop: 'Studio', mixed: true,
+    shopNames: ['{m} Events Beauté', 'Studio {m} Mariage', 'Atelier {m} Cérémonie'],
+    soloNames: ['{p} Mariage', 'Beauté Cérémonie by {p}', '{p} Events'],
+    tags: ['Mariée', 'Demoiselles d\'honneur', 'Baptême', 'Essai', 'À domicile', 'Carnaval'],
+    about: ['Coiffure et maquillage pour mariages, baptêmes et cérémonies, équipe déplacée sur place.', 'Essai possible avant le jour J, devis clair.'],
+    soloAbout: ['Se déplace le jour J avec tout son matériel, essai possible avant.', 'Beauté de la mariée et de sa famille, ponctuelle et rassurante.'],
+    menu: [['Coiffure + maquillage mariée', 180, 280], ['Essai coiffure + maquillage', 120, 90], ['Demoiselle d\'honneur : coiffure + maquillage', 90, 90], ['Maquillage invitée', 45, 45], ['Pack famille (4 personnes)', 240, 260], ['Coiffure baptême', 60, 55]],
+    extra: 'coiffure',
+  },
+  {
+    cat: 'formations', share: 6, indep: 0.7, shop: 'Studio', mixed: true,
+    shopNames: ['Académie {m} Beauté', 'Atelier {m}', 'Studio {m} Formation'],
+    soloNames: ['Atelier {p}', '{p} Formation', '{p} Conseil Beauté'],
+    tags: ['Auto-maquillage', 'Initiation', 'Consultation', 'Atelier', 'Routine'],
+    about: ['Ateliers en petit groupe et consultations individuelles, matériel fourni.', 'Initiations et conseils pour apprendre les bons gestes.'],
+    soloAbout: ['Cours individuels ou en petit groupe, support remis à la fin.', 'Conseils personnalisés sur ta routine et ton maquillage.'],
+    menu: [['Atelier auto-maquillage', 120, 60], ['Initiation vernis semi-permanent', 180, 90], ['Consultation routine soin visage', 45, 35], ['Atelier coiffures de fête', 120, 55], ['Consultation colorimétrie', 60, 40], ['Cours collectif ongles', 150, 80]],
   },
 ]
 
 const SHOP_PLACE: Record<Trade['shop'], string> = { Salon: 'Au salon', Institut: "À l'institut", Studio: 'Au studio', Spa: 'Au spa', Hôtel: "À l'hôtel" }
 
-/** Catalogue d'origine d'abord (inchangé), puis les métiers ajoutés ensuite : tatouage, piercing, massage, spa, hôtel. */
+/** Catalogue d'origine d'abord (inchangé), puis les métiers ajoutés ensuite : tatouage, piercing, massage, soins du corps, pieds, minceur, bronzage, dermopigmentation, médecine esthétique, évènements et formations. */
 export function generatePros(takenNames: string[]): Pro[] {
   const base = generate(20261010, TRADES, 'g', 1, takenNames)
-  const more = generate(20261016, NEW_TRADES, 'h', 0.4, [...takenNames, ...base.map(p => p.name)])
+  const more = generate(20261016, NEW_TRADES, 'h', 0.6, [...takenNames, ...base.map(p => p.name)])
   return [...base, ...more]
 }
 
@@ -251,7 +308,7 @@ function generate(seed: number, TRADES: Trade[], prefix: string, scale: number, 
         : pick([['À domicile'], [home], [home, 'À domicile'], [home, 'À domicile']])
       const travel = where.includes('À domicile') ? pick([0, 5, 5, 8, 10, 15]) : undefined
 
-      out.push({
+      const pro: Pro = {
         id: `${prefix}${String(++n).padStart(3, '0')}`,
         name,
         owner: solo ? `${prenom} ${pick([...INITIALES])}.` : undefined,
@@ -273,13 +330,32 @@ function generate(seed: number, TRADES: Trade[], prefix: string, scale: number, 
         h: Math.floor(r() * 360),
         about: pick(solo ? t.soloAbout : t.about),
         services,
-      })
+      }
+      pro.cats = finalCats(t, cats, pro.tags, services)
+      out.push(pro)
     }
   }
   return out
 }
 
+/**
+ * Catégories affichées d'une fiche de démonstration, déduites de ce qu'elle propose (sans tirage au hasard, pour ne pas changer le catalogue).
+ * Les tresses sont des coiffures, et seuls les locks apparaissent dans « Locks » ; les soins qui incluent de l'épilation apparaissent aussi dans « Épilations ».
+ */
+function finalCats(t: Trade, cats: Category[], tags: string[], services: Service[]): Category[] {
+  const out = [...cats]
+  const text = [...tags, ...services.map(s => s.n)].join(' ').toLowerCase()
+  if (out.includes('locks') && !text.includes('locks')) out.splice(out.indexOf('locks'), 1)
+  if (t.cat === 'locks' && !out.includes('coiffure')) out.push('coiffure')
+  if (t.cat === 'visage' && text.includes('pilation') && !out.includes('epilation')) out.splice(1, 0, 'epilation')
+  return out
+}
+
 /** Prestations courantes d'une catégorie, proposées en suggestion quand un prestataire crée sa fiche. */
 export function suggestedServices(cat: Category): { n: string, d: number, p: number }[] {
-  return TRADES.filter(t => t.cat === cat).flatMap(t => t.menu.map(([n, d, p]) => ({ n, d, p })))
+  const all = [...TRADES, ...NEW_TRADES]
+  const own = all.filter(t => t.cat === cat).flatMap(t => t.menu.map(([n, d, p]) => ({ n, d, p })))
+  if (cat === 'epilation') return all.filter(t => t.cat === 'visage').flatMap(t => t.menu).filter(([n]) => n.includes('pilation')).map(([n, d, p]) => ({ n, d, p }))
+  if (cat === 'coiffure') return [...own, ...all.filter(t => t.cat === 'locks').flatMap(t => t.menu).filter(([n]) => !n.toLowerCase().includes('locks')).map(([n, d, p]) => ({ n, d, p }))]
+  return own
 }
