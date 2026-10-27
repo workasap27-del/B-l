@@ -325,4 +325,31 @@ do $$ begin
   if (select count(*) from pro_blocks) <> 0 then raise exception 'la cliente voit les blocages'; end if;
 end $$;
 reset role;
+-- 18. E-mails à envoyer (patch 008) : une seule fois chacun, et jamais pour les fiches de démonstration.
+do $$ declare n int;
+begin
+  -- La fiche kaz est une fiche de démonstration dans le jeu d'essai : on la traite comme une vraie pour ce contrôle.
+  update pros set is_demo = false, siren = '732829320' where id = 'kaz';
+  select count(*) into n from notifications_due() where kind = 'nouvelle_reservation';
+  if n < 1 then raise exception 'aucune notification de nouvelle réservation'; end if;
+  -- La cliente A a annulé un rendez-vous à venir : le prestataire est prévenu, la cliente non.
+  if not exists (select 1 from notifications_due() where kind = 'annulation_pro' and booking_id = '00000000-0000-0000-0000-00000000d017') then
+    raise exception 'annulation non notifiée au prestataire';
+  end if;
+  if exists (select 1 from notifications_due() where kind = 'annulation_client' and booking_id = '00000000-0000-0000-0000-00000000d017') then
+    raise exception 'annulation notifiée à son autrice';
+  end if;
+  perform mark_notified(booking_id, kind) from notifications_due() where kind = 'confirmation';
+  if exists (select 1 from notifications_due() where kind = 'confirmation') then raise exception 'confirmation envoyée deux fois'; end if;
+  update pros set is_demo = true where id = 'kaz';
+  if exists (select 1 from notifications_due() where pro_id = 'kaz') then raise exception 'e-mail pour une fiche de démonstration'; end if;
+end $$;
+set role authenticated;
+do $$ begin
+  begin
+    perform * from notifications_due();
+    raise exception 'un compte lit la liste des e-mails';
+  exception when insufficient_privilege then null; end;
+end $$;
+reset role;
 select 'tous les contrôles passent' as resultat;

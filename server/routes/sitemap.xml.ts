@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   for (const [c] of CATEGORIES) if (c !== 'all') urls.push(`/recherche?cat=${c}`)
   if (cfg.supabaseUrl && cfg.supabaseKey) {
     try {
-      const rows = await $fetch<{ id: string }[]>(`${cfg.supabaseUrl}/rest/v1/pros?select=id&is_demo=eq.false`, {
+      const rows = await jsonFetch<{ id: string }[]>(`${cfg.supabaseUrl}/rest/v1/pros?select=id&is_demo=eq.false`, {
         headers: { apikey: cfg.supabaseKey, Authorization: `Bearer ${cfg.supabaseKey}` },
       })
       for (const r of rows) urls.push(`/pro/${encodeURIComponent(r.id)}`)

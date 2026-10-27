@@ -567,6 +567,7 @@ async function bookNew(input: BookInput): Promise<{ booking?: Booking, error?: s
       const b = fromRemote(r)
       remote.bookings.push(b)
       void refreshAvailability()
+      void api.notifyBooking(b.id)
       return { booking: b }
     }
     catch (e) {
@@ -609,6 +610,7 @@ async function change(id: string, f: Partial<Pick<Booking, 'status' | 'arrivedAt
   }
   Object.assign(b, f)
   if (b.real && f.status) void refreshAvailability()
+  if (b.real && f.status === 'cancelled') void api.notifyBooking(b.id)
   return true
 }
 

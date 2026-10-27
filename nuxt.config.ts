@@ -60,6 +60,12 @@ export default defineNuxtConfig({
     },
   },
   runtimeConfig: {
+    // Clés secrètes, uniquement côté serveur (variables d'environnement Vercel du même nom en NUXT_…).
+    // Vides : les e-mails de service sont simplement désactivés.
+    supabaseServiceKey: '',
+    brevoKey: '',
+    mailFrom: '',
+    cronSecret: '',
     public: {
       // Clé publique Supabase : prévue pour être dans le navigateur, la sécurité repose sur les règles de la base.
       // Variables d'environnement NUXT_PUBLIC_SUPABASE_URL et NUXT_PUBLIC_SUPABASE_KEY pour changer de projet ;

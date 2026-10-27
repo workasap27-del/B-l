@@ -439,6 +439,21 @@ export async function setCover(proId: string, url: string | null) {
   if (error) throw error
 }
 
+// E-mails de service -------------------------------------------------------------
+
+/** Demande l'envoi immédiat des e-mails d'une réservation (confirmation, annulation). Sans effet si les e-mails ne sont pas configurés. */
+export async function notifyBooking(bookingId: string) {
+  try {
+    const { data } = await sb()!.auth.getSession()
+    const token = data.session?.access_token
+    if (!token) return
+    await fetch('/api/notifications/booking', { method: 'POST', body: JSON.stringify({ bookingId }), headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${token}` } })
+  }
+  catch {
+    // La tâche planifiée rattrape les e-mails non envoyés.
+  }
+}
+
 // Fiabilité, blocage et vues -----------------------------------------------------
 
 export async function clientReliability(bookingId: string): Promise<unknown> {
