@@ -20,6 +20,8 @@ const badge = computed(() => (state.demo ? state.unseen : 0))
 const initial = computed(() => (account.value?.name ?? '').trim().charAt(0).toUpperCase())
 const flush = computed(() => route.path.startsWith('/pro/'))
 const homeDemo = computed(() => state.demo && route.path === '/')
+// Pied de page complet partout, sauf dans les parcours où il distrairait (réservation, compte, espace pro).
+const withFooter = computed(() => !['/reserver', '/confirmation', '/connexion', '/nouveau-mot-de-passe', '/espace-pro', '/pilotage', '/pro/'].some(x => route.path.startsWith(x)))
 // Largeur du contenu sur tablette et ordinateur : large (listes), moyenne (fiche) ou étroite (formulaires).
 const width = computed(() => {
   const p = route.path
@@ -46,17 +48,21 @@ watchEffect(() => {
   <div class="app">
     <main class="screen" :class="[{ flush, 'hd-screen': homeDemo }, `w-${width}`]">
       <slot />
+      <SiteFooter v-if="withFooter" />
     </main>
     <div id="sheets" />
     <div v-if="toastMessage" class="toast" role="status">{{ toastMessage }}</div>
     <nav class="nav" aria-label="Navigation principale">
       <NuxtLink to="/" class="nav-logo" aria-label="VLADI, accueil"><AppLogo :height="26" /></NuxtLink>
-      <NuxtLink v-for="t in tabsLive" :key="t.to" :to="t.to" :class="{ on: active(t.to) }">
-        <span v-if="t.to === '/profil' && account" class="avatar-xs" aria-hidden="true">{{ initial }}</span>
-        <component :is="t.icon" v-else :size="23" :stroke-width="1.8" />
-        <span class="nav-label"><span class="nl-m">{{ t.label }}</span><span class="nl-pc">{{ t.pc ?? t.label }}</span></span>
-        <span v-if="t.to === '/profil' && badge" class="count">{{ badge }}</span>
-      </NuxtLink>
+      <template v-for="(t, i) in tabsLive" :key="t.to">
+        <NuxtLink :to="t.to" :class="{ on: active(t.to) }">
+          <span v-if="t.to === '/profil' && account" class="avatar-xs" aria-hidden="true">{{ initial }}</span>
+          <component :is="t.icon" v-else :size="23" :stroke-width="1.8" />
+          <span class="nav-label"><span class="nl-m">{{ t.label }}</span><span class="nl-pc">{{ t.pc ?? t.label }}</span></span>
+          <span v-if="t.to === '/profil' && badge" class="count">{{ badge }}</span>
+        </NuxtLink>
+        <CategoryMenu v-if="i === 1" />
+      </template>
     </nav>
   </div>
 </template>

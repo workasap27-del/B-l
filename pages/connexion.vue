@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { passwordError } from '~/utils/password'
 import { ChevronLeft, Eye, EyeOff, Scissors, Sparkles } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -29,7 +30,11 @@ async function submit() {
   error.value = ''
   info.value = ''
   if (!/^\S+@\S+\.\S+$/.test(email.value.trim())) return (error.value = 'Indique une adresse e-mail valide.')
-  if (password.value.length < 8) return (error.value = 'Le mot de passe doit faire au moins 8 caractères.')
+  if (mode.value === 'inscription') {
+    const weak = passwordError(password.value, email.value)
+    if (weak) return (error.value = weak)
+  }
+  else if (!password.value) return (error.value = 'Indique ton mot de passe.')
   if (mode.value === 'inscription' && name.value.trim().length < 2) return (error.value = 'Indique ton prénom.')
   busy.value = true
   const e = mode.value === 'inscription'
@@ -90,12 +95,13 @@ function back() {
     <label class="field" for="a-pass">
       <span>Mot de passe</span>
       <div style="position:relative">
-        <input id="a-pass" v-model="password" class="input" :type="show ? 'text' : 'password'" :autocomplete="mode === 'inscription' ? 'new-password' : 'current-password'" placeholder="8 caractères minimum" style="padding-right:52px">
+        <input id="a-pass" v-model="password" class="input" :type="show ? 'text' : 'password'" :autocomplete="mode === 'inscription' ? 'new-password' : 'current-password'" :placeholder="mode === 'inscription' ? '12 caractères minimum' : ''" style="padding-right:52px">
         <button type="button" class="icon-btn" style="position:absolute;right:4px;top:5px" :aria-label="show ? 'Masquer le mot de passe' : 'Afficher le mot de passe'" @click="show = !show">
           <component :is="show ? EyeOff : Eye" :size="19" />
         </button>
       </div>
     </label>
+    <PasswordRules v-if="mode === 'inscription' && password" :value="password" :email="email" />
     <p v-if="error" class="error">{{ error }}</p>
     <p v-if="info" class="notice">{{ info }}</p>
     <button class="btn block" type="submit" :disabled="busy || !remote.online">{{ busy ? 'Un instant…' : mode === 'inscription' ? 'Créer mon compte' : 'Se connecter' }}</button>

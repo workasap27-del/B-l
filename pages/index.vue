@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { BarChart3, CalendarDays, ChevronDown, ChevronRight, MapPin, Search, Settings2, Store } from 'lucide-vue-next'
-import { LEGAL } from '~/data/legal'
 
 const { pros, openSlots, km, ratingOf, account, myBookings, isDone, pro, service, today, placeLabel, state, remote, firstName, agenda } = useVladi()
 const locOpen = ref(false)
@@ -137,21 +136,14 @@ const initial = computed(() => (account.value?.name ?? '').trim().charAt(0).toUp
   </section>
 
   <section v-if="!isPro" class="section">
-    <NuxtLink class="banner" :to="account ? '/espace-pro/fiche' : '/connexion?mode=inscription&role=pro'">
+    <NuxtLink class="banner" to="/devenir-prestataire">
       <div class="grow col gap4">
         <span class="name">Tu es prestataire ?</span>
-        <span class="meta">Crée ta fiche gratuitement et reçois tes réservations ici : beauté, bien-être, tatouage, spa, hôtel.</span>
+        <span class="meta">Crée ta fiche gratuitement et reçois tes réservations ici : beauté, coiffure, bien-être, tatouage et plus encore.</span>
       </div>
       <ChevronRight :size="18" style="align-self:center" />
     </NuxtLink>
   </section>
-
-  <footer class="legal-links mt24">
-    <NuxtLink to="/cgu">Conditions générales</NuxtLink>
-    <NuxtLink to="/confidentialite">Confidentialité</NuxtLink>
-    <NuxtLink to="/mentions-legales">Mentions légales</NuxtLink>
-    <a :href="`mailto:${LEGAL.contactEmail}`">Contact</a>
-  </footer>
 
   <LocationSheet v-if="locOpen" @close="locOpen = false" />
   <SettingsSheet v-if="settingsOpen" @close="settingsOpen = false" />

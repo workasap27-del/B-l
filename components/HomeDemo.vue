@@ -2,7 +2,6 @@
 import { ArrowRight, BarChart3, CalendarDays, ChevronDown, ChevronRight, MapPin, Search, Settings2, Store, X } from 'lucide-vue-next'
 import { DEMO_CLIENT } from '~/data/pros'
 import type { Category } from '~/data/pros'
-import { LEGAL } from '~/data/legal'
 import type { SearchPick } from '~/utils/suggest'
 
 // Accueil en préversion, visible seulement en mode présentation (?demo=1) :
@@ -235,13 +234,6 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
         <ChevronRight :size="18" style="align-self:center" />
       </NuxtLink>
     </section>
-
-    <footer class="legal-links hd-legal">
-      <NuxtLink to="/cgu">Conditions générales</NuxtLink>
-      <NuxtLink to="/confidentialite">Confidentialité</NuxtLink>
-      <NuxtLink to="/mentions-legales">Mentions légales</NuxtLink>
-      <a :href="`mailto:${LEGAL.contactEmail}`">Contact</a>
-    </footer>
   </div>
 
   <BottomSheet v-if="whenOpen" @close="whenOpen = false">

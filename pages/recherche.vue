@@ -23,6 +23,12 @@ const selected = ref('')
 const input = ref<HTMLInputElement | null>(null)
 
 onMounted(() => { if (route.query.saisie) input.value?.focus() })
+// Le menu des catégories peut changer la catégorie alors que la page est déjà ouverte.
+watch(() => [route.query.cat, route.query.lieu], ([c, l]) => {
+  cat.value = String(c ?? 'all')
+  place.value = l === 'client' ? 'client' : l === 'pro' ? 'pro' : 'all'
+  q.value = ''
+})
 watch([q, cat, place, kind, maxKm, todayOnly, sort, day], () => { shown.value = 12; selected.value = '' })
 
 const SUGGESTIONS = ['Pose gel', 'Box braids', 'Extensions de cils', 'Dégradé', 'Massage', 'Tatouage', 'Piercing', 'Pédicure', 'Brushing', 'Maquillage mariée', 'Épilation', 'Microblading']
