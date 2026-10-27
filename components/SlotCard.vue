@@ -8,7 +8,7 @@ const p = computed(() => pro(props.item.proId)!)
 const sv = computed(() => service(p.value, props.item.sid)!)
 const wait = computed(() => {
   const m = props.item.time - nowMin.value
-  return m >= 60 ? `dans ${Math.floor(m / 60)} h ${m % 60 ? String(m % 60).padStart(2, '0') : ''}`.trim() : `dans ${m} min`
+  return m >= 60 ? translate('dans {d}', { d: `${Math.floor(m / 60)} h ${m % 60 ? String(m % 60).padStart(2, '0') : ''}`.trim() }) : translate('dans {d}', { d: `${m} min` })
 })
 </script>
 

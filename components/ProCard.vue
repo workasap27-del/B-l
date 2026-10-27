@@ -14,10 +14,10 @@ const r = computed(() => ratingOf(props.pro))
 <template>
   <NuxtLink class="pcard" :to="`/pro/${pro.id}`">
     <ProPhoto :pro="pro">
-      <span v-if="slot" class="label now">-{{ slot.disc }} % aujourd'hui</span>
-      <span v-else-if="isMine(pro)" class="label">Votre entreprise</span>
+      <span v-if="slot" class="label now">{{ t('-{n} % aujourd\'hui', { n: slot.disc }) }}</span>
+      <span v-else-if="isMine(pro)" class="label">{{ t('Votre entreprise') }}</span>
       <span v-else />
-      <button class="icon-btn float" style="width:34px;height:34px" :aria-pressed="!!state.fav[pro.id]" aria-label="Ajouter aux favoris" @click.prevent="toggleFav(pro.id)">
+      <button class="icon-btn float" style="width:34px;height:34px" :aria-pressed="!!state.fav[pro.id]" :aria-label="t('Ajouter aux favoris')" @click.prevent="toggleFav(pro.id)">
         <Heart :size="17" :fill="state.fav[pro.id] ? 'currentColor' : 'none'" />
       </button>
     </ProPhoto>
@@ -25,12 +25,12 @@ const r = computed(() => ratingOf(props.pro))
       <div class="row between">
         <span class="name ellip">{{ pro.name }}</span>
         <span v-if="r.count" class="rate"><Star :size="13" />{{ fr(r.rating) }} <span class="n">({{ r.count }})</span></span>
-        <span v-else class="tag">Nouveau</span>
+        <span v-else class="tag">{{ t('Nouveau') }}</span>
       </div>
-      <span class="meta ellip">{{ CAT_SHORT[pro.cats[0]] }} · {{ pro.commune }} · {{ formatKm(km(pro)) }}</span>
+      <span class="meta ellip">{{ t(CAT_SHORT[pro.cats[0]]) }} · {{ pro.commune }} · {{ formatKm(km(pro)) }}</span>
       <span class="meta">
-        <span class="from">Dès {{ euro(from) }}</span>
-        <template v-if="next"> · <span class="ok">Libre {{ shortDay(next.date, today).toLowerCase() }} {{ hm(next.time) }}</span></template>
+        <span class="from">{{ t('Dès {price}', { price: euro(from) }) }}</span>
+        <template v-if="next"> · <span class="ok">{{ t('Libre {day} {time}', { day: shortDay(next.date, today).toLowerCase(), time: hm(next.time) }) }}</span></template>
       </span>
     </div>
   </NuxtLink>

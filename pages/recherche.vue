@@ -84,17 +84,17 @@ function resetFilters() {
 <template>
   <div class="search-field">
     <Search :size="19" />
-    <input id="q" ref="input" v-model="q" type="search" enterkeyhint="search" placeholder="Prestation, prestataire, commune" aria-label="Rechercher une prestation, un prestataire ou une commune">
-    <button v-if="q" class="icon-btn" style="width:32px;height:32px" aria-label="Effacer la recherche" @click="q = ''; input?.focus()"><X :size="18" /></button>
+    <input id="q" ref="input" v-model="q" type="search" enterkeyhint="search" :placeholder="t('Prestation, prestataire, commune')" :aria-label="t('Rechercher une prestation, un prestataire ou une commune')">
+    <button v-if="q" class="icon-btn" style="width:32px;height:32px" :aria-label="t('Effacer la recherche')" @click="q = ''; input?.focus()"><X :size="18" /></button>
   </div>
 
   <template v-if="browsing">
     <section class="section mt24">
-      <h2 class="h2">Catégories</h2>
+      <h2 class="h2">{{ t('Catégories') }}</h2>
       <CategoryGrid @pick="c => (c === 'domicile' ? (place = 'client') : (cat = c))" />
     </section>
     <section class="section">
-      <h2 class="h2">Recherches fréquentes</h2>
+      <h2 class="h2">{{ t('Recherches fréquentes') }}</h2>
       <div class="row wrap gap8">
         <button v-for="s in SUGGESTIONS" :key="s" class="chip" @click="q = s">{{ s }}</button>
       </div>
@@ -102,31 +102,31 @@ function resetFilters() {
   </template>
 
   <div class="chips mt16">
-    <button v-if="day" class="chip" aria-pressed="true" :aria-label="`Retirer le filtre : disponible ${dayLabel(day, today)}`" @click="day = ''">Dispo {{ dayLabel(day, today) }}<X :size="14" /></button>
-    <button class="chip" :class="{ has: activeFilters }" @click="filtersOpen = true"><SlidersHorizontal :size="16" />Filtres{{ activeFilters ? ` (${activeFilters})` : '' }}</button>
-    <button v-for="c in CATEGORIES" :key="c[0]" class="chip" :aria-pressed="cat === c[0]" @click="cat = c[0]">{{ c[1] }}</button>
+    <button v-if="day" class="chip" aria-pressed="true" :aria-label="`Retirer le filtre : disponible ${dayLabel(day, today)}`" @click="day = ''">{{ t('Dispo {day}', { day: dayLabel(day, today) }) }}<X :size="14" /></button>
+    <button class="chip" :class="{ has: activeFilters }" @click="filtersOpen = true"><SlidersHorizontal :size="16" />{{ t('Filtres') }}{{ activeFilters ? ` (${activeFilters})` : '' }}</button>
+    <button v-for="c in CATEGORIES" :key="c[0]" class="chip" :aria-pressed="cat === c[0]" @click="cat = c[0]">{{ t(c[1]) }}</button>
   </div>
 
   <div class="row between mt24" :class="{ section: browsing }">
     <div class="col gap4" style="min-width:0">
-      <span class="h2">{{ browsing ? 'Près de toi' : `${list.length} résultat${list.length > 1 ? 's' : ''}` }}</span>
-      <button class="place-picker" style="font-weight:500;font-size:13px" @click="locOpen = true"><MapPin :size="13" /><span>Autour de {{ state.pos.label }}</span><ChevronDown :size="13" /></button>
+      <span class="h2">{{ browsing ? t('Près de toi') : t(list.length > 1 ? '{n} résultats' : '{n} résultat', { n: list.length }) }}</span>
+      <button class="place-picker" style="font-weight:500;font-size:13px" @click="locOpen = true"><MapPin :size="13" /><span>{{ t('Autour de {place}', { place: state.pos.label }) }}</span><ChevronDown :size="13" /></button>
     </div>
     <button class="btn sm soft" @click="view = view === 'list' ? 'map' : 'list'">
-      <component :is="view === 'list' ? MapIcon : List" :size="16" />{{ view === 'list' ? 'Carte' : 'Liste' }}
+      <component :is="view === 'list' ? MapIcon : List" :size="16" />{{ view === 'list' ? t('Carte') : t('Liste') }}
     </button>
   </div>
 
   <div v-if="!list.length" class="empty">
     <SearchX :size="32" />
-    <b>Personne ne propose ça ici</b>
-    <span>Essaie un autre mot, élargis la distance ou enlève un filtre.</span>
-    <button v-if="activeFilters" class="btn sm soft" @click="resetFilters">Enlever les filtres</button>
+    <b>{{ t('Personne ne propose ça ici') }}</b>
+    <span>{{ t('Essaie un autre mot, élargis la distance ou enlève un filtre.') }}</span>
+    <button v-if="activeFilters" class="btn sm soft" @click="resetFilters">{{ t('Enlever les filtres') }}</button>
   </div>
 
   <div v-else-if="view === 'list'" class="col mt16 results">
     <ProResult v-for="h in list.slice(0, shown)" :key="h.pro.id" :pro="h.pro" :services="h.services" :sponsored="h.sponsored" />
-    <button v-if="list.length > shown" class="btn block soft" @click="shown += 12">Voir plus de résultats</button>
+    <button v-if="list.length > shown" class="btn block soft" @click="shown += 12">{{ t('Voir plus de résultats') }}</button>
   </div>
 
   <div v-else class="mapwrap mt16">
@@ -137,40 +137,40 @@ function resetFilters() {
   </div>
 
   <BottomSheet v-if="filtersOpen" @close="filtersOpen = false">
-    <div class="row between"><h2 class="h2">Filtres</h2><button class="textbtn" @click="resetFilters">Tout effacer</button></div>
+    <div class="row between"><h2 class="h2">{{ t('Filtres') }}</h2><button class="textbtn" @click="resetFilters">{{ t('Tout effacer') }}</button></div>
     <div class="col gap8">
-      <span class="h3">Où ?</span>
+      <span class="h3">{{ t('Où ?') }}</span>
       <div class="seg">
-        <button :aria-pressed="place === 'all'" @click="place = 'all'">Peu importe</button>
-        <button :aria-pressed="place === 'client'" @click="place = 'client'">Chez moi</button>
-        <button :aria-pressed="place === 'pro'" @click="place = 'pro'">Je me déplace</button>
+        <button :aria-pressed="place === 'all'" @click="place = 'all'">{{ t('Peu importe') }}</button>
+        <button :aria-pressed="place === 'client'" @click="place = 'client'">{{ t('Chez moi') }}</button>
+        <button :aria-pressed="place === 'pro'" @click="place = 'pro'">{{ t('Je me déplace') }}</button>
       </div>
     </div>
     <div class="col gap8">
-      <span class="h3">Prestataire</span>
+      <span class="h3">{{ t('Prestataire') }}</span>
       <div class="seg">
-        <button :aria-pressed="kind === 'all'" @click="kind = 'all'">Tous</button>
-        <button :aria-pressed="kind === 'salon'" @click="kind = 'salon'">Établissements</button>
-        <button :aria-pressed="kind === 'indep'" @click="kind = 'indep'">Indépendant·es</button>
+        <button :aria-pressed="kind === 'all'" @click="kind = 'all'">{{ t('Tous') }}</button>
+        <button :aria-pressed="kind === 'salon'" @click="kind = 'salon'">{{ t('Établissements') }}</button>
+        <button :aria-pressed="kind === 'indep'" @click="kind = 'indep'">{{ t('Indépendant·es') }}</button>
       </div>
     </div>
     <div class="col gap8">
-      <span class="h3">Distance maximale</span>
+      <span class="h3">{{ t('Distance maximale') }}</span>
       <div class="seg">
         <button v-for="n in [0, 5, 10, 20, 40]" :key="n" :aria-pressed="maxKm === n" @click="maxKm = n">{{ n ? `${n} km` : 'Toutes' }}</button>
       </div>
     </div>
     <div class="col gap8">
-      <span class="h3">Trier par</span>
+      <span class="h3">{{ t('Trier par') }}</span>
       <div class="seg">
-        <button :aria-pressed="sort === 'auto'" @click="sort = 'auto'">Pertinence</button>
-        <button :aria-pressed="sort === 'dist'" @click="sort = 'dist'">Distance</button>
-        <button :aria-pressed="sort === 'note'" @click="sort = 'note'">Note</button>
-        <button :aria-pressed="sort === 'prix'" @click="sort = 'prix'">Prix</button>
+        <button :aria-pressed="sort === 'auto'" @click="sort = 'auto'">{{ t('Pertinence') }}</button>
+        <button :aria-pressed="sort === 'dist'" @click="sort = 'dist'">{{ t('Distance') }}</button>
+        <button :aria-pressed="sort === 'note'" @click="sort = 'note'">{{ t('Note') }}</button>
+        <button :aria-pressed="sort === 'prix'" @click="sort = 'prix'">{{ t('Prix') }}</button>
       </div>
     </div>
-    <label class="switch"><span>Disponible aujourd'hui</span><input id="today-only" v-model="todayOnly" type="checkbox"></label>
-    <button class="btn block" @click="filtersOpen = false">Voir {{ list.length }} résultat{{ list.length > 1 ? 's' : '' }}</button>
+    <label class="switch"><span>{{ t('Disponible aujourd\'hui') }}</span><input id="today-only" v-model="todayOnly" type="checkbox"></label>
+    <button class="btn block" @click="filtersOpen = false">{{ t(list.length > 1 ? 'Voir {n} résultats' : 'Voir {n} résultat', { n: list.length }) }}</button>
   </BottomSheet>
   <LocationSheet v-if="locOpen" @close="locOpen = false" />
 </template>

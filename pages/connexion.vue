@@ -34,15 +34,15 @@ const captcha = ref('')
 const captchaBox = ref<{ reset: () => void } | null>(null)
 
 async function submit() {
-  error.value = ''
-  info.value = ''
-  if (!/^\S+@\S+\.\S+$/.test(email.value.trim())) return (error.value = 'Indique une adresse e-mail valide.')
+  error.value = translate('')
+  info.value = translate('')
+  if (!/^\S+@\S+\.\S+$/.test(email.value.trim())) return (error.value = translate('Indique une adresse e-mail valide.'))
   if (mode.value === 'inscription') {
     const weak = passwordError(password.value, email.value)
     if (weak) return (error.value = weak)
   }
-  else if (!password.value) return (error.value = 'Indique ton mot de passe.')
-  if (mode.value === 'inscription' && name.value.trim().length < 2) return (error.value = 'Indique ton prénom.')
+  else if (!password.value) return (error.value = translate('Indique ton mot de passe.'))
+  if (mode.value === 'inscription' && name.value.trim().length < 2) return (error.value = translate('Indique ton prénom.'))
   busy.value = true
   const e = mode.value === 'inscription'
     ? await register({ email: email.value, password: password.value, name: name.value, role: role.value, phone: phone.value, captcha: captcha.value })
@@ -55,17 +55,17 @@ async function submit() {
   next()
 }
 async function forgot() {
-  error.value = ''
-  if (!/^\S+@\S+\.\S+$/.test(email.value.trim())) return (error.value = 'Indique ton e-mail ci-dessus, puis appuie à nouveau.')
+  error.value = translate('')
+  if (!/^\S+@\S+\.\S+$/.test(email.value.trim())) return (error.value = translate('Indique ton e-mail ci-dessus, puis appuie à nouveau.'))
   const e = await forgotPassword(email.value, captcha.value)
   captchaBox.value?.reset()
   if (e) error.value = e
-  else info.value = 'Si un compte existe, un e-mail de réinitialisation vient d\'être envoyé.'
+  else info.value = translate('Si un compte existe, un e-mail de réinitialisation vient d\'être envoyé.')
 }
 // Connexion avec Google ou Apple, si elle est configurée.
 const providers = String(useRuntimeConfig().public.oauthProviders ?? '').split(',').map(x => x.trim()).filter((x): x is 'google' | 'apple' => x === 'google' || x === 'apple')
 async function oauth(p: 'google' | 'apple') {
-  error.value = ''
+  error.value = translate('')
   try {
     await api.signInWith(p, String(route.query.retour ?? '/'))
   }
@@ -81,45 +81,45 @@ function back() {
 
 <template>
   <div class="head">
-    <button class="icon-btn" aria-label="Retour" @click="back"><ChevronLeft :size="24" /></button>
+    <button class="icon-btn" :aria-label="t('Retour')" @click="back"><ChevronLeft :size="24" /></button>
   </div>
 
-  <div v-if="!remote.online && !remote.loading" class="notice mt16">La connexion aux comptes n'est pas disponible pour le moment.</div>
+  <div v-if="!remote.online && !remote.loading" class="notice mt16">{{ t('La connexion aux comptes n\'est pas disponible pour le moment.') }}</div>
 
   <div class="col gap8 mt16">
-    <h1 class="title">{{ mode === 'inscription' ? 'Créer un compte' : 'Se connecter' }}</h1>
-    <p class="meta">{{ mode === 'inscription' ? 'Gratuit, en une minute.' : 'Avec l\'e-mail utilisé à l\'inscription.' }}</p>
+    <h1 class="title">{{ mode === 'inscription' ? t('Créer un compte') : t('Se connecter') }}</h1>
+    <p class="meta">{{ mode === 'inscription' ? t('Gratuit, en une minute.') : t('Avec l\'e-mail utilisé à l\'inscription.') }}</p>
   </div>
 
   <div v-if="providers.length && role !== 'pro'" class="col gap8 mt24">
-    <button v-for="p in providers" :key="p" type="button" class="btn block line" @click="oauth(p)">Continuer avec {{ p === 'google' ? 'Google' : 'Apple' }}</button>
-    <p class="tiny" style="text-align:center">ou avec ton e-mail</p>
+    <button v-for="p in providers" :key="p" type="button" class="btn block line" @click="oauth(p)">{{ t('Continuer avec {name}', { name: p === 'google' ? 'Google' : 'Apple' }) }}</button>
+    <p class="tiny" style="text-align:center">{{ t('ou avec ton e-mail') }}</p>
   </div>
 
   <div class="seg mt24">
-    <button :aria-pressed="mode === 'connexion'" @click="mode = 'connexion'; error = ''">Connexion</button>
-    <button :aria-pressed="mode === 'inscription'" @click="mode = 'inscription'; error = ''">Inscription</button>
+    <button :aria-pressed="mode === 'connexion'" @click="mode = 'connexion'; error = ''">{{ t('Connexion') }}</button>
+    <button :aria-pressed="mode === 'inscription'" @click="mode = 'inscription'; error = ''">{{ t('Inscription') }}</button>
   </div>
 
   <form class="col gap16 mt24" novalidate @submit.prevent="submit">
     <template v-if="mode === 'inscription'">
       <div class="col gap8">
-        <span class="h3">Ton profil</span>
+        <span class="h3">{{ t('Ton profil') }}</span>
         <div class="choice">
           <button type="button" :aria-pressed="role === 'client'" @click="role = 'client'">
-            <Sparkles :size="22" /><span class="grow col gap4"><span class="name">Je réserve</span><span class="meta">Je cherche des prestations</span></span><span class="radio" />
+            <Sparkles :size="22" /><span class="grow col gap4"><span class="name">{{ t('Je réserve') }}</span><span class="meta">{{ t('Je cherche des prestations') }}</span></span><span class="radio" />
           </button>
           <button type="button" :aria-pressed="role === 'pro'" @click="role = 'pro'">
-            <Scissors :size="22" /><span class="grow col gap4"><span class="name">Je propose mes services</span><span class="meta">Je suis prestataire (SIREN demandé)</span></span><span class="radio" />
+            <Scissors :size="22" /><span class="grow col gap4"><span class="name">{{ t('Je propose mes services') }}</span><span class="meta">{{ t('Je suis prestataire (SIREN demandé)') }}</span></span><span class="radio" />
           </button>
         </div>
       </div>
-      <label class="field" for="a-name"><span>Prénom</span><input id="a-name" v-model="name" class="input" autocomplete="given-name" placeholder="Ton prénom"></label>
-      <label class="field" for="a-phone"><span>Téléphone <span class="help">(facultatif)</span></span><input id="a-phone" v-model="phone" class="input" type="tel" autocomplete="tel" placeholder="0690 00 00 00"></label>
+      <label class="field" for="a-name"><span>{{ t('Prénom') }}</span><input id="a-name" v-model="name" class="input" autocomplete="given-name" :placeholder="t('Ton prénom')"></label>
+      <label class="field" for="a-phone"><span>{{ t('Téléphone') }} <span class="help">{{ t('(facultatif)') }}</span></span><input id="a-phone" v-model="phone" class="input" type="tel" autocomplete="tel" placeholder="0690 00 00 00"></label>
     </template>
-    <label class="field" for="a-email"><span>E-mail</span><input id="a-email" v-model="email" class="input" type="email" autocomplete="email" inputmode="email" placeholder="prenom@mail.com"></label>
+    <label class="field" for="a-email"><span>{{ t('E-mail') }}</span><input id="a-email" v-model="email" class="input" type="email" autocomplete="email" inputmode="email" :placeholder="t('prenom@mail.com')"></label>
     <label class="field" for="a-pass">
-      <span>Mot de passe</span>
+      <span>{{ t('Mot de passe') }}</span>
       <div style="position:relative">
         <input id="a-pass" v-model="password" class="input" :type="show ? 'text' : 'password'" :autocomplete="mode === 'inscription' ? 'new-password' : 'current-password'" :placeholder="mode === 'inscription' ? '12 caractères minimum' : ''" style="padding-right:52px">
         <button type="button" class="icon-btn" style="position:absolute;right:4px;top:5px" :aria-label="show ? 'Masquer le mot de passe' : 'Afficher le mot de passe'" @click="show = !show">
@@ -128,19 +128,17 @@ function back() {
       </div>
     </label>
     <PasswordRules v-if="mode === 'inscription' && password" :value="password" :email="email" />
-    <TurnstileBox ref="captchaBox" @token="t => (captcha = t)" />
+    <TurnstileBox ref="captchaBox" @token="tok => (captcha = tok)" />
     <p v-if="error" class="error">{{ error }}</p>
     <p v-if="info" class="notice">{{ info }}</p>
-    <button class="btn block" type="submit" :disabled="busy || !remote.online">{{ busy ? 'Un instant…' : mode === 'inscription' ? 'Créer mon compte' : 'Se connecter' }}</button>
-    <button v-if="mode === 'connexion'" type="button" class="textbtn" style="align-self:center" @click="forgot">Mot de passe oublié ?</button>
+    <button class="btn block" type="submit" :disabled="busy || !remote.online">{{ busy ? t('Un instant…') : mode === 'inscription' ? t('Créer mon compte') : t('Se connecter') }}</button>
+    <button v-if="mode === 'connexion'" type="button" class="textbtn" style="align-self:center" @click="forgot">{{ t('Mot de passe oublié ?') }}</button>
   </form>
 
   <p v-if="mode === 'inscription' && role === 'client'" class="tiny mt24">
-    En créant ton compte, tu acceptes les <NuxtLink class="link" to="/cgu">conditions générales d'utilisation</NuxtLink> et la <NuxtLink class="link" to="/confidentialite">politique de confidentialité</NuxtLink>.
-    Ton prénom et ton téléphone sont transmis uniquement aux prestataires chez qui tu réserves.
+    {{ t('En créant ton compte, tu acceptes les') }} <NuxtLink class="link" to="/cgu">{{ t('conditions générales d\'utilisation') }}</NuxtLink> {{ t('et la') }} <NuxtLink class="link" to="/confidentialite">{{ t('politique de confidentialité') }}</NuxtLink>{{ t('. Ton prénom et ton téléphone sont transmis uniquement aux prestataires chez qui tu réserves.') }}
   </p>
   <p v-else-if="mode === 'inscription'" class="tiny mt24">
-    En créant ton compte, tu acceptes les <NuxtLink class="link" to="/cgu">conditions générales d'utilisation</NuxtLink>, dont les <NuxtLink class="link" to="/cgu#prestataires">engagements des prestataires</NuxtLink>, et la <NuxtLink class="link" to="/confidentialite">politique de confidentialité</NuxtLink>.
-    Les informations de ta fiche (nom commercial, commune, prestations, tarifs, horaires) seront publiques.
+    {{ t('En créant ton compte, tu acceptes les') }} <NuxtLink class="link" to="/cgu">{{ t('conditions générales d\'utilisation') }}</NuxtLink>{{ t(', dont les') }} <NuxtLink class="link" to="/cgu#prestataires">{{ t('engagements des prestataires') }}</NuxtLink>{{ t(', et la') }} <NuxtLink class="link" to="/confidentialite">{{ t('politique de confidentialité') }}</NuxtLink>{{ t('. Les informations de ta fiche (nom commercial, commune, prestations, tarifs, horaires) seront publiques.') }}
   </p>
 </template>

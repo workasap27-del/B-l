@@ -14,13 +14,13 @@ const shown = computed(() => (open.value ? cats : cats.slice(0, 7)))
 <template>
   <div class="cat-grid">
     <component :is="props.link ? resolveComponent('NuxtLink') : 'button'" v-for="c in shown" :key="c[0]" class="cat" v-bind="props.link ? { to: `/recherche?cat=${c[0]}` } : { type: 'button' }" @click="!props.link && emit('pick', c[0])">
-      <span class="ico"><component :is="CAT_ICON[c[0]]" :size="25" :stroke-width="1.6" /></span>{{ CAT_SHORT[c[0]] }}
+      <span class="ico"><component :is="CAT_ICON[c[0]]" :size="25" :stroke-width="1.6" /></span>{{ t(CAT_SHORT[c[0]]) }}
     </component>
     <component :is="props.link ? resolveComponent('NuxtLink') : 'button'" v-if="open" class="cat" v-bind="props.link ? { to: '/recherche?lieu=client' } : { type: 'button' }" @click="!props.link && emit('pick', 'domicile')">
-      <span class="ico"><House :size="25" :stroke-width="1.6" /></span>À domicile
+      <span class="ico"><House :size="25" :stroke-width="1.6" /></span>{{ t('À domicile') }}
     </component>
     <button class="cat more" type="button" :aria-expanded="open" @click="open = !open">
-      <span class="ico"><span class="dots">{{ open ? '−' : '+' }}</span></span>{{ open ? 'Moins' : 'Voir plus' }}
+      <span class="ico"><span class="dots">{{ open ? '−' : '+' }}</span></span>{{ open ? t('Moins') : t('Voir plus') }}
     </button>
   </div>
 </template>

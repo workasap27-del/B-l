@@ -1,4 +1,5 @@
-// Logique d'agenda, sans dépendance à Vue : dates, créneaux libres, occupation simulée.
+// Logique d'agenda : dates, créneaux libres, occupation simulée. Les libellés de jours passent par translate().
+import { translate } from '../composables/useLang'
 import type { Pro, Service } from '~/data/pros'
 import { CLIENT_NAMES } from '~/data/pros'
 import { hash, rng } from '~/data/random'
@@ -44,33 +45,33 @@ export function weekday(key: string): number {
 /** "aujourd'hui", "demain", "hier" ou "mar. 13 oct." */
 export function dayLabel(key: string, today: string): string {
   const n = diffDays(today, key)
-  if (n === 0) return "aujourd'hui"
-  if (n === 1) return 'demain'
-  if (n === -1) return 'hier'
+  if (n === 0) return translate("aujourd'hui")
+  if (n === 1) return translate('demain')
+  if (n === -1) return translate('hier')
   const d = parseKey(key)
-  return `${DAY_NAMES[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`
+  return `${translate(DAY_NAMES[d.getDay()])} ${d.getDate()} ${translate(MONTHS[d.getMonth()])}`
 }
 
 export function dayChip(key: string, today: string): string {
   const n = diffDays(today, key)
-  if (n === 0) return "Aujourd'hui"
-  if (n === 1) return 'Demain'
+  if (n === 0) return translate("Aujourd'hui")
+  if (n === 1) return translate('Demain')
   const d = parseKey(key)
-  return `${DAY_NAMES[d.getDay()]} ${d.getDate()}`
+  return `${translate(DAY_NAMES[d.getDay()])} ${d.getDate()}`
 }
 
 /** "Auj.", "Dem." ou "mar." : pour les créneaux affichés en petit. */
 export function shortDay(key: string, today: string): string {
   const n = diffDays(today, key)
-  if (n === 0) return 'Auj.'
-  if (n === 1) return 'Dem.'
-  return DAY_NAMES[parseKey(key).getDay()]
+  if (n === 0) return translate('Auj.')
+  if (n === 1) return translate('Dem.')
+  return translate(DAY_NAMES[parseKey(key).getDay()])
 }
 
 /** Jour de la semaine, numéro du jour et mois abrégés, pour les pastilles de date. */
 export function dateParts(key: string): { dow: string, day: number, month: string } {
   const d = parseKey(key)
-  return { dow: DAY_NAMES[d.getDay()].replace('.', ''), day: d.getDate(), month: MONTHS[d.getMonth()].replace('.', '') }
+  return { dow: translate(DAY_NAMES[d.getDay()]).replace('.', ''), day: d.getDate(), month: translate(MONTHS[d.getMonth()]).replace('.', '') }
 }
 
 export const WEEK = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']

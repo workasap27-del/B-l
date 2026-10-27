@@ -54,14 +54,14 @@ watchEffect(() => {
     </main>
     <div id="sheets" />
     <div v-if="toastMessage" class="toast" role="status">{{ toastMessage }}</div>
-    <nav class="nav" aria-label="Navigation principale">
-      <NuxtLink to="/" class="nav-logo" aria-label="VLADI, accueil"><AppLogo :height="26" /></NuxtLink>
-      <template v-for="(t, i) in tabsLive" :key="t.to">
-        <NuxtLink :to="t.to" :class="{ on: active(t.to) }">
-          <span v-if="t.to === '/profil' && account" class="avatar-xs" aria-hidden="true">{{ initial }}</span>
-          <component :is="t.icon" v-else :size="23" :stroke-width="1.8" />
-          <span class="nav-label"><span class="nl-m">{{ t.label }}</span><span class="nl-pc">{{ t.pc ?? t.label }}</span></span>
-          <span v-if="t.to === '/profil' && badge" class="count">{{ badge }}</span>
+    <nav class="nav" :aria-label="t('Navigation principale')">
+      <NuxtLink to="/" class="nav-logo" :aria-label="t('VLADI, accueil')"><AppLogo :height="26" /></NuxtLink>
+      <template v-for="(tab, i) in tabsLive" :key="tab.to">
+        <NuxtLink :to="tab.to" :class="{ on: active(tab.to) }">
+          <span v-if="tab.to === '/profil' && account" class="avatar-xs" aria-hidden="true">{{ initial }}</span>
+          <component :is="tab.icon" v-else :size="23" :stroke-width="1.8" />
+          <span class="nav-label"><span class="nl-m">{{ tab.to === '/profil' && account ? tab.label : t(tab.label) }}</span><span class="nl-pc">{{ tab.to === '/profil' && account ? tab.label : t(tab.pc ?? tab.label) }}</span></span>
+          <span v-if="tab.to === '/profil' && badge" class="count">{{ badge }}</span>
         </NuxtLink>
         <CategoryMenu v-if="i === 1" />
       </template>

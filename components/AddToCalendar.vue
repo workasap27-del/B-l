@@ -26,12 +26,12 @@ function ics() {
 </script>
 
 <template>
-  <button type="button" class="btn sm soft" @click="open = true"><CalendarPlus :size="15" />Ajouter à mon agenda</button>
+  <button type="button" class="btn sm soft" @click="open = true"><CalendarPlus :size="15" />{{ t('Ajouter à mon agenda') }}</button>
   <BottomSheet v-if="open" @close="open = false">
     <div class="share-sheet">
-      <p class="h3">Ajouter à mon agenda</p>
-      <button type="button" class="share-row" @click="ics"><span class="srch-ico sm"><CalendarPlus :size="18" /></span>Agenda du téléphone (Apple, Outlook…)</button>
-      <a class="share-row" :href="googleCalendarUrl(event)" target="_blank" rel="noopener" @click="open = false"><span class="srch-ico sm"><CalendarPlus :size="18" /></span>Google Agenda</a>
+      <p class="h3">{{ t('Ajouter à mon agenda') }}</p>
+      <button type="button" class="share-row" @click="ics"><span class="srch-ico sm"><CalendarPlus :size="18" /></span>{{ t('Agenda du téléphone (Apple, Outlook…)') }}</button>
+      <a class="share-row" :href="googleCalendarUrl(event)" target="_blank" rel="noopener" @click="open = false"><span class="srch-ico sm"><CalendarPlus :size="18" /></span>{{ t('Google Agenda') }}</a>
     </div>
   </BottomSheet>
 </template>

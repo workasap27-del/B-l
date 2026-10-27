@@ -1,6 +1,8 @@
 // Règles du mot de passe, d'après la recommandation de la CNIL (délibération 2022-100) :
 // 12 caractères minimum, avec majuscule, minuscule, chiffre et caractère spécial.
 
+import { translate } from '../composables/useLang'
+
 export interface PasswordRule { label: string, ok: boolean }
 
 /** Mots trop courants pour figurer dans un mot de passe. */
@@ -21,12 +23,12 @@ export function passwordRules(p: string): PasswordRule[] {
 /** Message d'erreur, ou chaîne vide si le mot de passe est accepté. */
 export function passwordError(p: string, email = ''): string {
   const missing = passwordRules(p).filter(r => !r.ok)
-  if (missing.length) return `Mot de passe trop faible : ${missing.map(r => r.label.replace(/ \(.*\)$/, '').toLowerCase()).join(', ')}.`
+  if (missing.length) return translate('Mot de passe trop faible : {list}.', { list: missing.map(r => translate(r.label).replace(/ \(.*\)$/, '').toLowerCase()).join(', ') })
   const low = plain(p)
-  if (WEAK.some(w => low.includes(w))) return 'Mot de passe trop facile à deviner : évite les mots courants comme « azerty » ou « motdepasse ».'
+  if (WEAK.some(w => low.includes(w))) return translate('Mot de passe trop facile à deviner : évite les mots courants comme « azerty » ou « motdepasse ».')
   const user = plain(email.split('@')[0] ?? '')
-  if (user.length >= 4 && low.includes(user)) return 'Le mot de passe ne doit pas contenir ton adresse e-mail.'
-  if (/(.)\1{3,}/.test(p)) return 'Mot de passe trop facile à deviner : évite de répéter le même caractère.'
+  if (user.length >= 4 && low.includes(user)) return translate('Le mot de passe ne doit pas contenir ton adresse e-mail.')
+  if (/(.)\1{3,}/.test(p)) return translate('Mot de passe trop facile à deviner : évite de répéter le même caractère.')
   return ''
 }
 

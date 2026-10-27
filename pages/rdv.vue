@@ -39,21 +39,21 @@ async function sendReview() {
 </script>
 
 <template>
-  <h1 class="title">Rendez-vous</h1>
+  <h1 class="title">{{ t('Rendez-vous') }}</h1>
   <div v-if="!account" class="empty mt24">
     <CalendarDays :size="32" />
-    <template v-if="remote.loading">Chargement…</template>
+    <template v-if="remote.loading">{{ t('Chargement…') }}</template>
     <template v-else>
-      <b>Connecte-toi pour voir tes rendez-vous</b>
-      <span>Tes réservations sont liées à ton compte et te suivent sur tous tes appareils.</span>
-      <NuxtLink class="btn sm" to="/connexion?retour=/rdv">Se connecter</NuxtLink>
-      <NuxtLink class="textbtn" to="/connexion?mode=inscription&retour=/rdv">Créer un compte</NuxtLink>
+      <b>{{ t('Connecte-toi pour voir tes rendez-vous') }}</b>
+      <span>{{ t('Tes réservations sont liées à ton compte et te suivent sur tous tes appareils.') }}</span>
+      <NuxtLink class="btn sm" to="/connexion?retour=/rdv">{{ t('Se connecter') }}</NuxtLink>
+      <NuxtLink class="textbtn" to="/connexion?mode=inscription&retour=/rdv">{{ t('Créer un compte') }}</NuxtLink>
     </template>
   </div>
   <template v-else>
   <div class="seg mt16">
-    <button :aria-pressed="tab === 'next'" @click="tab = 'next'">À venir{{ upcoming.length ? ` (${upcoming.length})` : '' }}</button>
-    <button :aria-pressed="tab === 'past'" @click="tab = 'past'">Passés{{ past.length ? ` (${past.length})` : '' }}</button>
+    <button :aria-pressed="tab === 'next'" @click="tab = 'next'">{{ t('À venir') }}{{ upcoming.length ? ` (${upcoming.length})` : '' }}</button>
+    <button :aria-pressed="tab === 'past'" @click="tab = 'past'">{{ t('Passés') }}{{ past.length ? ` (${past.length})` : '' }}</button>
   </div>
 
   <div class="col mt8">
@@ -63,7 +63,7 @@ async function sendReview() {
         <div class="col gap4">
           <div class="row between">
             <span class="name">{{ capitalize(dayLabel(b.date, today)) }} à {{ hm(b.time) }}</span>
-            <span v-if="b.mode === 'lm'" class="tag now">Konyéla</span>
+            <span v-if="b.mode === 'lm'" class="tag now">{{ t('Konyéla') }}</span>
           </div>
           <span class="meta">{{ label(b) }} · {{ euro(b.price) }}</span>
           <NuxtLink class="meta ellip" :to="`/pro/${b.proId}`">{{ pro(b.proId)!.name }}</NuxtLink>
@@ -72,16 +72,16 @@ async function sendReview() {
         <ArrivalBox v-if="tab === 'next' || b.noShow || b.disputed" :booking="b" side="client" />
         <div class="row wrap gap8">
           <template v-if="tab === 'next'">
-            <a v-if="b.place === 'pro'" class="btn sm soft" :href="directionsUrl(pro(b.proId)!)" target="_blank" rel="noopener"><Navigation :size="15" />Itinéraire</a>
+            <a v-if="b.place === 'pro'" class="btn sm soft" :href="directionsUrl(pro(b.proId)!)" target="_blank" rel="noopener"><Navigation :size="15" />{{ t('Itinéraire') }}</a>
             <AddToCalendar :booking="b" />
-            <button v-if="b.arrivedAt === undefined" class="btn sm line" @click="toCancel = b">Annuler</button>
+            <button v-if="b.arrivedAt === undefined" class="btn sm line" @click="toCancel = b">{{ t('Annuler') }}</button>
           </template>
           <template v-else>
-            <span v-if="b.status === 'cancelled'" class="tag">Annulé</span>
-            <span v-else-if="b.noShow || b.disputed" class="tag warn">{{ b.disputed ? 'Litige en cours' : 'Absence' }}</span>
-            <span v-else-if="b.reviewed" class="tag ok">Avis envoyé</span>
-            <button v-else class="btn sm soft" @click="openReview(b)"><Star :size="15" />Donner mon avis</button>
-            <NuxtLink class="btn sm line" :to="`/reserver/${b.proId}/${b.sid}`">Reprendre rendez-vous</NuxtLink>
+            <span v-if="b.status === 'cancelled'" class="tag">{{ t('Annulé') }}</span>
+            <span v-else-if="b.noShow || b.disputed" class="tag warn">{{ b.disputed ? t('Litige en cours') : t('Absence') }}</span>
+            <span v-else-if="b.reviewed" class="tag ok">{{ t('Avis envoyé') }}</span>
+            <button v-else class="btn sm soft" @click="openReview(b)"><Star :size="15" />{{ t('Donner mon avis') }}</button>
+            <NuxtLink class="btn sm line" :to="`/reserver/${b.proId}/${b.sid}`">{{ t('Reprendre rendez-vous') }}</NuxtLink>
           </template>
         </div>
       </div>
@@ -89,36 +89,36 @@ async function sendReview() {
     <div v-if="!list.length" class="empty">
       <CalendarDays :size="32" />
       <template v-if="tab === 'next'">
-        <b>Aucun rendez-vous prévu</b>
-        <span>Trouve une prestation ou tente un créneau de dernière minute.</span>
-        <NuxtLink class="btn sm soft" to="/recherche">Chercher une prestation</NuxtLink>
+        <b>{{ t('Aucun rendez-vous prévu') }}</b>
+        <span>{{ t('Trouve une prestation ou tente un créneau de dernière minute.') }}</span>
+        <NuxtLink class="btn sm soft" to="/recherche">{{ t('Chercher une prestation') }}</NuxtLink>
       </template>
-      <b v-else>Aucun rendez-vous passé</b>
+      <b v-else>{{ t('Aucun rendez-vous passé') }}</b>
     </div>
   </div>
   </template>
 
   <BottomSheet v-if="toCancel" @close="toCancel = null">
-    <h2 class="h2">Annuler ce rendez-vous ?</h2>
-    <p>{{ label(toCancel) }} avec {{ pro(toCancel.proId)!.name }}, {{ dayLabel(toCancel.date, today) }} à {{ hm(toCancel.time) }}.</p>
+    <h2 class="h2">{{ t('Annuler ce rendez-vous ?') }}</h2>
+    <p>{{ t('{what} avec {who}, {day} à {time}.', { what: label(toCancel) ?? '', who: pro(toCancel.proId)!.name, day: dayLabel(toCancel.date, today), time: hm(toCancel.time) }) }}</p>
     <template v-if="RULES.onlinePayment">
-      <p v-if="refundable(toCancel)" class="notice">Ton acompte de {{ euro(toCancel.deposit) }} sera remboursé.</p>
-      <p v-else class="error">{{ toCancel.mode === 'lm' ? 'Créneau de dernière minute' : 'Moins de 24 h avant' }} : l'acompte de {{ euro(toCancel.deposit) }} reste au/à la prestataire.</p>
+      <p v-if="refundable(toCancel)" class="notice">{{ t('Ton acompte de {amount} sera remboursé.', { amount: euro(toCancel.deposit) }) }}</p>
+      <p v-else class="error">{{ toCancel.mode === 'lm' ? t('Créneau de dernière minute') : t('Moins de 24 h avant') }} : {{ t('l\'acompte de {amount} reste au/à la prestataire.', { amount: euro(toCancel.deposit) }) }}</p>
     </template>
     <template v-else>
-      <p v-if="refundable(toCancel)" class="notice">Annulation sans frais.</p>
-      <p v-else class="error">{{ toCancel.mode === 'lm' ? 'Créneau de dernière minute' : `Moins de ${RULES.freeCancelHours} h avant le rendez-vous` }} : préviens {{ pro(toCancel.proId)!.name }} si possible. Les annulations tardives répétées peuvent entraîner la suspension du compte.</p>
+      <p v-if="refundable(toCancel)" class="notice">{{ t('Annulation sans frais.') }}</p>
+      <p v-else class="error">{{ toCancel.mode === 'lm' ? t('Créneau de dernière minute') : t('Moins de {h} h avant le rendez-vous', { h: RULES.freeCancelHours }) }} : {{ t('préviens {name} si possible. Les annulations tardives répétées peuvent entraîner la suspension du compte.', { name: pro(toCancel.proId)!.name }) }}</p>
     </template>
-    <button class="btn block danger" @click="confirmCancel">Annuler le rendez-vous</button>
-    <button class="btn block" @click="toCancel = null">Garder le rendez-vous</button>
+    <button class="btn block danger" @click="confirmCancel">{{ t('Annuler le rendez-vous') }}</button>
+    <button class="btn block" @click="toCancel = null">{{ t('Garder le rendez-vous') }}</button>
   </BottomSheet>
 
   <BottomSheet v-if="toReview" @close="toReview = null">
-    <h2 class="h2">Ton avis sur {{ pro(toReview.proId)!.name }}</h2>
-    <div class="stars" role="group" aria-label="Note">
+    <h2 class="h2">{{ t('Ton avis sur {name}', { name: pro(toReview.proId)!.name }) }}</h2>
+    <div class="stars" role="group" :aria-label="t('Note')">
       <button v-for="n in 5" :key="n" :aria-pressed="n <= stars" :aria-label="`${n} sur 5`" @click="stars = n"><Star :size="34" /></button>
     </div>
-    <textarea id="avis" v-model="text" class="textarea" placeholder="Raconte en une phrase" aria-label="Commentaire" />
-    <button class="btn block" @click="sendReview">Publier l'avis</button>
+    <textarea id="avis" v-model="text" class="textarea" :placeholder="t('Raconte en une phrase')" :aria-label="t('Commentaire')" />
+    <button class="btn block" @click="sendReview">{{ t('Publier l\'avis') }}</button>
   </BottomSheet>
 </template>

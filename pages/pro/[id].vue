@@ -26,7 +26,7 @@ const photos = computed(() => (p.value ? photosOf(p.value) : []))
 useHead(() => {
   const v = p.value
   if (!v) return { title: 'VLADI' }
-  const what = CAT_SHORT[v.cats[0]] ?? 'Beauté'
+  const what = translate(CAT_SHORT[v.cats[0]] ?? 'Beauté')
   const desc = `${v.name}, ${what.toLowerCase()} ${inCommune(v.commune)}. ${v.services.slice(0, 3).map(x => x.n).join(', ')}. Réserve en ligne sur VLADI.`
   return {
     title: `${v.name} · ${what} ${inCommune(v.commune)} · VLADI`,
@@ -90,8 +90,8 @@ const bars = computed(() => {
     <div class="hero bleed">
       <img :src="hero.src" :srcset="hero.srcset || undefined" :alt="`Photo illustrant ${p.name}`" onerror="this.style.visibility='hidden'">
       <div class="bar">
-        <button class="icon-btn float" aria-label="Retour" @click="back"><ChevronLeft :size="22" /></button>
-        <button class="icon-btn float" aria-label="Ajouter aux favoris" :aria-pressed="!!state.fav[p.id]" @click="toggleFav(p.id)">
+        <button class="icon-btn float" :aria-label="t('Retour')" @click="back"><ChevronLeft :size="22" /></button>
+        <button class="icon-btn float" :aria-label="t('Ajouter aux favoris')" :aria-pressed="!!state.fav[p.id]" @click="toggleFav(p.id)">
           <Heart :size="19" :fill="state.fav[p.id] ? 'currentColor' : 'none'" />
         </button>
       </div>
@@ -99,39 +99,39 @@ const bars = computed(() => {
 
     <div class="sheet-top">
       <div class="tags">
-        <span v-if="isMine(p)" class="tag accent">Votre entreprise</span>
-        <span v-if="!p.real" class="tag">Démonstration</span>
+        <span v-if="isMine(p)" class="tag accent">{{ t('Votre entreprise') }}</span>
+        <span v-if="!p.real" class="tag">{{ t('Démonstration') }}</span>
       </div>
       <h1 class="title">{{ p.name }}</h1>
       <div class="row wrap" style="gap:6px">
-        <span v-if="r.count" class="rate"><Star :size="14" />{{ fr(r.rating) }} <span class="n">({{ r.count }} avis)</span></span>
-        <span v-else class="tag">Nouveau sur VLADI</span>
+        <span v-if="r.count" class="rate"><Star :size="14" />{{ fr(r.rating) }} <span class="n">({{ t('{n} avis', { n: r.count }) }})</span></span>
+        <span v-else class="tag">{{ t('Nouveau sur VLADI') }}</span>
         <span class="meta">· {{ kindLabel(p.kind) }}{{ p.owner ? `, ${p.owner}` : '' }}</span>
       </div>
       <span class="status" :class="{ open: status.open }"><Clock :size="14" />{{ status.text }}</span>
-      <span class="meta">{{ p.quartier ? `${p.quartier}, ` : '' }}{{ p.commune }} · {{ formatKm(d) }}, environ {{ driveMinutes(d) }} min en voiture</span>
+      <span class="meta">{{ p.quartier ? `${p.quartier}, ` : '' }}{{ p.commune }} · {{ t('{km}, environ {min} min en voiture', { km: formatKm(d), min: driveMinutes(d) }) }}</span>
     </div>
 
     <div class="actions mt16">
-      <a :href="directionsUrl(p)" target="_blank" rel="noopener"><Navigation :size="20" />Itinéraire</a>
-      <a v-if="p.phone" :href="`tel:${p.phone.replace(/\s/g, '')}`"><Phone :size="20" />Appeler</a>
-      <button v-else @click="show('infos')"><MapPin :size="20" />Carte</button>
-      <NuxtLink v-if="isMine(p)" to="/espace-pro/fiche"><Pencil :size="20" />Modifier</NuxtLink>
-      <button v-else :aria-pressed="!!state.fav[p.id]" @click="toggleFav(p.id)"><Heart :size="20" :fill="state.fav[p.id] ? 'currentColor' : 'none'" />{{ state.fav[p.id] ? 'Enregistré' : 'Enregistrer' }}</button>
-      <button @click="share"><Share2 :size="20" />Partager</button>
+      <a :href="directionsUrl(p)" target="_blank" rel="noopener"><Navigation :size="20" />{{ t('Itinéraire') }}</a>
+      <a v-if="p.phone" :href="`tel:${p.phone.replace(/\s/g, '')}`"><Phone :size="20" />{{ t('Appeler') }}</a>
+      <button v-else @click="show('infos')"><MapPin :size="20" />{{ t('Carte') }}</button>
+      <NuxtLink v-if="isMine(p)" to="/espace-pro/fiche"><Pencil :size="20" />{{ t('Modifier') }}</NuxtLink>
+      <button v-else :aria-pressed="!!state.fav[p.id]" @click="toggleFav(p.id)"><Heart :size="20" :fill="state.fav[p.id] ? 'currentColor' : 'none'" />{{ state.fav[p.id] ? t('Enregistré') : t('Enregistrer') }}</button>
+      <button @click="share"><Share2 :size="20" />{{ t('Partager') }}</button>
     </div>
 
     <ProGallery v-if="photos.length" :photos="photos" :name="p.name" />
 
     <section v-if="slots.length" class="section">
-      <h2 class="h2">Libre aujourd'hui, prix réduit</h2>
+      <h2 class="h2">{{ t('Libre aujourd\'hui, prix réduit') }}</h2>
       <div class="col gap8"><SlotCard v-for="s in slots" :key="s.id" :item="s" hide-pro /></div>
     </section>
 
     <div ref="tabsEl" class="tabs mt24">
-      <button :aria-pressed="tab === 'prestations'" @click="tab = 'prestations'">Prestations</button>
-      <button :aria-pressed="tab === 'avis'" @click="tab = 'avis'">Avis</button>
-      <button :aria-pressed="tab === 'infos'" @click="tab = 'infos'">Infos</button>
+      <button :aria-pressed="tab === 'prestations'" @click="tab = 'prestations'">{{ t('Prestations') }}</button>
+      <button :aria-pressed="tab === 'avis'" @click="tab = 'avis'">{{ t('Avis') }}</button>
+      <button :aria-pressed="tab === 'infos'" @click="tab = 'infos'">{{ t('Infos') }}</button>
     </div>
 
     <div v-if="tab === 'prestations'">
@@ -140,7 +140,7 @@ const bars = computed(() => {
           <span class="name">{{ s.n }}</span>
           <span class="meta">{{ duration(s.d) }} · {{ euro(s.p) }}</span>
         </div>
-        <NuxtLink v-if="!isMine(p)" class="btn sm" :to="`/reserver/${p.id}/${s.id}`">Réserver</NuxtLink>
+        <NuxtLink v-if="!isMine(p)" class="btn sm" :to="`/reserver/${p.id}/${s.id}`">{{ t('Réserver') }}</NuxtLink>
       </div>
     </div>
 
@@ -148,7 +148,7 @@ const bars = computed(() => {
       <div v-if="r.count" class="row gap24 mt16">
         <div class="col" style="align-items:center;gap:6px">
           <span class="bigrate">{{ fr(r.rating) }}</span>
-          <span class="tiny">{{ r.count }} avis</span>
+          <span class="tiny">{{ t('{n} avis', { n: r.count }) }}</span>
         </div>
         <div v-if="!p.real" class="bars">
           <template v-for="b in bars" :key="b[0]"><span>{{ b[0] }}</span><i><b :style="{ width: b[1] + '%' }" /></i></template>
@@ -157,52 +157,52 @@ const bars = computed(() => {
       <div v-for="(rv, i) in reviewsOf(p)" :key="rv.id ?? i" class="review">
         <div class="row between"><span class="name">{{ rv.a }}</span><span class="stars5"><Star v-for="n in rv.s" :key="n" :size="12" /></span></div>
         <span>{{ rv.t }}</span>
-        <div v-if="rv.reply && editing !== rv.id" class="reply"><b>Réponse de {{ p.name }}</b>{{ rv.reply }}</div>
+        <div v-if="rv.reply && editing !== rv.id" class="reply"><b>{{ t('Réponse de {name}', { name: p.name }) }}</b>{{ rv.reply }}</div>
         <div v-if="rv.id && editing === rv.id" class="col gap8 mt8">
-          <textarea v-model="draft" class="input" rows="3" maxlength="1000" :aria-label="`Réponse à l'avis ${i + 1}`" placeholder="Merci pour ton avis…" />
+          <textarea v-model="draft" class="input" rows="3" maxlength="1000" :aria-label="`Réponse à l'avis ${i + 1}`" :placeholder="t('Merci pour ton avis…')" />
           <div class="row gap8">
-            <button type="button" class="btn sm" @click="saveReply(rv.id)">Publier</button>
-            <button type="button" class="btn sm soft" @click="editing = ''">Annuler</button>
+            <button type="button" class="btn sm" @click="saveReply(rv.id)">{{ t('Publier') }}</button>
+            <button type="button" class="btn sm soft" @click="editing = ''">{{ t('Annuler') }}</button>
           </div>
         </div>
         <div v-else-if="rv.id" class="rv-tools">
-          <button v-if="isMine(p)" type="button" @click="startReply(rv.id, rv.reply)">{{ rv.reply ? 'Modifier la réponse' : 'Répondre' }}</button>
-          <button v-else type="button" @click="reportOf = { reviewId: rv.id }">Signaler</button>
+          <button v-if="isMine(p)" type="button" @click="startReply(rv.id, rv.reply)">{{ rv.reply ? t('Modifier la réponse') : t('Répondre') }}</button>
+          <button v-else type="button" @click="reportOf = { reviewId: rv.id }">{{ t('Signaler') }}</button>
         </div>
       </div>
-      <p v-if="!reviewsOf(p).length" class="empty">Pas encore d'avis. Les avis sont publiés après un rendez-vous effectué.</p>
+      <p v-if="!reviewsOf(p).length" class="empty">{{ t('Pas encore d\'avis. Les avis sont publiés après un rendez-vous effectué.') }}</p>
     </div>
 
     <div v-else class="col gap24 mt16">
       <p v-if="p.about">{{ p.about }}</p>
       <div class="infobox">
-        <span class="h3">Où ça se passe</span>
+        <span class="h3">{{ t('Où ça se passe') }}</span>
         <div v-if="proPlace(p)" class="row"><Store :size="18" /><span class="grow">{{ proPlace(p) }}{{ p.quartier ? `, ${p.quartier}` : '' }}, {{ p.commune }}</span></div>
-        <div v-if="goesToClient(p)" class="row"><House :size="18" /><span class="grow">À domicile, {{ travelFee(p) ? `+ ${euro(travelFee(p))} de déplacement` : 'déplacement offert' }}</span></div>
+        <div v-if="goesToClient(p)" class="row"><House :size="18" /><span class="grow">{{ t('À domicile') }}, {{ travelFee(p) ? t('+ {fee} de déplacement', { fee: euro(travelFee(p)) }) : t('déplacement offert') }}</span></div>
       </div>
       <ProMap :items="[{ id: p.id, lat: p.lat, lng: p.lng }]" :user="state.pos" mini />
       <div class="col gap12">
-        <span class="h3">Horaires</span>
+        <span class="h3">{{ t('Horaires') }}</span>
         <div class="hours">
           <template v-for="n in days" :key="n">
-            <span :class="{ today: n === todayIndex }">{{ WEEK[n] }}</span>
+            <span :class="{ today: n === todayIndex }">{{ t(WEEK[n]) }}</span>
             <span :class="{ today: n === todayIndex }">{{ p.closed.includes(n) ? 'Fermé' : `${hm(p.open)} à ${hm(p.close)}` }}</span>
           </template>
         </div>
       </div>
-      <button v-if="p.real && !isMine(p)" type="button" class="textbtn row gap8" style="align-self:flex-start" @click="reportOf = { proId: p.id }"><Flag :size="15" />Signaler cette fiche</button>
-      <p v-if="!p.real" class="tiny">Établissement de démonstration, présenté à titre d'illustration.</p>
+      <button v-if="p.real && !isMine(p)" type="button" class="textbtn row gap8" style="align-self:flex-start" @click="reportOf = { proId: p.id }"><Flag :size="15" />{{ t('Signaler cette fiche') }}</button>
+      <p v-if="!p.real" class="tiny">{{ t('Établissement de démonstration, présenté à titre d\'illustration.') }}</p>
       <p v-else class="tiny">
-        <template v-if="p.siren">Entreprise immatriculée, SIREN {{ p.siren.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3') }}.</template>
-        <template v-if="!p.photo"> Photo d'illustration.</template>
+        <template v-if="p.siren">{{ t('Entreprise immatriculée, SIREN {n}.', { n: p.siren.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3') }) }}</template>
+        <template v-if="!p.photo"> {{ t('Photo d\'illustration.') }}</template>
       </p>
     </div>
     <ShareSheet v-if="shareOpen" :title="p.name" :text="`${p.name} sur VLADI`" :url="shareUrl" @close="shareOpen = false" />
     <ReportSheet v-if="reportOf" v-bind="reportOf" @close="reportOf = null" />
   </template>
-  <div v-else-if="remote.loading" class="empty" style="padding-top:96px">Chargement…</div>
+  <div v-else-if="remote.loading" class="empty" style="padding-top:96px">{{ t('Chargement…') }}</div>
   <div v-else class="empty" style="padding-top:96px">
-    <b>Cette fiche n'existe pas</b>
-    <NuxtLink class="btn sm soft" to="/">Retour à l'accueil</NuxtLink>
+    <b>{{ t('Cette fiche n\'existe pas') }}</b>
+    <NuxtLink class="btn sm soft" to="/">{{ t('Retour à l\'accueil') }}</NuxtLink>
   </div>
 </template>

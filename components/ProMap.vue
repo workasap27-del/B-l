@@ -78,5 +78,5 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="el" class="map" :class="mini ? 'mini' : 'full'" role="application" aria-label="Carte des prestataires" />
+  <div ref="el" class="map" :class="mini ? 'mini' : 'full'" role="application" :aria-label="t('Carte des prestataires')" />
 </template>

@@ -1,4 +1,6 @@
 // Petits formats d'affichage.
+import { currentLang, translate } from '../composables/useLang'
+
 export function fr(n: number): string {
   return String(n).replace('.', ',')
 }
@@ -13,15 +15,16 @@ export function duration(min: number): string {
 
 /** Statut d'un prestataire affiché sans accord de genre : "Indépendant·e". */
 export function kindLabel(kind: string): string {
-  return kind === 'Indépendante' || kind === 'Indépendant' ? 'Indépendant·e' : kind
+  return translate(kind === 'Indépendante' || kind === 'Indépendant' ? 'Indépendant·e' : kind)
 }
 
 export function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-/** « à Baie-Mahault », « au Gosier », « aux Abymes ». */
+/** « à Baie-Mahault », « au Gosier », « aux Abymes » ; « in Baie-Mahault » en anglais. */
 export function inCommune(commune: string): string {
+  if (currentLang() === 'en') return `in ${commune}`
   if (commune.startsWith('Les ')) return `aux ${commune.slice(4)}`
   if (commune.startsWith('Le ')) return `au ${commune.slice(3)}`
   return `à ${commune}`

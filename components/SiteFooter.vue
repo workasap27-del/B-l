@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronDown } from 'lucide-vue-next'
+import { ChevronDown, Globe } from 'lucide-vue-next'
 import { CATEGORIES } from '~/data/pros'
 import type { Category } from '~/data/pros'
 import { LEGAL } from '~/data/legal'
@@ -18,38 +18,45 @@ function hover(on: boolean) {
   clearTimeout(timer)
   timer = setTimeout(() => { open.value = on }, on ? 80 : 250)
 }
+const { lang, setLang } = useLang()
 </script>
 
 <template>
   <footer class="site-foot">
     <div class="cols">
-      <nav class="cats" aria-label="Catégories" @mouseenter="hover(true)" @mouseleave="hover(false)">
+      <nav class="cats" :aria-label="t('Catégories')" @mouseenter="hover(true)" @mouseleave="hover(false)">
         <button type="button" class="foot-toggle" :aria-expanded="open" @click="open = !open">
-          Catégories <ChevronDown :size="15" :class="{ flip: open }" />
+          {{ t('Catégories') }} <ChevronDown :size="15" :class="{ flip: open }" />
         </button>
         <ul v-if="open">
-          <li v-for="[c] in cats" :key="c"><NuxtLink :to="`/recherche?cat=${c}`">{{ CAT_SHORT[c as Category] }}</NuxtLink></li>
+          <li v-for="[c] in cats" :key="c"><NuxtLink :to="`/recherche?cat=${c}`">{{ t(CAT_SHORT[c as Category]) }}</NuxtLink></li>
         </ul>
       </nav>
-      <nav aria-label="VLADI">
+      <nav :aria-label="'VLADI'">
         <h2>VLADI</h2>
         <ul>
-          <li><NuxtLink to="/a-propos">À propos</NuxtLink></li>
-          <li><NuxtLink to="/faq">Questions fréquentes</NuxtLink></li>
-          <li><NuxtLink to="/devenir-prestataire">Devenir prestataire</NuxtLink></li>
-          <li><a :href="`mailto:${LEGAL.contactEmail}`">Nous contacter</a></li>
-          <li v-if="!account"><NuxtLink to="/connexion">Se connecter</NuxtLink></li>
+          <li><NuxtLink to="/a-propos">{{ t('À propos') }}</NuxtLink></li>
+          <li><NuxtLink to="/faq">{{ t('Questions fréquentes') }}</NuxtLink></li>
+          <li><NuxtLink to="/devenir-prestataire">{{ t('Devenir prestataire') }}</NuxtLink></li>
+          <li><a :href="`mailto:${LEGAL.contactEmail}`">{{ t('Nous contacter') }}</a></li>
+          <li v-if="!account"><NuxtLink to="/connexion">{{ t('Se connecter') }}</NuxtLink></li>
         </ul>
       </nav>
-      <nav aria-label="Informations légales">
-        <h2>Informations légales</h2>
+      <nav :aria-label="t('Informations légales')">
+        <h2>{{ t('Informations légales') }}</h2>
         <ul>
-          <li><NuxtLink to="/cgu">Conditions générales</NuxtLink></li>
-          <li><NuxtLink to="/confidentialite">Confidentialité</NuxtLink></li>
-          <li><NuxtLink to="/mentions-legales">Mentions légales</NuxtLink></li>
+          <li><NuxtLink to="/cgu">{{ t('Conditions générales') }}</NuxtLink></li>
+          <li><NuxtLink to="/confidentialite">{{ t('Confidentialité') }}</NuxtLink></li>
+          <li><NuxtLink to="/mentions-legales">{{ t('Mentions légales') }}</NuxtLink></li>
         </ul>
       </nav>
     </div>
-    <p class="copy">© {{ year }} VLADI, beauté et bien-être en Guadeloupe.</p>
+    <div class="foot-lang" role="group" :aria-label="t('Langue')">
+      <Globe :size="15" />
+      <button type="button" :aria-pressed="lang === 'fr'" lang="fr" @click="setLang('fr')">Français</button>
+      <button type="button" :aria-pressed="lang === 'en'" lang="en" @click="setLang('en')">English</button>
+    </div>
+    <p class="creole" lang="gcf">Byenvini an Gwadloup</p>
+    <p class="copy">© {{ year }} VLADI, {{ t('beauté et bien-être en Guadeloupe') }}.</p>
   </footer>
 </template>

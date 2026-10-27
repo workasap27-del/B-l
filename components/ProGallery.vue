@@ -23,10 +23,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', key))
   </div>
   <Teleport to="#sheets">
     <div v-if="open !== null" class="lightbox" role="dialog" aria-modal="true" :aria-label="`Photo ${open + 1} sur ${photos.length}`" @click.self="open = null">
-      <button class="icon-btn lb-close" type="button" aria-label="Fermer" @click="open = null"><X :size="22" /></button>
-      <button v-if="photos.length > 1" class="icon-btn lb-prev" type="button" aria-label="Photo précédente" @click="move(-1)"><ChevronLeft :size="24" /></button>
+      <button class="icon-btn lb-close" type="button" :aria-label="t('Fermer')" @click="open = null"><X :size="22" /></button>
+      <button v-if="photos.length > 1" class="icon-btn lb-prev" type="button" :aria-label="t('Photo précédente')" @click="move(-1)"><ChevronLeft :size="24" /></button>
       <img :src="photos[open].url" :alt="`Réalisation de ${name}`">
-      <button v-if="photos.length > 1" class="icon-btn lb-next" type="button" aria-label="Photo suivante" @click="move(1)"><ChevronRight :size="24" /></button>
+      <button v-if="photos.length > 1" class="icon-btn lb-next" type="button" :aria-label="t('Photo suivante')" @click="move(1)"><ChevronRight :size="24" /></button>
       <span class="lb-count">{{ open + 1 }} / {{ photos.length }}</span>
     </div>
   </Teleport>

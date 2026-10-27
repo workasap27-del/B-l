@@ -2,6 +2,7 @@
 // Ce fichier ne garde aucun état : il lit et écrit, puis useVladi range les résultats.
 import { createClient } from '@supabase/supabase-js'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { translate } from '~/composables/useLang'
 import type { Category, Pro, Service } from '~/data/pros'
 import { fromIso, toIso } from '~/utils/time'
 import { readCategories } from '~/utils/cats'
@@ -85,7 +86,12 @@ export interface AdminReport {
 }
 
 /** Message d'erreur compréhensible à partir d'une erreur Supabase. */
+/** Message d'erreur compréhensible, dans la langue choisie. */
 export function readable(e: unknown): string {
+  return translate(readableFr(e))
+}
+
+function readableFr(e: unknown): string {
   const msg = (e as { message?: string })?.message ?? String(e)
   if (/Invalid login credentials/i.test(msg)) return 'E-mail ou mot de passe incorrect.'
   if (/already registered|already been registered/i.test(msg)) return 'Un compte existe déjà avec cet e-mail. Connecte-toi.'

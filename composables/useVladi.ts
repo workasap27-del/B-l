@@ -9,6 +9,7 @@ import type { Pro, Review, Service } from '~/data/pros'
 import { PHOTO_POOLS, pexels } from '~/utils/photos'
 import { shrinkImage } from '~/utils/image'
 import { readReliability } from '~/utils/reliability'
+import { translate } from '~/composables/useLang'
 import type { Reliability } from '~/utils/reliability'
 import { addDays, ceil30, discounted, freeStarts, gaps, isClosed, simulatedAppointments, spansOverlap } from '~/utils/schedule'
 import type { Interval, Span } from '~/utils/schedule'
@@ -495,10 +496,10 @@ function nextSlots(p: Pro, sv: Service, count = 3): { date: string, time: number
 
 /** "Ouvert, ferme à 19h00", "Ouvre à 9h00", "Fermé aujourd'hui". */
 function openStatus(p: Pro): { open: boolean, text: string } {
-  if (isClosed(p, today.value)) return { open: false, text: "Fermé aujourd'hui" }
-  if (nowMin.value < p.open) return { open: false, text: `Ouvre à ${hmText(p.open)}` }
-  if (nowMin.value < p.close) return { open: true, text: `Ouvert jusqu'à ${hmText(p.close)}` }
-  return { open: false, text: 'Fermé pour ce soir' }
+  if (isClosed(p, today.value)) return { open: false, text: translate("Fermé aujourd'hui") }
+  if (nowMin.value < p.open) return { open: false, text: translate('Ouvre à {h}', { h: hmText(p.open) }) }
+  if (nowMin.value < p.close) return { open: true, text: translate("Ouvert jusqu'à {h}", { h: hmText(p.close) }) }
+  return { open: false, text: translate('Fermé pour ce soir') }
 }
 
 function hmText(t: number): string {
@@ -534,8 +535,8 @@ function refundable(b: Booking): boolean {
 /** Où se passera le rendez-vous, en clair. */
 function placeLabel(b: Booking): string {
   const p = pro(b.proId)
-  if (b.place === 'client') return `À domicile${b.address ? ` · ${b.address}` : ''}`
-  return p ? `${proPlace(p) ?? 'Sur place'} · ${p.quartier ? `${p.quartier}, ` : ''}${p.commune}` : 'Sur place'
+  if (b.place === 'client') return `${translate('À domicile')}${b.address ? ` · ${b.address}` : ''}`
+  return p ? `${translate(proPlace(p) ?? 'Sur place')} · ${p.quartier ? `${p.quartier}, ` : ''}${p.commune}` : translate('Sur place')
 }
 
 function findBooking(id: string): Booking | undefined {
@@ -556,7 +557,7 @@ async function book(input: BookInput): Promise<{ booking?: Booking, error?: stri
   if (clash) {
     // Deux rendez-vous à la même heure sont impossibles : il faut remplacer l'ancien ou choisir une autre heure.
     if (input.replaceId !== clash.id) return { error: 'chevauchement' }
-    if (!(await change(clash.id, { status: 'cancelled' }))) return { error: 'L\'ancien rendez-vous n\'a pas pu être annulé. Réessaie.' }
+    if (!(await change(clash.id, { status: 'cancelled' }))) return { error: translate('L\'ancien rendez-vous n\'a pas pu être annulé. Réessaie.') }
   }
   const res = await bookNew(input)
   // Si la nouvelle réservation échoue, l'ancien rendez-vous de présentation est rétabli.
@@ -567,11 +568,11 @@ async function book(input: BookInput): Promise<{ booking?: Booking, error?: stri
 async function bookNew(input: BookInput): Promise<{ booking?: Booking, error?: string }> {
   const p = pro(input.proId)
   const sv = p && service(p, input.sid)
-  if (!p || !sv) return { error: 'Prestation introuvable.' }
-  if (isMine(p)) return { error: 'C\'est ta propre fiche : tu ne peux pas réserver chez toi.' }
-  if (!allowedPlaces(p).includes(input.place)) return { error: 'Ce lieu n\'est pas proposé par ce prestataire.' }
+  if (!p || !sv) return { error: translate('Prestation introuvable.') }
+  if (isMine(p)) return { error: translate('C\'est ta propre fiche : tu ne peux pas réserver chez toi.') }
+  if (!allowedPlaces(p).includes(input.place)) return { error: translate('Ce lieu n\'est pas proposé par ce prestataire.') }
   const address = input.place === 'client' ? (input.address ?? '').trim() : undefined
-  if (input.place === 'client' && (!address || address.length < 5)) return { error: 'Indique ton adresse.' }
+  if (input.place === 'client' && (!address || address.length < 5)) return { error: translate('Indique ton adresse.') }
   if (!remote.profile) return { error: 'connexion' }
   if (address) state.address = address
 
@@ -598,12 +599,12 @@ async function bookNew(input: BookInput): Promise<{ booking?: Booking, error?: s
   let price = sv.p
   if (input.slotId) {
     const slot = state.slots.find(s => s.id === input.slotId)
-    if (!slot || slot.status !== 'open' || slot.time < nowMin.value + 10) return { error: 'Ce créneau vient de partir. Choisis-en un autre.' }
+    if (!slot || slot.status !== 'open' || slot.time < nowMin.value + 10) return { error: translate('Ce créneau vient de partir. Choisis-en un autre.') }
     slot.status = 'booked'
     price = discounted(sv, slot.disc)
   }
   else if (!starts(p, input.date, sv.d).includes(input.time)) {
-    return { error: 'Ce créneau vient de partir. Choisis-en un autre.' }
+    return { error: translate('Ce créneau vient de partir. Choisis-en un autre.') }
   }
   price += fee
   const b: Booking = { id: `l${++state.seq}`, proId: p.id, sid: sv.id, date: input.date, time: input.time, dur: sv.d, price, deposit: Math.round(price * RULES.depositRate), mode: input.slotId ? 'lm' : 'classic', status: 'confirmed', reviewed: false, place: input.place, address, fee, note: input.note?.trim() || undefined }
@@ -957,7 +958,7 @@ function setSim(minutes: number | null) {
 }
 
 function toast(message: string) {
-  toastMessage.value = message
+  toastMessage.value = translate(message)
   clearTimeout(toastTimer)
   toastTimer = setTimeout(() => { toastMessage.value = '' }, 3200)
 }

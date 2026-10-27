@@ -21,15 +21,15 @@ async function copy() {
 <template>
   <BottomSheet @close="emit('close')">
     <div class="share-sheet">
-      <p class="h3">Partager</p>
+      <p class="h3">{{ t('Partager') }}</p>
       <p class="meta ellip">{{ title }}</p>
       <a class="share-row" :href="`https://wa.me/?text=${encodeURIComponent(message)}`" target="_blank" rel="noopener" @click="emit('close')">
-        <span class="srch-ico sm"><MessageCircle :size="18" /></span>WhatsApp
+        <span class="srch-ico sm"><MessageCircle :size="18" /></span>{{ t('WhatsApp') }}
       </a>
       <a class="share-row" :href="`sms:?&body=${encodeURIComponent(message)}`" @click="emit('close')">
         <span class="srch-ico sm"><Send :size="18" /></span>SMS
       </a>
-      <button type="button" class="share-row" @click="copy"><span class="srch-ico sm"><Copy :size="18" /></span>Copier le lien</button>
+      <button type="button" class="share-row" @click="copy"><span class="srch-ico sm"><Copy :size="18" /></span>{{ t('Copier le lien') }}</button>
     </div>
   </BottomSheet>
 </template>

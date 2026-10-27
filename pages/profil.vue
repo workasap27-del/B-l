@@ -18,12 +18,12 @@ const error = ref('')
 function openEdit() {
   name.value = account.value?.name ?? ''
   phone.value = account.value?.phone ?? ''
-  error.value = ''
+  error.value = translate('')
   editOpen.value = true
 }
 async function save() {
   if (name.value.trim().length < 2) {
-    error.value = 'Indique ton prénom.'
+    error.value = translate('Indique ton prénom.')
     return
   }
   const e = await saveProfile({ name: name.value, phone: phone.value })
@@ -45,8 +45,8 @@ const delWord = ref('')
 const delBusy = ref(false)
 const delError = ref('')
 async function confirmDelete() {
-  delError.value = ''
-  if (delWord.value.trim().toUpperCase() !== 'SUPPRIMER') return (delError.value = 'Écris SUPPRIMER pour confirmer.')
+  delError.value = translate('')
+  if (!['SUPPRIMER', 'DELETE'].includes(delWord.value.trim().toUpperCase())) return (delError.value = translate('Écris SUPPRIMER pour confirmer.'))
   delBusy.value = true
   const e = await deleteAccount()
   delBusy.value = false
@@ -85,116 +85,116 @@ const inviteUrl = computed(() => `${window.location.origin}/?parrain=${code.valu
     </div>
 
     <section class="section">
-      <h2 class="h2">{{ remote.myPro ? 'Mon activité' : account.role === 'pro' ? 'Ma fiche prestataire' : 'Tu proposes des services ?' }}</h2>
+      <h2 class="h2">{{ remote.myPro ? t('Mon activité') : account.role === 'pro' ? t('Ma fiche prestataire') : t('Tu proposes des services ?') }}</h2>
       <div class="list">
         <template v-if="remote.myPro">
-          <NuxtLink to="/espace-pro"><Store :size="20" />Mon agenda<span class="sub"><ChevronRight :size="18" /></span></NuxtLink>
-          <NuxtLink :to="`/pro/${remote.myPro.id}`"><UserRound :size="20" />Voir ma fiche<span class="sub ellip" style="max-width:50%">{{ remote.myPro.name }}<ChevronRight :size="18" /></span></NuxtLink>
-          <NuxtLink to="/espace-pro/fiche"><Settings2 :size="20" />Modifier ma fiche<span class="sub"><ChevronRight :size="18" /></span></NuxtLink>
+          <NuxtLink to="/espace-pro"><Store :size="20" />{{ t('Mon agenda') }}<span class="sub"><ChevronRight :size="18" /></span></NuxtLink>
+          <NuxtLink :to="`/pro/${remote.myPro.id}`"><UserRound :size="20" />{{ t('Voir ma fiche') }}<span class="sub ellip" style="max-width:50%">{{ remote.myPro.name }}<ChevronRight :size="18" /></span></NuxtLink>
+          <NuxtLink to="/espace-pro/fiche"><Settings2 :size="20" />{{ t('Modifier ma fiche') }}<span class="sub"><ChevronRight :size="18" /></span></NuxtLink>
         </template>
-        <NuxtLink v-else to="/espace-pro/fiche"><Store :size="20" />Créer ma fiche prestataire<span class="sub">Gratuit<ChevronRight :size="18" /></span></NuxtLink>
+        <NuxtLink v-else to="/espace-pro/fiche"><Store :size="20" />{{ t('Créer ma fiche prestataire') }}<span class="sub">{{ t('Gratuit') }}<ChevronRight :size="18" /></span></NuxtLink>
       </div>
     </section>
 
     <section v-if="remote.admin || remote.adminMfa" class="section">
-      <h2 class="h2">Administration</h2>
+      <h2 class="h2">{{ t('Administration') }}</h2>
       <div class="list">
-        <NuxtLink to="/pilotage"><BarChart3 :size="20" />Pilotage<span class="sub">Indicateurs et journal<ChevronRight :size="18" /></span></NuxtLink>
+        <NuxtLink to="/pilotage"><BarChart3 :size="20" />{{ t('Pilotage') }}<span class="sub">{{ t('Indicateurs et journal') }}<ChevronRight :size="18" /></span></NuxtLink>
       </div>
     </section>
 
     <section class="section">
-      <h2 class="h2">Mon compte</h2>
+      <h2 class="h2">{{ t('Mon compte') }}</h2>
       <div class="list">
-        <button @click="openEdit"><UserRound :size="20" />Mes informations<span class="sub">{{ account.phone || 'Ajouter un téléphone' }}<ChevronRight :size="18" /></span></button>
-        <button @click="locOpen = true"><MapPin :size="20" />Ma position<span class="sub">{{ state.pos.label }}<ChevronRight :size="18" /></span></button>
-        <button @click="settingsOpen = true"><Settings2 :size="20" />Réglages<span class="sub"><ChevronRight :size="18" /></span></button>
-        <button @click="out()"><LogOut :size="20" />Se déconnecter</button>
-        <button @click="out(true)"><LogOut :size="20" />Se déconnecter de tous les appareils</button>
-        <button class="danger-row" @click="delOpen = true; delWord = ''; delError = ''"><Trash2 :size="20" />Supprimer mon compte</button>
+        <button @click="openEdit"><UserRound :size="20" />{{ t('Mes informations') }}<span class="sub">{{ account.phone || t('Ajouter un téléphone') }}<ChevronRight :size="18" /></span></button>
+        <button @click="locOpen = true"><MapPin :size="20" />{{ t('Ma position') }}<span class="sub">{{ state.pos.label }}<ChevronRight :size="18" /></span></button>
+        <button @click="settingsOpen = true"><Settings2 :size="20" />{{ t('Réglages') }}<span class="sub"><ChevronRight :size="18" /></span></button>
+        <button @click="out()"><LogOut :size="20" />{{ t('Se déconnecter') }}</button>
+        <button @click="out(true)"><LogOut :size="20" />{{ t('Se déconnecter de tous les appareils') }}</button>
+        <button class="danger-row" @click="delOpen = true; delWord = ''; delError = ''"><Trash2 :size="20" />{{ t('Supprimer mon compte') }}</button>
       </div>
     </section>
   </template>
 
   <template v-else>
     <div class="col gap8">
-      <h1 class="title">Ton compte VLADI</h1>
-      <p class="meta">Réserve en quelques secondes et retrouve tes rendez-vous sur tous tes appareils.</p>
+      <h1 class="title">{{ t('Ton compte VLADI') }}</h1>
+      <p class="meta">{{ t('Réserve en quelques secondes et retrouve tes rendez-vous sur tous tes appareils.') }}</p>
     </div>
     <div class="col gap12 mt24">
-      <NuxtLink class="btn block" to="/connexion?mode=inscription">Créer un compte</NuxtLink>
-      <NuxtLink class="btn block line" to="/connexion">J'ai déjà un compte</NuxtLink>
+      <NuxtLink class="btn block" to="/connexion?mode=inscription">{{ t('Créer un compte') }}</NuxtLink>
+      <NuxtLink class="btn block line" to="/connexion">{{ t('J\'ai déjà un compte') }}</NuxtLink>
     </div>
     <section class="section">
       <NuxtLink class="banner" to="/connexion?mode=inscription&role=pro">
         <Store :size="22" />
         <div class="grow col gap4">
-          <span class="name">Tu es prestataire ?</span>
-          <span class="meta">Crée ta fiche gratuitement, gère ton agenda et remplis tes créneaux vides.</span>
+          <span class="name">{{ t('Tu es prestataire ?') }}</span>
+          <span class="meta">{{ t('Crée ta fiche gratuitement, gère ton agenda et remplis tes créneaux vides.') }}</span>
         </div>
         <ChevronRight :size="18" style="align-self:center" />
       </NuxtLink>
     </section>
     <section class="section">
       <div class="list">
-        <button @click="locOpen = true"><MapPin :size="20" />Ma position<span class="sub">{{ state.pos.label }}<ChevronRight :size="18" /></span></button>
-        <button @click="settingsOpen = true"><Settings2 :size="20" />Réglages<span class="sub"><ChevronRight :size="18" /></span></button>
-        <NuxtLink v-if="state.demo" to="/espace-pro"><Store :size="20" />Espace prestataire de démonstration<span class="sub"><span v-if="state.unseen" class="tag warn">{{ state.unseen }}</span><ChevronRight :size="18" /></span></NuxtLink>
+        <button @click="locOpen = true"><MapPin :size="20" />{{ t('Ma position') }}<span class="sub">{{ state.pos.label }}<ChevronRight :size="18" /></span></button>
+        <button @click="settingsOpen = true"><Settings2 :size="20" />{{ t('Réglages') }}<span class="sub"><ChevronRight :size="18" /></span></button>
+        <NuxtLink v-if="state.demo" to="/espace-pro"><Store :size="20" />{{ t('Espace prestataire de démonstration') }}<span class="sub"><span v-if="state.unseen" class="tag warn">{{ state.unseen }}</span><ChevronRight :size="18" /></span></NuxtLink>
       </div>
     </section>
   </template>
 
   <section v-if="loyal" class="section">
-    <h2 class="h2">Fidélité et parrainage</h2>
+    <h2 class="h2">{{ t('Fidélité et parrainage') }}</h2>
     <div class="loyal mt12">
       <div class="loyal-bar" role="progressbar" :aria-valuenow="loyal.inCycle" aria-valuemin="0" :aria-valuemax="loyal.cycle"><i :style="{ width: `${(loyal.inCycle / loyal.cycle) * 100}%` }" /></div>
-      <p class="mt8"><b>{{ loyal.visits }} rendez-vous honoré{{ loyal.visits > 1 ? 's' : '' }}</b> · encore {{ loyal.next.left }} avant {{ euro(loyal.next.credit) }} de crédit</p>
-      <p class="meta">Crédit cumulé : {{ euro(loyal.earned) }}<template v-if="!RULES.onlinePayment">, utilisable dès l'ouverture du paiement en ligne</template>.</p>
+      <p class="mt8"><b>{{ t(loyal.visits > 1 ? '{n} rendez-vous honorés' : '{n} rendez-vous honoré', { n: loyal.visits }) }}</b> · {{ t('encore {n} avant {amount} de crédit', { n: loyal.next.left, amount: euro(loyal.next.credit) }) }}</p>
+      <p class="meta">{{ t('Crédit cumulé : {amount}', { amount: euro(loyal.earned) }) }}<template v-if="!RULES.onlinePayment">{{ t(', utilisable dès l\'ouverture du paiement en ligne') }}</template>.</p>
     </div>
     <div v-if="code" class="infobox mt16">
-      <span class="h3">Invite tes proches</span>
-      <p class="mt8">{{ euro(LOYALTY.referralCredit) }} pour toi et {{ euro(LOYALTY.referralCredit) }} pour la personne invitée après son premier rendez-vous. Ton code : <b>{{ code }}</b></p>
-      <button type="button" class="btn sm soft mt8" @click="inviteOpen = true">Partager mon lien</button>
+      <span class="h3">{{ t('Invite tes proches') }}</span>
+      <p class="mt8">{{ t('{amount} pour toi et {amount} pour la personne invitée après son premier rendez-vous. Ton code :', { amount: euro(LOYALTY.referralCredit) }) }} <b>{{ code }}</b></p>
+      <button type="button" class="btn sm soft mt8" @click="inviteOpen = true">{{ t('Partager mon lien') }}</button>
     </div>
-    <ShareSheet v-if="inviteOpen" title="Invitation VLADI" :text="`Je réserve mes rendez-vous beauté sur VLADI. Inscris-toi avec mon lien :`" :url="inviteUrl" @close="inviteOpen = false" />
+    <ShareSheet v-if="inviteOpen" :title="t('Invitation VLADI')" :text="`Je réserve mes rendez-vous beauté sur VLADI. Inscris-toi avec mon lien :`" :url="inviteUrl" @close="inviteOpen = false" />
   </section>
 
   <section v-if="trust" class="section">
-    <h2 class="h2">Ma fiabilité</h2>
+    <h2 class="h2">{{ t('Ma fiabilité') }}</h2>
     <p class="mt8"><b>{{ reliabilityText(trust) }}</b></p>
-    <p class="tiny mt8">Calculée sur douze mois : rendez-vous honorés, absences et annulations à moins de {{ RULES.freeCancelHours }} h. Seuls les prestataires chez qui tu réserves la voient, jamais le public. Prévenir quand tu ne peux pas venir la garde au vert.</p>
+    <p class="tiny mt8">{{ t('Calculée sur douze mois : rendez-vous honorés, absences et annulations à moins de {h} h. Seuls les prestataires chez qui tu réserves la voient, jamais le public. Prévenir quand tu ne peux pas venir la garde au vert.', { h: RULES.freeCancelHours }) }}</p>
   </section>
 
   <section class="section">
-    <h2 class="h2"><Heart :size="18" style="vertical-align:-2px" /> Mes favoris</h2>
+    <h2 class="h2"><Heart :size="18" style="vertical-align:-2px" /> {{ t('Mes favoris') }}</h2>
     <div v-if="favs.length" class="carousel"><ProCard v-for="p in favs" :key="p.id" :pro="p" /></div>
-    <p v-else class="meta">Touche le cœur sur une fiche pour la retrouver ici.</p>
+    <p v-else class="meta">{{ t('Touche le cœur sur une fiche pour la retrouver ici.') }}</p>
   </section>
 
   <section class="section">
-    <h2 class="h2">Informations</h2>
+    <h2 class="h2">{{ t('Informations') }}</h2>
     <div class="list">
-      <NuxtLink to="/cgu"><FileText :size="20" />Conditions générales d'utilisation<span class="sub"><ChevronRight :size="18" /></span></NuxtLink>
-      <NuxtLink to="/confidentialite"><Shield :size="20" />Politique de confidentialité<span class="sub"><ChevronRight :size="18" /></span></NuxtLink>
-      <NuxtLink to="/mentions-legales"><FileText :size="20" />Mentions légales<span class="sub"><ChevronRight :size="18" /></span></NuxtLink>
-      <a :href="`mailto:${LEGAL.contactEmail}`"><Mail :size="20" />Nous contacter<span class="sub ellip" style="max-width:55%">{{ LEGAL.contactEmail }}</span></a>
+      <NuxtLink to="/cgu"><FileText :size="20" />{{ t('Conditions générales d\'utilisation') }}<span class="sub"><ChevronRight :size="18" /></span></NuxtLink>
+      <NuxtLink to="/confidentialite"><Shield :size="20" />{{ t('Politique de confidentialité') }}<span class="sub"><ChevronRight :size="18" /></span></NuxtLink>
+      <NuxtLink to="/mentions-legales"><FileText :size="20" />{{ t('Mentions légales') }}<span class="sub"><ChevronRight :size="18" /></span></NuxtLink>
+      <a :href="`mailto:${LEGAL.contactEmail}`"><Mail :size="20" />{{ t('Nous contacter') }}<span class="sub ellip" style="max-width:55%">{{ LEGAL.contactEmail }}</span></a>
     </div>
   </section>
 
   <BottomSheet v-if="editOpen" @close="editOpen = false">
-    <h2 class="h2">Mes informations</h2>
-    <label class="field" for="p-name"><span>Prénom</span><input id="p-name" v-model="name" class="input" autocomplete="given-name"></label>
-    <label class="field" for="p-phone"><span>Téléphone <span class="help">(transmis aux prestataires chez qui tu réserves)</span></span><input id="p-phone" v-model="phone" class="input" type="tel" autocomplete="tel" placeholder="0690 00 00 00"></label>
+    <h2 class="h2">{{ t('Mes informations') }}</h2>
+    <label class="field" for="p-name"><span>{{ t('Prénom') }}</span><input id="p-name" v-model="name" class="input" autocomplete="given-name"></label>
+    <label class="field" for="p-phone"><span>{{ t('Téléphone') }} <span class="help">{{ t('(transmis aux prestataires chez qui tu réserves)') }}</span></span><input id="p-phone" v-model="phone" class="input" type="tel" autocomplete="tel" placeholder="0690 00 00 00"></label>
     <p v-if="error" class="error">{{ error }}</p>
-    <button class="btn block" @click="save">Enregistrer</button>
+    <button class="btn block" @click="save">{{ t('Enregistrer') }}</button>
   </BottomSheet>
   <BottomSheet v-if="delOpen" @close="delOpen = false">
-    <h2 class="h2">Supprimer ton compte ?</h2>
-    <p>C'est définitif. Tes rendez-vous à venir seront annulés et les prestataires prévenus. Ton historique, tes favoris et tes avis seront supprimés.<template v-if="remote.myPro"> Ta fiche « {{ remote.myPro.name }} », ses photos et ses rendez-vous à venir seront aussi supprimés, et les client·e·s prévenu·e·s.</template></p>
-    <label class="field" for="del-w"><span>Écris SUPPRIMER pour confirmer</span><input id="del-w" v-model="delWord" class="input" autocomplete="off" autocapitalize="characters"></label>
+    <h2 class="h2">{{ t('Supprimer ton compte ?') }}</h2>
+    <p>{{ t('C\'est définitif. Tes rendez-vous à venir seront annulés et les prestataires prévenus. Ton historique, tes favoris et tes avis seront supprimés.') }}<template v-if="remote.myPro"> {{ t('Ta fiche « {name} », ses photos et ses rendez-vous à venir seront aussi supprimés, et les client·e·s prévenu·e·s.', { name: remote.myPro.name }) }}</template></p>
+    <label class="field" for="del-w"><span>{{ t('Écris SUPPRIMER pour confirmer') }}</span><input id="del-w" v-model="delWord" class="input" autocomplete="off" autocapitalize="characters"></label>
     <p v-if="delError" class="error">{{ delError }}</p>
-    <button class="btn block danger" :disabled="delBusy" @click="confirmDelete">{{ delBusy ? 'Suppression…' : 'Supprimer définitivement' }}</button>
-    <button class="btn block" @click="delOpen = false">Garder mon compte</button>
+    <button class="btn block danger" :disabled="delBusy" @click="confirmDelete">{{ delBusy ? t('Suppression…') : t('Supprimer définitivement') }}</button>
+    <button class="btn block" @click="delOpen = false">{{ t('Garder mon compte') }}</button>
   </BottomSheet>
   <LocationSheet v-if="locOpen" @close="locOpen = false" />
   <SettingsSheet v-if="settingsOpen" @close="settingsOpen = false" />

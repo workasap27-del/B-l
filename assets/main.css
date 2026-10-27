@@ -604,3 +604,8 @@ svg.lucide { flex: 0 0 auto; }
 .loyal-bar { height: 10px; border-radius: 5px; background: var(--surface2); overflow: hidden; }
 .loyal-bar i { display: block; height: 100%; border-radius: 5px; background: var(--accent, var(--ink)); }
 .list .danger-row { color: var(--warn); }
+.foot-lang { display: flex; align-items: center; gap: 10px; margin-top: 24px; font-size: 13px; color: var(--muted); }
+.foot-lang button { background: none; border: 0; padding: 2px 0; font: inherit; color: var(--muted); cursor: pointer; }
+.foot-lang button[aria-pressed="true"] { color: var(--ink); font-weight: 700; }
+.creole { font-style: italic; color: var(--muted); font-size: 14px; margin: 0; }
+.site-foot .creole { margin-top: 18px; }

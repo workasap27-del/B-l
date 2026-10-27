@@ -181,7 +181,7 @@ async function save() {
     <div class="fieldset">
       <span class="h3">Ce que tu proposes</span>
       <div class="chips" style="flex-wrap:wrap;margin:0;padding:0">
-        <button v-for="c in CATS" :key="c" type="button" class="chip" :aria-pressed="f.cats.includes(c)" @click="toggleCat(c)">{{ CAT_SHORT[c] }}</button>
+        <button v-for="c in CATS" :key="c" type="button" class="chip" :aria-pressed="f.cats.includes(c)" @click="toggleCat(c)">{{ t(CAT_SHORT[c]) }}</button>
       </div>
       <p v-if="f.cats.includes('tatouage') || f.cats.includes('piercing') || f.cats.includes('dermo')" class="notice">Tatouage, piercing et maquillage permanent : la formation à l'hygiène et à la salubrité est obligatoire, et l'activité doit être déclarée auprès de l'ARS (préfecture). Pour les mineurs, l'autorisation d'un parent est exigée. Tu restes seul·e responsable du respect de ces obligations.</p>
       <p v-if="f.cats.includes('medecine')" class="notice">Les actes de médecine esthétique (injections, laser, peelings médicaux) sont réservés aux professionnel·les de santé habilité·es. Tu restes seul·e responsable du respect de ces obligations.</p>

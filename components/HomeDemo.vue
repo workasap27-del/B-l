@@ -103,7 +103,7 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
     <header class="hd-bar">
       <AppLogo class="hd-logo" :height="26" />
       <div class="hd-tools">
-        <button class="icon-btn hd-gear" aria-label="Réglages et thème" @click="settingsOpen = true"><Settings2 :size="19" /></button>
+        <button class="icon-btn hd-gear" :aria-label="t('Réglages et thème')" @click="settingsOpen = true"><Settings2 :size="19" /></button>
         <NuxtLink class="me-chip hd-me" to="/profil" :aria-label="`Mon compte, ${who}`">
           <span class="avatar-xs">{{ initial }}</span><span class="me-name ellip">{{ who }}</span><ChevronDown :size="15" class="hd-me-chev" />
         </NuxtLink>
@@ -116,37 +116,37 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
         <img :src="art.m" alt="" width="800" height="600" fetchpriority="high">
       </picture>
       <img v-if="themeId === 'corail'" class="hd-art-l" src="/themes/corail-pc-left.jpg" alt="" aria-hidden="true">
-      <span v-if="copy.script" class="hd-script" aria-hidden="true">Plus qu'un rendez-vous, un moment pour toi</span>
+      <span v-if="copy.script" class="hd-script" aria-hidden="true">{{ t('Plus qu\'un rendez-vous, un moment pour toi') }}</span>
       <div class="hd-copy">
         <span v-if="copy.eyebrow" class="hd-eyebrow">{{ copy.eyebrow }}</span>
-        <h1 class="hd-title"><span class="sr-only">Bonjour {{ who }}. </span>Réserve ton instant beauté et bien-être</h1>
+        <h1 class="hd-title"><span class="sr-only">{{ t('Bonjour {name}', { name: who }) }}. </span>{{ t('Réserve ton instant beauté et bien-être') }}</h1>
         <p v-if="copy.sub" class="hd-sub hd-sub-pc">{{ copy.sub }}</p>
         <p v-if="copy.subM" class="hd-sub hd-sub-m">{{ copy.subM }}</p>
       </div>
 
-      <form class="hd-panel" role="search" aria-label="Rechercher" @submit.prevent="router.push(resultsUrl())">
+      <form class="hd-panel" role="search" :aria-label="t('Rechercher')" @submit.prevent="router.push(resultsUrl())">
         <div class="hd-field">
           <button type="button" class="hd-row" @click="searchOpen = true">
             <component :is="catOf(what?.cat)" :size="22" class="hd-ico" />
             <span class="hd-txt">
-              <span class="hd-a" :class="{ ph: !what }">{{ what?.label ?? 'Soin ou établissement' }}</span>
-              <span class="hd-b">{{ what ? 'Soin ou établissement' : 'Ex. : Coiffure, onglerie, massage…' }}</span>
+              <span class="hd-a" :class="{ ph: !what }">{{ what?.label ?? t('Soin ou établissement') }}</span>
+              <span class="hd-b">{{ what ? t('Soin ou établissement') : t('Ex. : Coiffure, onglerie, massage…') }}</span>
             </span>
             <ChevronRight :size="18" class="hd-chev" />
           </button>
-          <button v-if="what" type="button" class="icon-btn hd-clear" aria-label="Retirer la prestation" @click="what = null"><X :size="17" /></button>
+          <button v-if="what" type="button" class="icon-btn hd-clear" :aria-label="t('Retirer la prestation')" @click="what = null"><X :size="17" /></button>
         </div>
-        <button type="button" class="hd-row" aria-label="Changer de lieu" @click="locOpen = true">
+        <button type="button" class="hd-row" :aria-label="t('Changer de lieu')" @click="locOpen = true">
           <MapPin :size="22" class="hd-ico" />
-          <span class="hd-txt"><span class="hd-a">{{ state.pos.label }}</span><span class="hd-b">Guadeloupe</span></span>
+          <span class="hd-txt"><span class="hd-a">{{ state.pos.label }}</span><span class="hd-b">{{ t('Guadeloupe') }}</span></span>
           <ChevronRight :size="18" class="hd-chev" />
         </button>
         <button type="button" class="hd-row" @click="whenOpen = true">
           <CalendarDays :size="22" class="hd-ico" />
-          <span class="hd-txt"><span class="hd-a">Quand ? <span class="hd-dot">·</span> <span class="hd-when" :class="{ ph: !when }">{{ whenLabel }}</span></span><span class="hd-b">Choisis une date</span></span>
+          <span class="hd-txt"><span class="hd-a">{{ t('Quand ?') }} <span class="hd-dot">·</span> <span class="hd-when" :class="{ ph: !when }">{{ whenLabel }}</span></span><span class="hd-b">{{ t('Choisis une date') }}</span></span>
           <ChevronRight :size="18" class="hd-chev" />
         </button>
-        <button type="submit" class="btn block hd-go">Rechercher<ArrowRight :size="19" /></button>
+        <button type="submit" class="btn block hd-go">{{ t('Rechercher') }}<ArrowRight :size="19" /></button>
       </form>
     </section>
 
@@ -154,7 +154,7 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
       <span class="rdv-ic" aria-hidden="true"><CalendarDays :size="22" /></span>
       <span class="rdv-date" aria-hidden="true"><i>{{ nextDate.wd }}.</i><b>{{ nextDate.day }}</b><i>{{ nextDate.mon }}.</i></span>
       <span class="rdv-when">
-        <span class="rdv-k">Ton prochain rendez-vous</span>
+        <span class="rdv-k">{{ t('Ton prochain rendez-vous') }}</span>
         <span class="rdv-v">{{ capitalize(dayLabel(nextBooking.date, today)) }} à {{ hm(nextBooking.time) }}</span>
       </span>
       <ProPhoto class="rdv-thumb thumb" :pro="nextPro" :w="128" :h="128" ratio="none" :demo-label="false" />
@@ -162,7 +162,7 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
         <span class="rdv-svc"><span class="rdv-s">{{ service(nextPro, nextBooking.sid)?.n }}</span><span class="rdv-dot"> · </span><span class="rdv-p">{{ nextPro.name }}</span></span>
         <span class="rdv-where"><MapPin :size="13" />{{ nextPro.commune }}</span>
       </span>
-      <span class="rdv-go"><span class="rdv-go-t">Voir mon rendez-vous</span><ArrowRight :size="17" class="rdv-go-a" /><ChevronRight :size="18" class="rdv-go-c" /></span>
+      <span class="rdv-go"><span class="rdv-go-t">{{ t('Voir mon rendez-vous') }}</span><ArrowRight :size="17" class="rdv-go-a" /><ChevronRight :size="18" class="rdv-go-c" /></span>
     </NuxtLink>
   </div>
 
@@ -172,20 +172,20 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
         <CalendarDays :size="22" />
         <div class="grow col gap4">
           <span class="name">{{ proToday ? `${proToday} rendez-vous aujourd'hui` : 'Aucun rendez-vous aujourd\'hui' }}</span>
-          <span class="meta ellip">{{ remote.myPro.name }} · Ouvrir mon agenda</span>
+          <span class="meta ellip">{{ remote.myPro.name }} · {{ t('Ouvrir mon agenda') }}</span>
         </div>
         <ChevronRight :size="18" style="align-self:center" />
       </NuxtLink>
       <NuxtLink v-else class="banner" to="/espace-pro/fiche">
         <Store :size="22" />
-        <div class="grow col gap4"><span class="name">Publie ta fiche prestataire</span><span class="meta">Ajoute tes prestations et tes horaires pour recevoir des réservations.</span></div>
+        <div class="grow col gap4"><span class="name">{{ t('Publie ta fiche prestataire') }}</span><span class="meta">{{ t('Ajoute tes prestations et tes horaires pour recevoir des réservations.') }}</span></div>
         <ChevronRight :size="18" style="align-self:center" />
       </NuxtLink>
     </section>
     <section v-if="remote.admin" class="hd-sec">
       <NuxtLink class="banner" to="/pilotage">
         <BarChart3 :size="22" />
-        <div class="grow col gap4"><span class="name">Pilotage</span><span class="meta">Indicateurs, journal d'activité et exports</span></div>
+        <div class="grow col gap4"><span class="name">{{ t('Pilotage') }}</span><span class="meta">{{ t('Indicateurs, journal d\'activité et exports') }}</span></div>
         <ChevronRight :size="18" style="align-self:center" />
       </NuxtLink>
     </section>
@@ -193,34 +193,34 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
     <section v-if="slots.length" class="hd-sec hd-slots">
       <div class="section-head">
         <div class="col gap4">
-          <h2 class="h2">Libre aujourd'hui</h2>
-          <p class="hd-sec-sub">Des créneaux disponibles près de chez toi, pour te faire du bien sans attendre.</p>
+          <h2 class="h2">{{ t('Libre aujourd\'hui') }}</h2>
+          <p class="hd-sec-sub">{{ t('Des créneaux disponibles près de chez toi, pour te faire du bien sans attendre.') }}</p>
         </div>
-        <NuxtLink class="see-all" to="/konyela">Voir tout<ChevronRight :size="16" /></NuxtLink>
+        <NuxtLink class="see-all" to="/konyela">{{ t('Voir tout') }}<ChevronRight :size="16" /></NuxtLink>
       </div>
       <div class="carousel wide hd-car"><SlotPhoto v-for="s in slots" :key="s.id" :item="s" /></div>
     </section>
 
     <section v-if="near.length" class="hd-sec">
       <div class="section-head">
-        <h2 class="h2">Près de toi</h2>
-        <NuxtLink class="see-all" to="/recherche">Voir tout<ChevronRight :size="16" /></NuxtLink>
+        <h2 class="h2">{{ t('Près de toi') }}</h2>
+        <NuxtLink class="see-all" to="/recherche">{{ t('Voir tout') }}<ChevronRight :size="16" /></NuxtLink>
       </div>
       <div class="carousel"><ProCard v-for="p in near" :key="p.id" :pro="p" /></div>
     </section>
 
     <section v-if="atHome.length" class="hd-sec band">
       <div class="section-head">
-        <h2 class="h2">Ils viennent chez toi</h2>
-        <NuxtLink class="see-all" to="/recherche?lieu=client">Tout voir<ChevronRight :size="16" /></NuxtLink>
+        <h2 class="h2">{{ t('Ils viennent chez toi') }}</h2>
+        <NuxtLink class="see-all" to="/recherche?lieu=client">{{ t('Tout voir') }}<ChevronRight :size="16" /></NuxtLink>
       </div>
       <div class="carousel"><ProCard v-for="p in atHome" :key="p.id" :pro="p" /></div>
     </section>
 
     <section v-if="best.length" class="hd-sec">
       <div class="section-head">
-        <h2 class="h2">Les mieux notés</h2>
-        <NuxtLink class="see-all" to="/recherche?tri=note">Tout voir<ChevronRight :size="16" /></NuxtLink>
+        <h2 class="h2">{{ t('Les mieux notés') }}</h2>
+        <NuxtLink class="see-all" to="/recherche?tri=note">{{ t('Tout voir') }}<ChevronRight :size="16" /></NuxtLink>
       </div>
       <div class="carousel"><ProCard v-for="p in best" :key="p.id" :pro="p" /></div>
     </section>
@@ -228,8 +228,8 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
     <section v-if="!isPro" class="hd-sec">
       <NuxtLink class="banner" :to="account ? '/espace-pro/fiche' : '/connexion?mode=inscription&role=pro'">
         <div class="grow col gap4">
-          <span class="name">Tu es prestataire ?</span>
-          <span class="meta">Crée ta fiche gratuitement et reçois tes réservations ici : beauté, bien-être, tatouage, spa, hôtel.</span>
+          <span class="name">{{ t('Tu es prestataire ?') }}</span>
+          <span class="meta">{{ t('Crée ta fiche gratuitement et reçois tes réservations ici : beauté, bien-être, tatouage, spa, hôtel.') }}</span>
         </div>
         <ChevronRight :size="18" style="align-self:center" />
       </NuxtLink>
@@ -237,12 +237,12 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
   </div>
 
   <BottomSheet v-if="whenOpen" @close="whenOpen = false">
-    <h2 class="h2">Quand ?</h2>
+    <h2 class="h2">{{ t('Quand ?') }}</h2>
     <div class="chips" style="flex-wrap:wrap">
-      <button class="chip" :aria-pressed="!when" @click="when = ''; whenOpen = false">Peu importe</button>
+      <button class="chip" :aria-pressed="!when" @click="when = ''; whenOpen = false">{{ t('Peu importe') }}</button>
       <button v-for="d in days" :key="d" class="chip" :aria-pressed="when === d" @click="when = d; whenOpen = false">{{ dayChip(d, today) }}</button>
     </div>
-    <p class="meta">Seuls les établissements qui ont encore de la place ce jour-là seront affichés.</p>
+    <p class="meta">{{ t('Seuls les établissements qui ont encore de la place ce jour-là seront affichés.') }}</p>
   </BottomSheet>
   <SearchSheet v-if="searchOpen" :initial="what?.q ?? ''" @close="searchOpen = false" @pick="onPick" @all="onAll" />
   <LocationSheet v-if="locOpen" @close="locOpen = false" />

@@ -11,10 +11,10 @@ const level = computed(() => passwordStrength(props.value, props.email ?? ''))
 <template>
   <div class="pw-rules" aria-live="polite">
     <div class="pw-meter" :data-level="level" aria-hidden="true"><i /><i /><i /><i /></div>
-    <span v-if="level" class="pw-level">{{ STRENGTH_LABEL[level] }}</span>
+    <span v-if="level" class="pw-level">{{ t(STRENGTH_LABEL[level]) }}</span>
     <ul>
       <li v-for="r in rules" :key="r.label" :class="{ ok: r.ok }">
-        <Check v-if="r.ok" :size="14" :stroke-width="2.4" /><Circle v-else :size="12" :stroke-width="2" />{{ r.label }}
+        <Check v-if="r.ok" :size="14" :stroke-width="2.4" /><Circle v-else :size="12" :stroke-width="2" />{{ t(r.label) }}
       </li>
     </ul>
   </div>
