@@ -14,7 +14,7 @@ const sv = computed(() => (p.value && b.value ? service(p.value, b.value.sid) : 
     <div class="col gap16" style="align-items:center;text-align:center">
       <div class="tick"><Check :size="34" :stroke-width="3" /></div>
       <div class="col gap4">
-        <span class="creole" lang="gcf">Mèsi !</span>
+        <span class="creole" lang="gcf">Mèsi an pil !</span>
         <h1 class="title">{{ t('C\'est réservé') }}</h1>
         <p class="meta">{{ p.real ? `${p.name} a reçu ta réservation.` : 'Réservation de démonstration.' }}</p>
       </div>
