@@ -228,6 +228,8 @@ export interface ProInput {
   travel: number
   /** communes desservies à domicile ; vide : partout en Guadeloupe */
   zone: string[]
+  /** la fiche avait déjà une liste de communes (pour pouvoir la vider) */
+  hadZone?: boolean
   commune: string
   quartier: string
   lat: number
@@ -250,7 +252,9 @@ export async function saveMyPro(userId: string, f: ProInput): Promise<string> {
   const c = sb()!
   const row = {
     owner_id: userId, name: f.name.trim(), owner_name: f.ownerName.trim() || null, kind: f.kind, siren: f.siren.replace(/\s/g, ''),
-    phone: f.phone.trim() || null, places: f.places, travel_fee_eur: f.travel, travel_zone: f.places.includes('À domicile') ? f.zone : [], commune: f.commune, quartier: f.quartier.trim() || null,
+    phone: f.phone.trim() || null, places: f.places, travel_fee_eur: f.travel,
+    // Colonne envoyée seulement si une liste est choisie ou retirée : une base sans le patch 013 continue de fonctionner.
+    ...(f.zone.length || f.hadZone ? { travel_zone: f.places.includes('À domicile') ? f.zone : [] } : {}), commune: f.commune, quartier: f.quartier.trim() || null,
     lat: f.lat, lng: f.lng, categories: f.cats, tags: [], about: f.about.trim() || null, opens_at: f.open, closes_at: f.close,
     closed_weekdays: f.closed, hue: Math.floor(Math.random() * 360),
   }

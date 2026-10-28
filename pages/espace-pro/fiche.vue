@@ -138,7 +138,7 @@ async function save() {
   busy.value = true
   const e = await saveMyPro({
     id: f.id, name: f.name, ownerName: f.ownerName, kind: f.kind, siren: f.siren, phone: f.phone,
-    places, travel: f.travels ? Math.max(0, Number(f.travel) || 0) : 0, zone: f.travels && !f.zoneAll ? f.zone : [], commune: f.commune, quartier: f.quartier,
+    places, travel: f.travels ? Math.max(0, Number(f.travel) || 0) : 0, zone: f.travels && !f.zoneAll ? f.zone : [], hadZone: !!remote.myPro?.zone?.length, commune: f.commune, quartier: f.quartier,
     lat: point.lat, lng: point.lng, cats: f.cats, about: f.about, open: f.open, close: f.close, closed: f.closed,
     services: f.services.filter(s => s.n.trim()).map(s => ({ ...s, p: Number(s.p) })),
   })
