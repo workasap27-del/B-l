@@ -1,7 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <title>VLADI</title>
-  <rect width="512" height="512" rx="116" fill="#B94B29"/>
-  <path d="M256 404 C196 360 132 262 138 132 C214 170 262 268 256 404 Z" fill="#FAF6F1"/>
-  <path d="M256 404 C316 360 380 262 374 132 C298 170 250 268 256 404 Z" fill="#FAF6F1" fill-opacity=".8"/>
-  <circle cx="256" cy="150" r="26" fill="#F2B45A"/>
+  <rect width="512" height="512" rx="116" fill="#c2185b"/>
+  <path d="M136 150 L256 392 L376 150" fill="none" stroke="#ffffff" stroke-width="62" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="256" cy="150" r="40" fill="#f2b705"/>
 </svg>

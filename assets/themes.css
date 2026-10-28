@@ -174,8 +174,8 @@
 .tl-word { font-size: calc(var(--tl) * 1.15); line-height: 1; }
 .tl-deco { width: calc(var(--tl) * .9); height: calc(var(--tl) * .9); flex: 0 0 auto; }
 .tl-tag { font-size: 8.5px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; opacity: .85; line-height: 1.35; max-width: 13em; }
-.tl-mark { display: block; height: calc(var(--tl) * 1.25); width: auto; }
-.tl-terracotta { --bm-petal: #E0683F; --bm-dot: #F2B45A; }
+.tl-terracotta .tl-word { font-weight: 700; letter-spacing: .06em; }
+.tl-terracotta .tl-deco { color: #E0683F; margin-top: -2px; --tl-eye: #fff; }
 .tl-lavande .tl-word { font-weight: 800; letter-spacing: .01em; }
 .tl-lavande .tl-deco { color: #8B5BD6; width: calc(var(--tl) * .95); height: calc(var(--tl) * .95); margin: -2px 0 0 -2px; }
 .tl-jardin .tl-word { font-family: "Fraunces", Georgia, serif; font-weight: 400; letter-spacing: .12em; }

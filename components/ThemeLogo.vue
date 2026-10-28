@@ -10,8 +10,7 @@ const size = computed(() => `${props.height}px`)
 
 <template>
   <span class="tlogo" :class="`tl-${id}`" :style="{ '--tl': size }" role="img" aria-label="VLADI">
-    <BrandMark v-if="id === 'terracotta'" class="tl-mark" aria-hidden="true" />
-    <span v-else class="tl-top" aria-hidden="true">
+    <span class="tl-top" aria-hidden="true">
       <span class="tl-word">VLADI</span>
       <svg v-if="deco === 'hibiscus'" class="tl-deco" viewBox="-24 -24 48 48">
         <g fill="currentColor">
