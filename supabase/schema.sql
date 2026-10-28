@@ -65,6 +65,8 @@ create table pros (
   -- 'Au salon', 'À l''institut', 'Chez elle', 'Chez lui' (chez le prestataire) et 'À domicile' (chez la cliente)
   places text[] not null default '{}',
   travel_fee_eur numeric(6, 2) not null default 0 check (travel_fee_eur >= 0),
+  -- Communes où le prestataire se déplace à domicile ; vide : partout en Guadeloupe (patch 013).
+  travel_zone text[] not null default '{}' constraint pros_travel_zone_size check (cardinality(travel_zone) <= 40),
   commune text not null,
   quartier text,
   -- position, pour la carte et le calcul de distance

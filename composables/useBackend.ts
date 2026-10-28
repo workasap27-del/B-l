@@ -179,7 +179,7 @@ export async function updateProfile(id: string, fields: { name?: string, phone?:
 
 interface ProRow {
   id: string, owner_id: string | null, name: string, owner_name: string | null, kind: Pro['kind'], siren: string | null, phone: string | null,
-  photo_url: string | null, places: string[], travel_fee_eur: number | string, commune: string, quartier: string | null, lat: number, lng: number,
+  photo_url: string | null, places: string[], travel_fee_eur: number | string, travel_zone?: string[] | null, commune: string, quartier: string | null, lat: number, lng: number,
   categories: string[], tags: string[], about: string | null, opens_at: number, closes_at: number, closed_weekdays: number[], hue: number,
   services?: { id: string, code: string, name: string, duration_min: number, price_eur: number | string, active: boolean }[]
 }
@@ -190,7 +190,7 @@ function mapPro(r: ProRow): Pro {
     .sort((a, b) => a.code.localeCompare(b.code, 'fr', { numeric: true }))
     .map(s => ({ id: s.id, n: s.name, d: s.duration_min, p: Number(s.price_eur) }))
   return {
-    id: r.id, name: r.name, owner: r.owner_name ?? undefined, kind: r.kind, where: r.places, travel: Number(r.travel_fee_eur) || 0,
+    id: r.id, name: r.name, owner: r.owner_name ?? undefined, kind: r.kind, where: r.places, travel: Number(r.travel_fee_eur) || 0, zone: r.travel_zone ?? [],
     commune: r.commune, quartier: r.quartier ?? '', lat: r.lat, lng: r.lng,
     cats: readCategories(r.categories ?? []), tags: r.tags ?? [],
     rating: 0, nrev: 0, open: r.opens_at, close: r.closes_at, closed: r.closed_weekdays ?? [], fill: 0, h: r.hue,
@@ -226,6 +226,8 @@ export interface ProInput {
   phone: string
   places: string[]
   travel: number
+  /** communes desservies à domicile ; vide : partout en Guadeloupe */
+  zone: string[]
   commune: string
   quartier: string
   lat: number
@@ -248,7 +250,7 @@ export async function saveMyPro(userId: string, f: ProInput): Promise<string> {
   const c = sb()!
   const row = {
     owner_id: userId, name: f.name.trim(), owner_name: f.ownerName.trim() || null, kind: f.kind, siren: f.siren.replace(/\s/g, ''),
-    phone: f.phone.trim() || null, places: f.places, travel_fee_eur: f.travel, commune: f.commune, quartier: f.quartier.trim() || null,
+    phone: f.phone.trim() || null, places: f.places, travel_fee_eur: f.travel, travel_zone: f.places.includes('À domicile') ? f.zone : [], commune: f.commune, quartier: f.quartier.trim() || null,
     lat: f.lat, lng: f.lng, categories: f.cats, tags: [], about: f.about.trim() || null, opens_at: f.open, closes_at: f.close,
     closed_weekdays: f.closed, hue: Math.floor(Math.random() * 360),
   }

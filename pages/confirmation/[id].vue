@@ -22,7 +22,7 @@ const sv = computed(() => (p.value && b.value ? service(p.value, b.value.sid) : 
     <div class="appt" style="border:0">
       <ProPhoto class="thumb" :pro="p" :w="128" :h="128" ratio="none" :demo-label="false" />
       <div class="grow col gap4">
-        <span class="name">{{ capitalize(dayLabel(b.date, today)) }} à {{ hm(b.time) }}</span>
+        <span class="name">{{ t('{day} à {time}', { day: capitalize(dayLabel(b.date, today)), time: hm(b.time) }) }}</span>
         <span class="meta">{{ sv.n }} · {{ p.name }}</span>
       </div>
     </div>

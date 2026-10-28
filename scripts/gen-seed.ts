@@ -8,8 +8,8 @@ const arr = (list: (string | number)[], cast: string) => `array[${list.map(x => 
 const lines = ['-- Données de démonstration (fictives). Fichier généré par scripts/gen-seed.mjs, ne pas modifier à la main.', '']
 for (const p of PROS) {
   lines.push(
-    `insert into pros (id, name, owner_name, kind, places, travel_fee_eur, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values (`
-    + [q(p.id), q(p.name), q(p.owner), q(p.kind), arr(p.where, 'text'), p.travel ?? 0, q(p.commune), q(p.quartier), p.lat.toFixed(5), p.lng.toFixed(5), arr(p.cats, 'text'), arr(p.tags, 'text'), q(p.about), p.open, p.close, arr(p.closed, 'smallint'), p.h, 'true'].join(', ')
+    `insert into pros (id, name, owner_name, kind, places, travel_fee_eur, travel_zone, commune, quartier, lat, lng, categories, tags, about, opens_at, closes_at, closed_weekdays, hue, is_demo) values (`
+    + [q(p.id), q(p.name), q(p.owner), q(p.kind), arr(p.where, 'text'), p.travel ?? 0, arr(p.zone ?? [], 'text'), q(p.commune), q(p.quartier), p.lat.toFixed(5), p.lng.toFixed(5), arr(p.cats, 'text'), arr(p.tags, 'text'), q(p.about), p.open, p.close, arr(p.closed, 'smallint'), p.h, 'true'].join(', ')
     + ');',
   )
   for (const s of p.services) {

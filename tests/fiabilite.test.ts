@@ -9,6 +9,10 @@ describe('fiabilité', () => {
     expect(reliabilityText({ done: 12, noShows: 0, lateCancels: 0, late: 1 })).toBe('12 rendez-vous honorés, aucune absence')
     expect(reliabilityText({ done: 1, noShows: 2, lateCancels: 1, late: 0 })).toBe('1 rendez-vous honoré, 2 absences, 1 annulation tardive')
   })
+  it('résume aussi en anglais', () => {
+    expect(reliabilityText(readReliability({}), 'en')).toBe('First booking on VLADI')
+    expect(reliabilityText({ done: 1, noShows: 2, lateCancels: 1, late: 0 }, 'en')).toBe('1 appointment kept, 2 no-shows, 1 late cancellation')
+  })
   it('signale à partir de deux absences ou trois annulations tardives', () => {
     expect(needsCare({ done: 5, noShows: 1, lateCancels: 2, late: 0 })).toBe(false)
     expect(needsCare({ done: 5, noShows: 2, lateCancels: 0, late: 0 })).toBe(true)

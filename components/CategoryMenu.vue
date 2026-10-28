@@ -1,38 +1,41 @@
 <script setup lang="ts">
-import { House, LayoutGrid, Search } from 'lucide-vue-next'
+import { ChevronDown, House, LayoutGrid, Search } from 'lucide-vue-next'
 import { CATEGORIES } from '~/data/pros'
 import type { Category } from '~/data/pros'
 
-// Entrée « Catégories » de la navigation : toutes les catégories au survol sur ordinateur (menu latéral),
-// dans une fenêtre sur téléphone et tablette.
+// Entrée « Catégories » de la navigation : toutes les catégories dans un panneau qui s'ouvre au clic sur ordinateur
+// (pas au survol : il ne s'ouvre plus en passant la souris vers une autre rubrique), dans une fenêtre sur téléphone et tablette.
 const cats = CATEGORIES.filter(c => c[0] !== 'all') as [Category, string][]
 const open = ref(false)
 const wide = ref(false)
 const route = useRoute()
 let mq: MediaQueryList | undefined
 const sync = () => { wide.value = !!mq?.matches }
+const root = ref<HTMLElement | null>(null)
+// Un clic ailleurs sur la page referme le panneau.
+function outside(e: Event) {
+  if (open.value && wide.value && root.value && !root.value.contains(e.target as Node)) open.value = false
+}
 onMounted(() => {
   mq = window.matchMedia('(min-width: 1000px) and (hover: hover)')
   sync()
   mq.addEventListener('change', sync)
+  document.addEventListener('pointerdown', outside)
 })
-onBeforeUnmount(() => mq?.removeEventListener('change', sync))
+onBeforeUnmount(() => {
+  mq?.removeEventListener('change', sync)
+  document.removeEventListener('pointerdown', outside)
+})
 watch(() => route.fullPath, () => { open.value = false })
-
-let timer: ReturnType<typeof setTimeout> | undefined
-function hover(on: boolean) {
-  if (!wide.value) return
-  clearTimeout(timer)
-  timer = setTimeout(() => { open.value = on }, on ? 60 : 180)
-}
 const current = computed(() => (route.path === '/recherche' ? String(route.query.cat ?? '') : ''))
 </script>
 
 <template>
-  <div class="catmenu" @mouseenter="hover(true)" @mouseleave="hover(false)" @keydown.esc="open = false">
+  <div ref="root" class="catmenu" @keydown.esc="open = false">
     <button type="button" class="nav-btn" :class="{ on: open }" :aria-expanded="open" aria-haspopup="true" @click="open = !open">
       <LayoutGrid :size="23" :stroke-width="1.8" />
       <span class="nav-label"><span class="nl-m">{{ t('Catégories') }}</span><span class="nl-pc">{{ t('Catégories') }}</span></span>
+      <ChevronDown class="nav-caret" :size="16" :class="{ flip: open }" />
     </button>
     <div v-if="open && wide" class="catmenu-fly" role="menu">
       <p class="catmenu-title">{{ t('Toutes les catégories') }}</p>

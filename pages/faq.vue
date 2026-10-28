@@ -27,7 +27,7 @@ const QA = computed(() => {
         : { q: t('Comment se passe le paiement ?'), a: t('Rien n\'est payé en ligne. La prestation se règle sur place, directement auprès du ou de la prestataire, selon les moyens de paiement qu\'il ou elle accepte.') },
     ] },
     { group: t('Annuler ou modifier'), items: [
-      { q: t('Puis-je annuler ?'), a: t(RULES.onlinePayment ? 'Oui, sans frais depuis l\'onglet Rendez-vous jusqu\'à {h} heures avant le début. L\'acompte est alors remboursé.' : 'Oui, sans frais depuis l\'onglet Rendez-vous jusqu\'à {h} heures avant le début. Au-delà, préviens directement le ou la prestataire.', { h: RULES.freeCancelHours }) },
+      { q: t('Puis-je annuler ?'), a: RULES.onlinePayment ? t('Oui, sans frais depuis l\'onglet Rendez-vous jusqu\'à {h} heures avant le début. L\'acompte est alors remboursé.', { h: RULES.freeCancelHours }) : t('Oui, sans frais depuis l\'onglet Rendez-vous jusqu\'à {h} heures avant le début. Au-delà, préviens directement le ou la prestataire.', { h: RULES.freeCancelHours }) },
       { q: t('Et si je suis en retard ?'), a: t('Signale-le depuis l\'application. Un retard de {n} minutes au plus est toléré ; au-delà, la prestation peut être écourtée ou reportée.', { n: TOLERANCE }) },
       { q: t('Et si personne ne vient ?'), a: t('L\'autre partie peut déclarer l\'absence dans l\'application. La personne concernée peut la contester dans les {n} heures.', { n: DISPUTE_HOURS }) },
     ] },

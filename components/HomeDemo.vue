@@ -7,6 +7,7 @@ import type { SearchPick } from '~/utils/suggest'
 // Accueil en préversion, visible seulement en mode présentation (?demo=1) :
 // un premier ensemble (logo, profil, titre, formulaire de recherche, prochain rendez-vous), puis les offres et la découverte.
 const router = useRouter()
+const { lang } = useLang()
 const { pros, openSlots, km, ratingOf, account, myBookings, isDone, pro, service, today, state, remote, agenda } = useVladi()
 
 const locOpen = ref(false)
@@ -18,7 +19,7 @@ const whenOpen = ref(false)
 const what = ref<SearchPick | null>(null)
 const when = ref('')
 const days = computed(() => Array.from({ length: 14 }, (_, i) => addDays(today.value, i)))
-const whenLabel = computed(() => (when.value ? capitalize(dayLabel(when.value, today.value)) : 'Peu importe'))
+const whenLabel = computed(() => (when.value ? capitalize(dayLabel(when.value, today.value)) : translate('Peu importe')))
 
 function onPick(p: SearchPick) {
   what.value = p
@@ -57,7 +58,10 @@ const proToday = computed(() => (remote.myPro ? agenda(today.value).filter(e => 
 
 const byDistance = computed(() => [...pros.value].sort((a, b) => km(a) - km(b)))
 const near = computed(() => byDistance.value.slice(0, 10))
-const atHome = computed(() => byDistance.value.filter(goesToClient).slice(0, 10))
+const atHome = computed(() => {
+  const here = nearestCommune(state.pos)
+  return byDistance.value.filter(p => servesCommune(p, here)).slice(0, 10)
+})
 const best = computed(() => byDistance.value.slice(0, 60).filter(p => ratingOf(p).count >= 15).sort((a, b) => ratingOf(b).rating - ratingOf(a).rating).slice(0, 10))
 const slots = computed(() => openSlots().filter(s => km(pro(s.proId)!) <= 30).slice(0, 10))
 // Le thème est posé sur la page par le gabarit ; ici on signale seulement que l'accueil est affiché
@@ -67,7 +71,7 @@ onBeforeUnmount(() => { document.documentElement.classList.remove('hd-home') })
 
 // Composition propre à chaque thème : textes d'accompagnement, photos d'en-tête, mention de signature.
 const themeId = computed(() => themeOf(state.theme).id)
-const PHRASE = 'Des prestataires locaux près de chez toi'
+const PHRASE = tr('Des prestataires locaux près de chez toi')
 const COPY: Record<string, { eyebrow: string, sub: string, subM: string, script?: boolean }> = {
   terracotta: { eyebrow: '', sub: PHRASE, subM: PHRASE },
   lavande: { eyebrow: '', sub: PHRASE, subM: PHRASE },
@@ -75,7 +79,11 @@ const COPY: Record<string, { eyebrow: string, sub: string, subM: string, script?
   corail: { eyebrow: '', sub: PHRASE, subM: PHRASE, script: true },
   editorial: { eyebrow: '', sub: PHRASE, subM: PHRASE, script: true },
 }
-const copy = computed(() => COPY[themeId.value])
+const copy = computed(() => {
+  void lang.value
+  const c = COPY[themeId.value]
+  return { ...c, sub: c.sub && translate(c.sub), subM: c.subM && translate(c.subM) }
+})
 const ART = {
   terracotta: { m: '/themes/terra-m.jpg', pc: '/themes/terra-pc.jpg' },
   lavande: { m: '/themes/lavande-m-hibiscus.png', pc: '/themes/lavande-pc-feuilles.png' },
@@ -104,7 +112,7 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
       <AppLogo class="hd-logo" :height="26" />
       <div class="hd-tools">
         <button class="icon-btn hd-gear" :aria-label="t('Réglages et thème')" @click="settingsOpen = true"><Settings2 :size="19" /></button>
-        <NuxtLink class="me-chip hd-me" to="/profil" :aria-label="`Mon compte, ${who}`">
+        <NuxtLink class="me-chip hd-me" to="/profil" :aria-label="t('Mon compte, {name}', { name: who })">
           <span class="avatar-xs">{{ initial }}</span><span class="me-name ellip">{{ who }}</span><ChevronDown :size="15" class="hd-me-chev" />
         </NuxtLink>
       </div>
@@ -155,7 +163,7 @@ const catOf = (c?: Category | 'domicile') => (c && c !== 'domicile' ? CAT_ICON[c
       <span class="rdv-date" aria-hidden="true"><i>{{ nextDate.wd }}.</i><b>{{ nextDate.day }}</b><i>{{ nextDate.mon }}.</i></span>
       <span class="rdv-when">
         <span class="rdv-k">{{ t('Ton prochain rendez-vous') }}</span>
-        <span class="rdv-v">{{ capitalize(dayLabel(nextBooking.date, today)) }} à {{ hm(nextBooking.time) }}</span>
+        <span class="rdv-v">{{ t('{day} à {time}', { day: capitalize(dayLabel(nextBooking.date, today)), time: hm(nextBooking.time) }) }}</span>
       </span>
       <ProPhoto class="rdv-thumb thumb" :pro="nextPro" :w="128" :h="128" ratio="none" :demo-label="false" />
       <span class="rdv-what">

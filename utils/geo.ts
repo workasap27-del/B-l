@@ -1,4 +1,5 @@
 // Positions et distances. Les coordonnées des communes sont approximatives (centre du bourg).
+import { currentLang } from '../composables/useLang'
 
 export interface LatLng { lat: number, lng: number }
 
@@ -45,6 +46,17 @@ export function communePoint(name: string): LatLng {
 }
 
 /** Distance à vol d'oiseau, en km. */
+/** Commune la plus proche d'un point (centre du bourg). */
+export function nearestCommune(p: LatLng): string {
+  let best = ''
+  let min = Infinity
+  for (const name of Object.keys(COMMUNE_COORDS)) {
+    const d = haversineKm(p, communePoint(name))
+    if (d < min) { min = d; best = name }
+  }
+  return best
+}
+
 export function haversineKm(a: LatLng, b: LatLng): number {
   const rad = (x: number) => (x * Math.PI) / 180
   const dLat = rad(b.lat - a.lat)
@@ -58,9 +70,9 @@ export function roadKm(a: LatLng, b: LatLng): number {
   return haversineKm(a, b) * 1.3
 }
 
-export function formatKm(km: number): string {
+export function formatKm(km: number, lang: 'fr' | 'en' = currentLang()): string {
   if (km < 1) return `${Math.max(50, Math.round((km * 1000) / 50) * 50)} m`
-  if (km < 10) return `${String(Math.round(km * 10) / 10).replace('.', ',')} km`
+  if (km < 10) return `${String(Math.round(km * 10) / 10).replace('.', lang === 'en' ? '.' : ',')} km`
   return `${Math.round(km)} km`
 }
 

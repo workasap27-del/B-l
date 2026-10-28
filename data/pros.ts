@@ -35,6 +35,8 @@ export interface Pro {
   where: string[]
   /** frais de déplacement en euros quand la prestation a lieu chez la cliente */
   travel?: number
+  /** communes où le prestataire se déplace à domicile ; vide ou absent : partout en Guadeloupe */
+  zone?: string[]
   commune: string
   quartier: string
   /** position (fictive, autour du centre de la commune) */
@@ -121,7 +123,7 @@ const HAND_MADE: Omit<Pro, 'lat' | 'lng'>[] = [
     services: [s('a', 'Pose gel', 90, 60), s('b', 'Remplissage', 60, 42), s('c', 'Semi-permanent', 60, 30), s('d', 'Beauté des pieds + vernis', 60, 38)],
   },
   {
-    id: 'tre', name: 'Tresses Lokal', owner: 'Sandrine D.', kind: 'Indépendante', where: ['À domicile'], travel: 8,
+    id: 'tre', name: 'Tresses Lokal', owner: 'Sandrine D.', kind: 'Indépendante', where: ['À domicile'], travel: 8, zone: ['Le Gosier', 'Les Abymes', 'Pointe-à-Pitre', 'Sainte-Anne'],
     commune: 'Le Gosier', quartier: 'Mare-Gaillard', cats: ['coiffure', 'locks'], tags: ['Box braids', 'Vanilles', 'Locks'],
     rating: 4.8, nrev: 63, open: 480, close: 1080, closed: [0], fill: 0.45, h: 25,
     about: 'Tresseuse à domicile sur toute la Riviera du Levant. Mèches fournies sur demande, comptées en supplément.',
@@ -177,7 +179,7 @@ const HAND_MADE: Omit<Pro, 'lat' | 'lng'>[] = [
     services: [s('a', 'Coupe femme', 60, 30), s('b', 'Brushing', 30, 22), s('c', 'Coupe homme', 30, 15), s('d', 'Défrisage + soin', 120, 70), s('e', 'Couleur', 90, 55)],
   },
   {
-    id: 'glo', name: 'Glow Gwada', owner: 'Kéliane P.', kind: 'Indépendante', where: ['À domicile'], travel: 15,
+    id: 'glo', name: 'Glow Gwada', owner: 'Kéliane P.', kind: 'Indépendante', where: ['À domicile'], travel: 15, zone: ['Saint-François', 'Sainte-Anne', 'Le Moule', 'Le Gosier'],
     commune: 'Saint-François', quartier: 'Bourg', cats: ['maquillage'], tags: ['Mariée', 'Soirée', 'Cours'],
     rating: 4.9, nrev: 38, open: 480, close: 1200, closed: [], fill: 0.35, h: 40,
     about: 'Maquilleuse mariages et événements, se déplace dans toute la Grande-Terre.',

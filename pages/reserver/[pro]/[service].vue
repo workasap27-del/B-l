@@ -21,7 +21,19 @@ const address = ref(state.address)
 const note = ref('')
 watchEffect(() => { if (places.value.length && !places.value.includes(place.value)) place.value = places.value[0] })
 const fee = computed(() => (p.value && place.value === 'client' ? travelFee(p.value) : 0))
-const addressOk = computed(() => place.value !== 'client' || address.value.trim().length >= 5)
+// Prestataire qui ne se déplace que dans certaines communes : la personne choisit la sienne dans cette liste.
+const zone = computed(() => (p.value ? travelZone(p.value) : []))
+const here = nearestCommune(state.pos)
+const commune = ref('')
+// Adresse mémorisée d'une réservation précédente qui finit par sa commune : on la sépare pour ne pas la répéter.
+const lastPart = address.value.split(',').pop()?.trim() ?? ''
+if (zone.value.length && lastPart in COMMUNE_COORDS) {
+  address.value = address.value.slice(0, address.value.lastIndexOf(',')).trim()
+  if (zone.value.includes(lastPart)) commune.value = lastPart
+}
+watchEffect(() => { if (zone.value.length && !zone.value.includes(commune.value)) commune.value = zone.value.includes(here) ? here : '' })
+const addressOk = computed(() => place.value !== 'client' || (address.value.trim().length >= 5 && (!zone.value.length || !!commune.value)))
+const fullAddress = computed(() => (place.value === 'client' && zone.value.length ? `${address.value.trim()}, ${commune.value}` : address.value.trim()))
 
 // Jour et heure, éventuellement déjà choisis depuis la liste de résultats.
 const days = computed(() => Array.from({ length: 14 }, (_, i) => addDays(today.value, i)))
@@ -79,7 +91,7 @@ async function pay() {
       return
     }
   }
-  const res = await book({ proId: p.value.id, sid: sv.value.id, date: when.value.date, time: when.value.time, slotId: slot.value?.id, place: place.value, address: address.value, note: note.value, replaceId: replace.value ? clash.value?.id : undefined })
+  const res = await book({ proId: p.value.id, sid: sv.value.id, date: when.value.date, time: when.value.time, slotId: slot.value?.id, place: place.value, address: fullAddress.value, note: note.value, replaceId: replace.value ? clash.value?.id : undefined })
   busy.value = false
   if (res.error === 'connexion') return router.push(loginLink.value)
   if (res.error === 'chevauchement') {
@@ -126,11 +138,18 @@ function back() {
           </button>
           <button v-if="places.includes('client')" :aria-pressed="place === 'client'" @click="place = 'client'">
             <House :size="22" />
-            <span class="grow col gap4"><span class="name">{{ t('Chez moi') }}</span><span class="meta">{{ travelFee(p) ? t('+ {fee} de déplacement', { fee: euro(travelFee(p)) }) : t('Déplacement offert') }}</span></span>
+            <span class="grow col gap4"><span class="name">{{ t('Chez moi') }}</span><span class="meta">{{ travelFee(p) ? t('+ {fee} de déplacement', { fee: euro(travelFee(p)) }) : t('Déplacement offert') }}</span><span v-if="zone.length" class="meta">{{ t('Se déplace à : {list}', { list: zone.join(', ') }) }}</span></span>
             <span class="radio" />
           </button>
         </div>
-        <input v-if="place === 'client'" id="adresse" v-model="address" class="input" type="text" autocomplete="street-address" :placeholder="t('Ton adresse : rue, quartier, commune')" :aria-label="t('Adresse de la prestation')">
+        <template v-if="place === 'client'">
+          <select v-if="zone.length" v-model="commune" class="select" :aria-label="t('Ta commune')">
+            <option value="" disabled>{{ t('Ta commune') }}</option>
+            <option v-for="c in zone" :key="c" :value="c">{{ c }}</option>
+          </select>
+          <input id="adresse" v-model="address" class="input" type="text" autocomplete="street-address" :placeholder="zone.length ? t('Ton adresse : rue, quartier') : t('Ton adresse : rue, quartier, commune')" :aria-label="t('Adresse de la prestation')">
+          <p v-if="zone.length && !zone.includes(here)" class="tiny">{{ t('{name} ne se déplace pas à {commune}. Choisis une commune de la liste si ton adresse s\'y trouve.', { name: p.name, commune: here }) }}</p>
+        </template>
       </section>
 
       <section v-if="isSlot && slot" class="section">
@@ -198,7 +217,7 @@ function back() {
       <div class="recap">
         <div class="kv"><span>{{ t('Prestation') }}</span><span>{{ sv.n }}</span></div>
         <div class="kv"><span>{{ t('Avec') }}</span><span>{{ p.name }}</span></div>
-        <div class="kv"><span>{{ t('Où') }}</span><span>{{ place === 'client' ? `${t('Chez moi')}, ${address.trim()}` : `${t(proPlace(p) ?? '')}, ${p.commune}` }}</span></div>
+        <div class="kv"><span>{{ t('Où') }}</span><span>{{ place === 'client' ? `${t('Chez moi')}, ${fullAddress}` : `${t(proPlace(p) ?? '')}, ${p.commune}` }}</span></div>
         <div class="kv"><span>{{ t('Quand') }}</span><span>{{ capitalize(dayLabel(when.date, today)) }} à {{ hm(when.time) }}</span></div>
         <div class="kv"><span>{{ t('Prix') }}</span><span><span v-if="slot" class="strike">{{ euro(sv.p) }}</span> {{ euro(servicePrice) }}</span></div>
         <div v-if="place === 'client'" class="kv"><span>{{ t('Déplacement') }}</span><span>{{ fee ? euro(fee) : t('offert') }}</span></div>

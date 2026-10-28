@@ -6,6 +6,7 @@ import { LEGAL } from '~/data/legal'
 
 useHead({ title: 'Mon compte · VLADI' })
 
+const { lang } = useLang()
 const { state, pros, km, account, remote, logout, saveProfile, toast } = useVladi()
 const favs = computed(() => pros.value.filter(p => state.fav[p.id]).sort((a, b) => km(a) - km(b)))
 const locOpen = ref(false)
@@ -35,7 +36,7 @@ async function save() {
 }
 async function out(everywhere = false) {
   await logout(everywhere)
-  toast(everywhere ? 'Déconnecté·e de tous tes appareils' : 'Déconnexion effectuée')
+  toast(everywhere ? translate('Déconnecté·e de tous tes appareils') : translate('Déconnexion effectuée'))
 }
 
 // Suppression du compte.
@@ -50,7 +51,7 @@ async function confirmDelete() {
   delBusy.value = true
   const e = await deleteAccount()
   delBusy.value = false
-  if (e === 'indisponible') return (delError.value = `La suppression automatique n'est pas encore ouverte. Écris-nous à ${LEGAL.contactEmail} depuis l'adresse de ton compte : il sera supprimé sous trente jours.`)
+  if (e === 'indisponible') return (delError.value = translate('La suppression automatique n\'est pas encore ouverte. Écris-nous à {email} depuis l\'adresse de ton compte : il sera supprimé sous trente jours.', { email: LEGAL.contactEmail }))
   if (e) return (delError.value = e)
   delOpen.value = false
   toast('Ton compte a été supprimé')
@@ -161,7 +162,7 @@ const inviteUrl = computed(() => `${window.location.origin}/?parrain=${code.valu
 
   <section v-if="trust" class="section">
     <h2 class="h2">{{ t('Ma fiabilité') }}</h2>
-    <p class="mt8"><b>{{ reliabilityText(trust) }}</b></p>
+    <p class="mt8"><b>{{ reliabilityText(trust, lang) }}</b></p>
     <p class="tiny mt8">{{ t('Calculée sur douze mois : rendez-vous honorés, absences et annulations à moins de {h} h. Seuls les prestataires chez qui tu réserves la voient, jamais le public. Prévenir quand tu ne peux pas venir la garde au vert.', { h: RULES.freeCancelHours }) }}</p>
   </section>
 

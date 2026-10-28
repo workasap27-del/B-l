@@ -5,6 +5,7 @@ import type { Reliability } from '~/utils/reliability'
 
 // Fiabilité de la personne qui a réservé, visible par le prestataire seulement, et blocage.
 const props = defineProps<{ booking: Booking }>()
+const { lang } = useLang()
 const { reliabilityFor, blocked, setBlocked } = useVladi()
 const r = ref<Reliability | null>(null)
 watch(() => props.booking.id, async () => { r.value = await reliabilityFor(props.booking) }, { immediate: true })
@@ -20,7 +21,7 @@ async function block() {
 <template>
   <div v-if="booking.real" class="trust">
     <span v-if="r" class="trust-line" :class="{ care: needsCare(r) }">
-      <component :is="needsCare(r) ? TriangleAlert : ShieldCheck" :size="14" />{{ reliabilityText(r) }}
+      <component :is="needsCare(r) ? TriangleAlert : ShieldCheck" :size="14" />{{ reliabilityText(r, lang) }}
     </span>
     <button v-if="booking.clientId && !isBlocked" type="button" class="trust-btn" @click="asking = true"><Ban :size="13" />{{ t('Bloquer') }}</button>
     <span v-else-if="isBlocked" class="tiny">{{ t('Bloqué·e chez toi') }}</span>

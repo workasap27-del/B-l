@@ -10,10 +10,10 @@ function back() {
 }
 const start = computed(() => (account.value ? '/espace-pro/fiche' : '/connexion?mode=inscription&role=pro'))
 const WHY = [
-  { icon: Eye, t: 'Être visible', d: 'Ta fiche apparaît quand quelqu\'un cherche ton métier près de chez toi, même sans connaître ton nom.' },
-  { icon: CalendarCheck, t: 'Recevoir des réservations', d: 'Les clients et clientes réservent à toute heure selon tes disponibilités, sans échange de messages.' },
-  { icon: Zap, t: 'Remplir les trous', d: 'Un créneau libre aujourd\'hui ? Propose-le en Konyéla avec la remise de ton choix.' },
-  { icon: ShieldCheck, t: 'Moins de lapins', d: 'Annulation en ligne, signalement de retard et déclaration d\'absence : chacun sait à quoi s\'en tenir.' },
+  { icon: Eye, t: tr('Être visible'), d: tr('Ta fiche apparaît quand quelqu\'un cherche ton métier près de chez toi, même sans connaître ton nom.') },
+  { icon: CalendarCheck, t: tr('Recevoir des réservations'), d: tr('Les clients et clientes réservent à toute heure selon tes disponibilités, sans échange de messages.') },
+  { icon: Zap, t: tr('Remplir les trous'), d: tr('Un créneau libre aujourd\'hui ? Propose-le en Konyéla avec la remise de ton choix.') },
+  { icon: ShieldCheck, t: tr('Moins de lapins'), d: tr('Annulation en ligne, signalement de retard et déclaration d\'absence : chacun sait à quoi s\'en tenir.') },
 ]
 </script>
 
@@ -25,7 +25,7 @@ const WHY = [
     <div class="why">
       <div v-for="w in WHY" :key="w.t" class="why-item">
         <span class="srch-ico sm"><component :is="w.icon" :size="18" :stroke-width="1.7" /></span>
-        <div><b>{{ w.t }}</b><p>{{ w.d }}</p></div>
+        <div><b>{{ t(w.t) }}</b><p>{{ t(w.d) }}</p></div>
       </div>
     </div>
     <h2>{{ t('Comment ça marche') }}</h2>

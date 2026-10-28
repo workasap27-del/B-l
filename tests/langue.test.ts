@@ -25,8 +25,15 @@ describe('traduction anglaise', () => {
     for (const f of files(ROOT)) {
       if (FRENCH_ONLY.some(x => f.includes(x)) || f.endsWith('locales/en.ts')) continue
       const src = readFileSync(f, 'utf8')
-      for (const m of src.matchAll(/(?<![\w.])(?:t|translate|toast)\(\s*'((?:\\.|[^'\\])*)'/g)) {
-        const key = m[1].replace(/\\'/g, '\'')
+      const keys = [
+        ...[...src.matchAll(/(?<![\w.])(?:t|translate|toast)\(\s*'((?:\\.|[^'\\])*)'/g)].map(m => m[1]),
+        // Branches d'une condition passée directement : t(x ? 'Oui' : 'Non')
+        ...[...src.matchAll(/(?<![\w.])(?:t|translate|toast)\(\s*[\w.!=<> ]+\?\s*'((?:\\.|[^'\\])*)'\s*:\s*'((?:\\.|[^'\\])*)'/g)].flatMap(m => [m[1], m[2]]),
+        // Textes marqués pour une traduction différée : tr('…')
+        ...[...src.matchAll(/(?<![\w.])tr\(\s*'((?:\\.|[^'\\])*)'/g)].map(m => m[1]),
+      ]
+      for (const k of keys) {
+        const key = k.replace(/\\'/g, '\'')
         if (/[A-Za-zÀ-ÿ]/.test(key) && !(key in EN)) missing.push(`${f.replace(ROOT, '')} : ${key}`)
       }
     }

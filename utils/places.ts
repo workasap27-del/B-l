@@ -17,6 +17,18 @@ export function goesToClient(p: Pro): boolean {
   return p.where.includes(AT_CLIENT)
 }
 
+/** Communes où le prestataire se déplace ; liste vide : partout en Guadeloupe. */
+export function travelZone(p: Pro): string[] {
+  return goesToClient(p) ? (p.zone ?? []) : []
+}
+
+/** Le prestataire se déplace-t-il à domicile dans cette commune ? */
+export function servesCommune(p: Pro, commune: string): boolean {
+  if (!goesToClient(p)) return false
+  const zone = p.zone ?? []
+  return !zone.length || zone.includes(commune)
+}
+
 export function travelFee(p: Pro): number {
   return goesToClient(p) ? (p.travel ?? 0) : 0
 }

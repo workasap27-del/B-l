@@ -37,6 +37,8 @@ useHead(() => {
   return { title: label ? `${label} en Guadeloupe · VLADI` : 'Rechercher une prestation · VLADI' }
 })
 
+// Commune de la personne, pour ne garder que les prestataires qui s'y déplacent quand elle choisit « Chez moi ».
+const myCommune = computed(() => nearestCommune(state.pos))
 const SUGGESTIONS = ['Pose gel', 'Box braids', 'Extensions de cils', 'Dégradé', 'Massage', 'Tatouage', 'Piercing', 'Pédicure', 'Brushing', 'Maquillage mariée', 'Épilation', 'Microblading']
 const minPrice = (p: Pro) => Math.min(...p.services.map(s => s.p))
 const freeToday = (p: Pro) => p.services.some(s => starts(p, today.value, s.d).length > 0)
@@ -48,7 +50,7 @@ const list = computed<(SearchHit & { sponsored?: boolean })[]>(() => {
   const hits = searchPros(pros.value, q.value, km).filter(({ pro: p }) => {
     // La catégorie compte les prestations proposées, pas seulement le métier affiché (un barbier qui fait les sourcils apparaît dans Cils).
     if (c && !inCategory(p, c)) return false
-    if (place.value === 'client' && !goesToClient(p)) return false
+    if (place.value === 'client' && !servesCommune(p, myCommune.value)) return false
     if (place.value === 'pro' && !proPlace(p)) return false
     if (kind.value === 'salon' && p.kind.startsWith('Indépendant')) return false
     if (kind.value === 'indep' && !p.kind.startsWith('Indépendant')) return false
@@ -141,7 +143,7 @@ function resetFilters() {
     <div class="col gap8">
       <span class="h3">{{ t('Où ?') }}</span>
       <div class="seg">
-        <button :aria-pressed="place === 'all'" @click="place = 'all'">{{ t('Peu importe') }}</button>
+        <button :aria-pressed="place === 'all'" @click="place = 'all'">{{ t('Partout') }}</button>
         <button :aria-pressed="place === 'client'" @click="place = 'client'">{{ t('Chez moi') }}</button>
         <button :aria-pressed="place === 'pro'" @click="place = 'pro'">{{ t('Je me déplace') }}</button>
       </div>

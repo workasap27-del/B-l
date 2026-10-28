@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronDown, Globe } from 'lucide-vue-next'
+import { Globe } from 'lucide-vue-next'
 import { CATEGORIES } from '~/data/pros'
 import type { Category } from '~/data/pros'
 import { LEGAL } from '~/data/legal'
@@ -8,27 +8,16 @@ import { LEGAL } from '~/data/legal'
 const cats = CATEGORIES.filter(c => c[0] !== 'all')
 const { account } = useVladi()
 const year = new Date().getFullYear()
-// Liste des catégories repliée : elle s'ouvre au clic, ou au survol sur ordinateur.
-const open = ref(false)
-const canHover = ref(false)
-onMounted(() => { canHover.value = window.matchMedia('(hover: hover) and (min-width: 1000px)').matches })
-let timer: ReturnType<typeof setTimeout> | undefined
-function hover(on: boolean) {
-  if (!canHover.value) return
-  clearTimeout(timer)
-  timer = setTimeout(() => { open.value = on }, on ? 80 : 250)
-}
 const { lang, setLang } = useLang()
 </script>
 
 <template>
   <footer class="site-foot">
     <div class="cols">
-      <nav class="cats" :aria-label="t('Catégories')" @mouseenter="hover(true)" @mouseleave="hover(false)">
-        <button type="button" class="foot-toggle" :aria-expanded="open" @click="open = !open">
-          {{ t('Catégories') }} <ChevronDown :size="15" :class="{ flip: open }" />
-        </button>
-        <ul v-if="open">
+      <!-- Toutes les catégories d'un coup d'oeil, en pastilles qui passent à la ligne : pas de longue colonne à dérouler. -->
+      <nav class="cats" :aria-label="t('Catégories')">
+        <h2>{{ t('Catégories') }}</h2>
+        <ul class="foot-cats">
           <li v-for="[c] in cats" :key="c"><NuxtLink :to="`/recherche?cat=${c}`">{{ t(CAT_SHORT[c as Category]) }}</NuxtLink></li>
         </ul>
       </nav>

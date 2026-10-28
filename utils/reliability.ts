@@ -2,13 +2,19 @@
 
 export interface Reliability { done: number, noShows: number, lateCancels: number, late: number }
 
-const plural = (n: number, one: string, many: string) => `${n} ${n > 1 ? many : one}`
+const WORDS = {
+  fr: { first: 'Première réservation sur VLADI', done: ['rendez-vous honoré', 'rendez-vous honorés'], noShow: ['absence', 'absences'], none: 'aucune absence', late: ['annulation tardive', 'annulations tardives'] },
+  en: { first: 'First booking on VLADI', done: ['appointment kept', 'appointments kept'], noShow: ['no-show', 'no-shows'], none: 'no no-shows', late: ['late cancellation', 'late cancellations'] },
+} as const
 
-export function reliabilityText(r: Reliability): string {
-  if (!r.done && !r.noShows && !r.lateCancels) return 'Première réservation sur VLADI'
-  const parts = [plural(r.done, 'rendez-vous honoré', 'rendez-vous honorés')]
-  parts.push(r.noShows ? plural(r.noShows, 'absence', 'absences') : 'aucune absence')
-  if (r.lateCancels) parts.push(plural(r.lateCancels, 'annulation tardive', 'annulations tardives'))
+const plural = (n: number, w: readonly [string, string]) => `${n} ${n > 1 ? w[1] : w[0]}`
+
+export function reliabilityText(r: Reliability, lang: 'fr' | 'en' = 'fr'): string {
+  const w = WORDS[lang]
+  if (!r.done && !r.noShows && !r.lateCancels) return w.first
+  const parts = [plural(r.done, w.done)]
+  parts.push(r.noShows ? plural(r.noShows, w.noShow) : w.none)
+  if (r.lateCancels) parts.push(plural(r.lateCancels, w.late))
   return parts.join(', ')
 }
 

@@ -439,4 +439,15 @@ insert into auth.users (id, email, raw_user_meta_data) values ('00000000-0000-00
 do $$ begin
   if (select display_name from profiles where id = '00000000-0000-0000-0000-0000000000a4') <> 'Marie' then raise exception 'prénom Google non repris'; end if;
 end $$;
+-- 23. Zone de déplacement à domicile (patch 013) : vide par défaut (partout), liste de communes limitée.
+do $$ begin
+  if (select travel_zone from pros where id = 'g001') <> '{}' then raise exception 'zone de déplacement non vide par défaut'; end if;
+  update pros set travel_zone = array['Les Abymes', 'Le Gosier'] where id = 'g001';
+  if not exists (select 1 from pros where id = 'g001' and 'Le Gosier' = any(travel_zone)) then raise exception 'zone de déplacement non enregistrée'; end if;
+  begin
+    update pros set travel_zone = array_fill('Les Abymes'::text, array[41]) where id = 'g001';
+    raise exception 'zone de déplacement trop longue acceptée';
+  exception when check_violation then null; end;
+  update pros set travel_zone = '{}' where id = 'g001';
+end $$;
 select 'tous les contrôles passent' as resultat;

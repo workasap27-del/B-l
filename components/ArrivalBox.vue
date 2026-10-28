@@ -16,7 +16,7 @@ const lateOpen = ref(false)
 
 async function late(m: number) {
   lateOpen.value = false
-  if (await announceLate(props.booking.id, m)) toast(`Retard de ${m} min signalé`)
+  if (await announceLate(props.booking.id, m)) toast(translate('Retard de {n} min signalé', { n: m }))
 }
 async function act(fn: (id: string) => unknown, msg: string) {
   if ((await fn(props.booking.id)) !== false) toast(msg)

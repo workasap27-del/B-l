@@ -31,7 +31,7 @@ const DAYS = [1, 2, 3, 4, 5, 6, 0]
 const f = reactive({
   id: undefined as string | undefined,
   name: '', ownerName: '', kind: 'Indépendante' as Pro['kind'], siren: '', phone: '',
-  receives: true, travels: false, travel: 10,
+  receives: true, travels: false, travel: 10, zoneAll: true, zone: [] as string[],
   commune: 'Les Abymes', quartier: '', lat: 0, lng: 0, gps: false,
   cats: [] as Category[], about: '', open: 540, close: 1080, closed: [0] as number[],
   services: [] as { id?: string, n: string, d: number, p: number }[],
@@ -67,7 +67,7 @@ watchEffect(() => {
   if (p && f.id !== p.id) {
     Object.assign(f, {
       id: p.id, name: p.name, ownerName: p.owner ?? '', kind: p.kind, siren: p.siren ?? '', phone: p.phone ?? '',
-      receives: p.where.some(w => w !== 'À domicile'), travels: p.where.includes('À domicile'), travel: p.travel ?? 0,
+      receives: p.where.some(w => w !== 'À domicile'), travels: p.where.includes('À domicile'), travel: p.travel ?? 0, zoneAll: !(p.zone ?? []).length, zone: [...(p.zone ?? [])],
       commune: p.commune, quartier: p.quartier, lat: p.lat, lng: p.lng, gps: true,
       cats: [...p.cats], about: p.about, open: p.open, close: p.close, closed: [...p.closed],
       services: p.services.map(s => ({ ...s })),
@@ -86,6 +86,13 @@ const suggestions = computed(() => {
 
 function toggleCat(c: Category) {
   f.cats = f.cats.includes(c) ? f.cats.filter(x => x !== c) : [...f.cats, c]
+}
+function setZoneAll(all: boolean) {
+  f.zoneAll = all
+  if (!all && !f.zone.length) f.zone = [f.commune]
+}
+function toggleZone(c: string) {
+  f.zone = f.zone.includes(c) ? f.zone.filter(x => x !== c) : [...f.zone, c].sort((a, b) => a.localeCompare(b, 'fr'))
 }
 function toggleDay(d: number) {
   f.closed = f.closed.includes(d) ? f.closed.filter(x => x !== d) : [...f.closed, d]
@@ -113,6 +120,7 @@ function check(): string {
   if (!company.value) return 'Le SIREN n\'a pas pu être vérifié. Réessaie.'
   if (!f.cats.length) return 'Choisis au moins une catégorie.'
   if (!f.receives && !f.travels) return 'Indique si tu reçois, si tu te déplaces, ou les deux.'
+  if (f.travels && !f.zoneAll && !f.zone.length) return 'Choisis au moins une commune où tu te déplaces, ou « Partout en Guadeloupe ».'
   if (f.close <= f.open) return 'L\'heure de fermeture doit être après l\'ouverture.'
   if (f.closed.length === 7) return 'Laisse au moins un jour ouvert.'
   const list = f.services.filter(s => s.n.trim())
@@ -130,7 +138,7 @@ async function save() {
   busy.value = true
   const e = await saveMyPro({
     id: f.id, name: f.name, ownerName: f.ownerName, kind: f.kind, siren: f.siren, phone: f.phone,
-    places, travel: f.travels ? Math.max(0, Number(f.travel) || 0) : 0, commune: f.commune, quartier: f.quartier,
+    places, travel: f.travels ? Math.max(0, Number(f.travel) || 0) : 0, zone: f.travels && !f.zoneAll ? f.zone : [], commune: f.commune, quartier: f.quartier,
     lat: point.lat, lng: point.lng, cats: f.cats, about: f.about, open: f.open, close: f.close, closed: f.closed,
     services: f.services.filter(s => s.n.trim()).map(s => ({ ...s, p: Number(s.p) })),
   })
@@ -207,7 +215,22 @@ async function save() {
       <button type="button" class="btn sm line" style="align-self:flex-start" :disabled="locating" @click="locate"><LocateFixed :size="16" />{{ f.gps ? 'Position précise enregistrée' : 'Utiliser ma position exacte' }}</button>
       <label class="switch"><span>Je reçois ({{ AT_HOME[f.kind].toLowerCase() }})</span><input v-model="f.receives" type="checkbox"></label>
       <label class="switch"><span>Je me déplace à domicile</span><input v-model="f.travels" type="checkbox"></label>
-      <label v-if="f.travels" class="field" for="f-travel"><span>Frais de déplacement (€)</span><input id="f-travel" v-model.number="f.travel" class="input" type="number" min="0" step="1" inputmode="decimal"></label>
+      <template v-if="f.travels">
+        <div class="field">
+          <span>Où te déplaces-tu ?</span>
+          <div class="seg">
+            <button type="button" :aria-pressed="f.zoneAll" @click="setZoneAll(true)">Partout en Guadeloupe</button>
+            <button type="button" :aria-pressed="!f.zoneAll" @click="setZoneAll(false)">Certaines communes</button>
+          </div>
+        </div>
+        <div v-if="!f.zoneAll" class="col gap8">
+          <span class="meta">{{ f.zone.length ? `${f.zone.length} commune${f.zone.length > 1 ? 's' : ''} choisie${f.zone.length > 1 ? 's' : ''}` : 'Touche les communes où tu te déplaces' }}</span>
+          <div class="zone-chips">
+            <button v-for="c in COMMUNES" :key="c" type="button" class="chip" :aria-pressed="f.zone.includes(c)" @click="toggleZone(c)">{{ c }}</button>
+          </div>
+        </div>
+        <label class="field" for="f-travel"><span>Frais de déplacement (€)</span><input id="f-travel" v-model.number="f.travel" class="input" type="number" min="0" step="1" inputmode="decimal"></label>
+      </template>
     </div>
 
     <div class="fieldset">

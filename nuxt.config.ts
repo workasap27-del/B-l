@@ -52,9 +52,9 @@ export default defineNuxtConfig({
         { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
       ],
       link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/icon.svg' },
-        { rel: 'apple-touch-icon', href: '/icon-180.png' },
-        { rel: 'manifest', href: '/manifest.webmanifest' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/icon.svg?v=2' },
+        { rel: 'apple-touch-icon', href: '/icon-180.png?v=2' },
+        { rel: 'manifest', href: '/manifest.webmanifest?v=2' },
         { rel: 'preconnect', href: 'https://images.pexels.com' },
       ],
     },

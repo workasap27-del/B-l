@@ -13,17 +13,17 @@ const same = computed(() => openSlots(props.item.proId).filter(s => s.date === p
 const times = computed(() => same.value.map(s => s.time).slice(0, 3))
 const chip = computed(() => {
   const id = themeOf(state.theme).id
-  if (id === 'editorial') return `${same.value.length} créneau${same.value.length > 1 ? 'x' : ''} aujourd'hui`
-  if (id === 'corail') return 'Dispo aujourd\'hui'
-  if (id === 'lavande') return 'Aujourd\'hui'
-  return 'Disponible aujourd\'hui'
+  if (id === 'editorial') return same.value.length > 1 ? translate('{n} créneaux aujourd\'hui', { n: same.value.length }) : translate('1 créneau aujourd\'hui')
+  if (id === 'corail') return tr('Dispo aujourd\'hui')
+  if (id === 'lavande') return tr('Aujourd\'hui')
+  return tr('Disponible aujourd\'hui')
 })
 </script>
 
 <template>
   <NuxtLink v-if="p && sv" class="spc" :to="`/reserver/${p.id}/${sv.id}?creneau=${item.id}`">
     <ProPhoto :pro="p" class="spc-ph" :demo-label="false">
-      <span class="spc-chip"><i class="spc-dot" />{{ chip }}</span>
+      <span class="spc-chip"><i class="spc-dot" />{{ t(chip) }}</span>
       <button class="icon-btn float spc-fav" :aria-pressed="!!state.fav[p.id]" :aria-label="t('Ajouter aux favoris')" @click.prevent="toggleFav(p.id)">
         <Heart :size="17" :fill="state.fav[p.id] ? 'currentColor' : 'none'" />
       </button>

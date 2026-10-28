@@ -4,8 +4,8 @@ const props = defineProps<{ proId?: string, reviewId?: string }>()
 const emit = defineEmits<{ close: [] }>()
 const { reportContent, account } = useVladi()
 const REASONS = props.reviewId
-  ? ['Avis faux ou mensonger', 'Propos injurieux ou discriminants', 'Informations personnelles', 'Autre']
-  : ['Prestataire introuvable ou fermé', 'Informations fausses', 'Contenu choquant', 'Activité non déclarée ou illégale', 'Autre']
+  ? [tr('Avis faux ou mensonger'), tr('Propos injurieux ou discriminants'), tr('Informations personnelles'), tr('Autre')]
+  : [tr('Prestataire introuvable ou fermé'), tr('Informations fausses'), tr('Contenu choquant'), tr('Activité non déclarée ou illégale'), tr('Autre')]
 const choice = ref('')
 const details = ref('')
 const busy = ref(false)
@@ -28,7 +28,7 @@ async function send() {
       <p class="h3" style="margin:0">{{ reviewId ? t('Signaler cet avis') : t('Signaler cette fiche') }}</p>
       <template v-if="account">
         <div class="col gap8">
-          <label v-for="r in REASONS" :key="r" class="radio-row"><input v-model="choice" type="radio" name="reason" :value="r">{{ r }}</label>
+          <label v-for="r in REASONS" :key="r" class="radio-row"><input v-model="choice" type="radio" name="reason" :value="r">{{ t(r) }}</label>
         </div>
         <label class="field" for="rep-d"><span>{{ t('Précisions') }} <span class="help">{{ t('(facultatif)') }}</span></span>
           <textarea id="rep-d" v-model="details" class="input" rows="3" maxlength="800" /></label>

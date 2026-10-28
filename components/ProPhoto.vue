@@ -11,7 +11,7 @@ watch(img, () => { failed.value = false })
 
 <template>
   <div class="photo" :class="ratio !== 'none' ? `ratio-${ratio}` : ''">
-    <img :src="img.src" :srcset="img.srcset || undefined" :alt="`Photo illustrant ${pro.name}`" loading="lazy" decoding="async" :style="failed ? 'visibility:hidden' : undefined" @error="failed = true">
+    <img :src="img.src" :srcset="img.srcset || undefined" :alt="t('Photo illustrant {name}', { name: pro.name })" loading="lazy" decoding="async" :style="failed ? 'visibility:hidden' : undefined" @error="failed = true">
     <div class="over"><slot /></div>
     <span v-if="demoLabel && !pro.real" class="demo">{{ t('Démo') }}</span>
   </div>

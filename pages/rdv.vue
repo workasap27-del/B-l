@@ -116,7 +116,7 @@ async function sendReview() {
   <BottomSheet v-if="toReview" @close="toReview = null">
     <h2 class="h2">{{ t('Ton avis sur {name}', { name: pro(toReview.proId)!.name }) }}</h2>
     <div class="stars" role="group" :aria-label="t('Note')">
-      <button v-for="n in 5" :key="n" :aria-pressed="n <= stars" :aria-label="`${n} sur 5`" @click="stars = n"><Star :size="34" /></button>
+      <button v-for="n in 5" :key="n" :aria-pressed="n <= stars" :aria-label="t('{n} sur 5', { n })" @click="stars = n"><Star :size="34" /></button>
     </div>
     <textarea id="avis" v-model="text" class="textarea" :placeholder="t('Raconte en une phrase')" :aria-label="t('Commentaire')" />
     <button class="btn block" @click="sendReview">{{ t('Publier l\'avis') }}</button>

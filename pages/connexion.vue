@@ -51,7 +51,7 @@ async function submit() {
   // Un jeton anti-robots ne sert qu'une fois.
   captchaBox.value?.reset()
   if (e) return (error.value = e)
-  toast(mode.value === 'inscription' ? 'Compte créé, bienvenue !' : 'Te revoilà !')
+  toast(mode.value === 'inscription' ? translate('Compte créé, bienvenue !') : translate('Te revoilà !'))
   next()
 }
 async function forgot() {
@@ -122,7 +122,7 @@ function back() {
       <span>{{ t('Mot de passe') }}</span>
       <div style="position:relative">
         <input id="a-pass" v-model="password" class="input" :type="show ? 'text' : 'password'" :autocomplete="mode === 'inscription' ? 'new-password' : 'current-password'" :placeholder="mode === 'inscription' ? '12 caractères minimum' : ''" style="padding-right:52px">
-        <button type="button" class="icon-btn" style="position:absolute;right:4px;top:5px" :aria-label="show ? 'Masquer le mot de passe' : 'Afficher le mot de passe'" @click="show = !show">
+        <button type="button" class="icon-btn" style="position:absolute;right:4px;top:5px" :aria-label="show ? t('Masquer le mot de passe') : t('Afficher le mot de passe')" @click="show = !show">
           <component :is="show ? EyeOff : Eye" :size="19" />
         </button>
       </div>

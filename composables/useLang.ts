@@ -1,7 +1,7 @@
 // Langue de l'interface : français par défaut, anglais au choix (ou d'office pour un navigateur anglophone).
 // Les textes sont écrits en français dans le code ; t() renvoie la traduction anglaise de locales/en.ts quand elle existe.
 import { ref } from 'vue'
-import { EN } from '~/locales/en'
+import { EN } from '../locales/en'
 
 export type Lang = 'fr' | 'en'
 const KEY = 'vladi-lang'
@@ -24,6 +24,11 @@ export type Params = Record<string, string | number | undefined | null>
 export function translate(fr: string, params?: Params, l: Lang = lang.value): string {
   const out = l === 'en' ? EN[fr] ?? fr : fr
   return params ? out.replace(/\{(\w+)\}/g, (m, k: string) => (params[k] ?? '') + '') : out
+}
+
+/** Marque un texte à traduire plus tard, à l'affichage (listes, libellés stockés). Le renvoie tel quel. */
+export function tr(fr: string): string {
+  return fr
 }
 
 /** Langue actuelle, pour les fonctions qui fabriquent du texte hors des gabarits. */

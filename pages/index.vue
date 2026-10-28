@@ -9,7 +9,10 @@ const settingsOpen = ref(false)
 
 const byDistance = computed(() => [...pros.value].sort((a, b) => km(a) - km(b)))
 const near = computed(() => byDistance.value.slice(0, 10))
-const atHome = computed(() => byDistance.value.filter(goesToClient).slice(0, 10))
+const atHome = computed(() => {
+  const here = nearestCommune(state.pos)
+  return byDistance.value.filter(p => servesCommune(p, here)).slice(0, 10)
+})
 const best = computed(() => byDistance.value.slice(0, 60).filter(p => ratingOf(p).count >= 15).sort((a, b) => ratingOf(b).rating - ratingOf(a).rating).slice(0, 10))
 // Dernière minute : seulement ce qui est raisonnablement proche, du plus tôt au plus tard.
 const slots = computed(() => openSlots().filter(s => km(pro(s.proId)!) <= 30).slice(0, 10))
@@ -38,7 +41,7 @@ const featured = computed(() => {
     <AppLogo />
     <div class="row gap8">
       <button class="icon-btn filled" :aria-label="t('Réglages')" @click="settingsOpen = true"><Settings2 :size="20" /></button>
-      <NuxtLink v-if="account" class="me-chip" to="/profil" :aria-label="`Mon compte, ${account.name}`">
+      <NuxtLink v-if="account" class="me-chip" to="/profil" :aria-label="t('Mon compte, {name}', { name: account.name })">
         <span class="avatar-xs">{{ initial }}</span><span class="me-name ellip">{{ firstName }}</span>
       </NuxtLink>
       <NuxtLink v-else-if="!remote.loading" class="btn sm" to="/connexion">{{ t('Se connecter') }}</NuxtLink>
@@ -95,7 +98,7 @@ const featured = computed(() => {
     <NuxtLink class="appt" style="padding:0;border:0" to="/rdv">
       <ProPhoto class="thumb" :pro="nextPro" :w="128" :h="128" ratio="none" :demo-label="false" />
       <div class="grow col gap4">
-        <span class="name">{{ capitalize(dayLabel(nextBooking.date, today)) }} à {{ hm(nextBooking.time) }}</span>
+        <span class="name">{{ t('{day} à {time}', { day: capitalize(dayLabel(nextBooking.date, today)), time: hm(nextBooking.time) }) }}</span>
         <span class="meta ellip">{{ service(nextPro, nextBooking.sid)?.n }} · {{ nextPro.name }}</span>
         <span class="meta ellip">{{ placeLabel(nextBooking) }}</span>
       </div>

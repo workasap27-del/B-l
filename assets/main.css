@@ -108,6 +108,9 @@ svg.lucide { flex: 0 0 auto; }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .chip.has { border-color: var(--ink); font-weight: 600; }
 .chip:disabled { opacity: .35; cursor: default; }
+/* Choix des communes desservies à domicile (fiche du prestataire) */
+.zone-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.zone-chips .chip { height: 32px; padding: 0 12px; font-size: 13px; }
 .seg { display: flex; background: var(--surface2); border-radius: 10px; padding: 3px; gap: 2px; }
 .seg button { flex: 1; min-height: 34px; padding: 6px 8px; border-radius: 8px; font-size: 14px; font-weight: 500; color: var(--ink2); }
 .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: 0 1px 3px rgb(0 0 0 / .1); }
@@ -519,6 +522,8 @@ svg.lucide { flex: 0 0 auto; }
 .catmenu-fly a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; color: var(--ink); text-decoration: none; font-size: 14px; line-height: 1.25; }
 .catmenu-fly a:hover, .catmenu-fly a.on { background: var(--surface2); }
 .catmenu-fly a svg { flex: 0 0 auto; color: var(--muted); }
+.nav-caret { display: none; flex: 0 0 auto; transition: transform .2s; }
+.nav-caret.flip { transform: rotate(180deg); }
 .catmenu-foot { display: flex; gap: 16px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
 @media (min-width: 700px) {
   .nav .catmenu { flex: 0 1 132px; }
@@ -537,18 +542,18 @@ svg.lucide { flex: 0 0 auto; }
 .site-foot a:hover { color: var(--ink); text-decoration: underline; }
 .site-foot .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 20px; }
 .site-foot .cats { grid-column: 1 / -1; }
-.site-foot .cats ul { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 20px; margin-top: 10px; }
-.foot-toggle { display: inline-flex; align-items: center; gap: 6px; padding: 0; background: none; border: 0; font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); cursor: pointer; }
-.foot-toggle svg { transition: transform .2s; }
-.foot-toggle svg.flip { transform: rotate(180deg); }
+.site-foot .foot-cats { flex-direction: row; flex-wrap: wrap; gap: 8px; }
+.site-foot .foot-cats a { display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink2); font-size: 13px; white-space: nowrap; }
+.site-foot .foot-cats a:hover { border-color: var(--ink2); color: var(--ink); text-decoration: none; }
 .site-foot .copy { margin: 28px 0 0; font-size: 12px; }
 @media (min-width: 700px) {
   .site-foot .cols { grid-template-columns: 1fr 1fr 1fr; }
-  .site-foot .cats { grid-column: auto; }
-  .site-foot .cats ul { grid-template-columns: 1fr; }
+  .site-foot .cats { grid-column: 1 / -1; }
 }
 
 /* Questions fréquentes et pages d'information ------------------------------ */
+/* Titres de rubrique de la FAQ en couleur de la charte, pour repérer les sections d'un coup d'oeil. */
+.legal.faq h2 { color: var(--cat-ink); margin-top: 30px; margin-bottom: -4px; }
 .faq-item { border-bottom: 1px solid var(--line); }
 .faq-q { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 0; background: none; border: 0; font: inherit; font-weight: 600; color: var(--ink); text-align: left; cursor: pointer; }
 .faq-q svg { flex: 0 0 auto; transition: transform .2s; color: var(--muted); }

@@ -174,8 +174,8 @@
 .tl-word { font-size: calc(var(--tl) * 1.15); line-height: 1; }
 .tl-deco { width: calc(var(--tl) * .9); height: calc(var(--tl) * .9); flex: 0 0 auto; }
 .tl-tag { font-size: 8.5px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; opacity: .85; line-height: 1.35; max-width: 13em; }
-.tl-terracotta .tl-word { font-weight: 700; letter-spacing: .06em; }
-.tl-terracotta .tl-deco { color: #E0683F; margin-top: -2px; --tl-eye: #fff; }
+.tl-mark { display: block; height: calc(var(--tl) * 1.25); width: auto; }
+.tl-terracotta { --bm-petal: #E0683F; --bm-dot: #F2B45A; }
 .tl-lavande .tl-word { font-weight: 800; letter-spacing: .01em; }
 .tl-lavande .tl-deco { color: #8B5BD6; width: calc(var(--tl) * .95); height: calc(var(--tl) * .95); margin: -2px 0 0 -2px; }
 .tl-jardin .tl-word { font-family: "Fraunces", Georgia, serif; font-weight: 400; letter-spacing: .12em; }
@@ -364,20 +364,28 @@
   [data-theme] .screen { padding-top: 24px; }
   [data-theme] .screen.flush { padding-top: 0; }
   [data-theme] .nav { order: -1; position: relative; z-index: 10; flex: 0 0 64px; width: auto; height: 64px; flex-direction: row; justify-content: flex-start; align-items: center; gap: 2px; padding: 0 max(20px, calc((100vw - var(--nav-wrap, 1344px)) / 2)); border-top: 0; border-right: 0; border-bottom: 1px solid var(--line); background: var(--bg); }
-  [data-theme] .nav a.nav-logo { display: flex; align-items: center; height: 64px; padding: 0; margin-right: 34px; flex: 0 0 auto; color: var(--ink); }
-  [data-theme] .nav a { flex: 0 0 auto; flex-direction: row; height: 64px; padding: 0 16px; gap: 0; border-radius: 0; font-size: 15px; font-weight: 500; color: var(--ink2); }
-  [data-theme] .nav a:hover { background: none; color: var(--ink); }
-  [data-theme] .nav a:not(.nav-logo) svg, [data-theme] .nav a .avatar-xs { display: none; }
-  [data-theme] .nav a.on { background: none; color: var(--ink); font-weight: 650; }
-  [data-theme] .nav a:last-child { margin-left: auto; }
+  [data-theme] .nav > a.nav-logo { display: flex; align-items: center; height: 64px; padding: 0; margin-right: 34px; flex: 0 0 auto; color: var(--ink); }
+  [data-theme] .nav > a { flex: 0 0 auto; flex-direction: row; height: 64px; padding: 0 16px; gap: 0; border-radius: 0; font-size: 15px; font-weight: 500; color: var(--ink2); }
+  [data-theme] .nav > a:hover { background: none; color: var(--ink); }
+  [data-theme] .nav > a:not(.nav-logo) svg, [data-theme] .nav > a .avatar-xs { display: none; }
+  [data-theme] .nav > a.on { background: none; color: var(--ink); font-weight: 650; }
+  [data-theme] .nav > a:last-child { margin-left: auto; }
   [data-theme] .nl-m { display: none; }
   [data-theme] .nl-pc { display: inline; }
   [data-theme] .nav-label { max-width: none; overflow: visible; }
   [data-theme] .nav .count { position: static; margin: 0 0 0 8px; }
-  [data-theme="lavande"] .nav a.on::after { content: ""; position: absolute; left: 16px; right: 16px; bottom: -1px; height: 2px; border-radius: 1px; background: var(--accent); }
-  [data-theme="lavande"] .nav a { position: relative; }
+  [data-theme="lavande"] .nav > a.on::after { content: ""; position: absolute; left: 16px; right: 16px; bottom: -1px; height: 2px; border-radius: 1px; background: var(--accent); }
+  [data-theme="lavande"] .nav > a { position: relative; }
   [data-theme] .topbar .tlogo { display: none; }
-  html.hd-home .nav a:last-child { display: none; }
+  /* Catégories dans la barre du haut : même allure que les autres rubriques, panneau ouvert sous le bouton. */
+  [data-theme] .nav .catmenu { flex: 0 0 auto; height: 64px; align-items: center; }
+  [data-theme] .nav .nav-btn { height: 64px; padding: 0 16px; gap: 6px; border-radius: 0; background: none; font-size: 15px; font-weight: 500; color: var(--ink2); }
+  [data-theme] .nav .nav-btn:hover, [data-theme] .nav .nav-btn.on { background: none; color: var(--ink); }
+  [data-theme] .nav .nav-btn > svg:first-child { display: none; }
+  [data-theme] .nav .nav-caret { display: block; }
+  [data-theme] .catmenu-fly { left: 0; top: calc(100% - 6px); }
+  [data-theme] .catmenu-fly::before { left: 0; right: 0; top: -14px; bottom: auto; width: auto; height: 14px; }
+  html.hd-home .nav > a:last-child { display: none; }
 
   /* Accueil : conteneur par thème, bandeau pleine largeur */
   [data-theme] .screen.hd-screen { padding-top: 0; padding-bottom: 60px; }

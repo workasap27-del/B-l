@@ -88,7 +88,7 @@ const bars = computed(() => {
 <template>
   <template v-if="p">
     <div class="hero bleed">
-      <img :src="hero.src" :srcset="hero.srcset || undefined" :alt="`Photo illustrant ${p.name}`" onerror="this.style.visibility='hidden'">
+      <img :src="hero.src" :srcset="hero.srcset || undefined" :alt="t('Photo illustrant {name}', { name: p.name })" onerror="this.style.visibility='hidden'">
       <div class="bar">
         <button class="icon-btn float" :aria-label="t('Retour')" @click="back"><ChevronLeft :size="22" /></button>
         <button class="icon-btn float" :aria-label="t('Ajouter aux favoris')" :aria-pressed="!!state.fav[p.id]" @click="toggleFav(p.id)">
@@ -159,7 +159,7 @@ const bars = computed(() => {
         <span>{{ rv.t }}</span>
         <div v-if="rv.reply && editing !== rv.id" class="reply"><b>{{ t('Réponse de {name}', { name: p.name }) }}</b>{{ rv.reply }}</div>
         <div v-if="rv.id && editing === rv.id" class="col gap8 mt8">
-          <textarea v-model="draft" class="input" rows="3" maxlength="1000" :aria-label="`Réponse à l'avis ${i + 1}`" :placeholder="t('Merci pour ton avis…')" />
+          <textarea v-model="draft" class="input" rows="3" maxlength="1000" :aria-label="t('Réponse à l\'avis {n}', { n: i + 1 })" :placeholder="t('Merci pour ton avis…')" />
           <div class="row gap8">
             <button type="button" class="btn sm" @click="saveReply(rv.id)">{{ t('Publier') }}</button>
             <button type="button" class="btn sm soft" @click="editing = ''">{{ t('Annuler') }}</button>
@@ -177,8 +177,8 @@ const bars = computed(() => {
       <p v-if="p.about">{{ p.about }}</p>
       <div class="infobox">
         <span class="h3">{{ t('Où ça se passe') }}</span>
-        <div v-if="proPlace(p)" class="row"><Store :size="18" /><span class="grow">{{ proPlace(p) }}{{ p.quartier ? `, ${p.quartier}` : '' }}, {{ p.commune }}</span></div>
-        <div v-if="goesToClient(p)" class="row"><House :size="18" /><span class="grow">{{ t('À domicile') }}, {{ travelFee(p) ? t('+ {fee} de déplacement', { fee: euro(travelFee(p)) }) : t('déplacement offert') }}</span></div>
+        <div v-if="proPlace(p)" class="row"><Store :size="18" /><span class="grow">{{ t(proPlace(p) ?? '') }}{{ p.quartier ? `, ${p.quartier}` : '' }}, {{ p.commune }}</span></div>
+        <div v-if="goesToClient(p)" class="row"><House :size="18" /><span class="grow col gap4"><span>{{ t('À domicile') }}, {{ travelFee(p) ? t('+ {fee} de déplacement', { fee: euro(travelFee(p)) }) : t('déplacement offert') }}</span><span class="meta">{{ travelZone(p).length ? t('Se déplace à : {list}', { list: travelZone(p).join(', ') }) : t('Se déplace partout en Guadeloupe') }}</span></span></div>
       </div>
       <ProMap :items="[{ id: p.id, lat: p.lat, lng: p.lng }]" :user="state.pos" mini />
       <div class="col gap12">
@@ -186,7 +186,7 @@ const bars = computed(() => {
         <div class="hours">
           <template v-for="n in days" :key="n">
             <span :class="{ today: n === todayIndex }">{{ t(WEEK[n]) }}</span>
-            <span :class="{ today: n === todayIndex }">{{ p.closed.includes(n) ? 'Fermé' : `${hm(p.open)} à ${hm(p.close)}` }}</span>
+            <span :class="{ today: n === todayIndex }">{{ p.closed.includes(n) ? t('Fermé') : t('{a} à {b}', { a: hm(p.open), b: hm(p.close) }) }}</span>
           </template>
         </div>
       </div>

@@ -176,7 +176,7 @@ function baseReviews(p: Pro): Review[] {
 }
 
 function reviewsOf(p: Pro): Review[] {
-  if (p.real) return (remote.reviews[p.id] ?? []).map(r => ({ id: r.id, a: 'Avis vérifié', s: r.stars, t: r.body || 'Sans commentaire.', reply: r.reply || undefined }))
+  if (p.real) return (remote.reviews[p.id] ?? []).map(r => ({ id: r.id, a: translate('Avis vérifié'), s: r.stars, t: r.body || translate('Sans commentaire.'), reply: r.reply || undefined }))
   return [...(state.reviews[p.id] ?? []), ...baseReviews(p)]
 }
 
@@ -198,7 +198,7 @@ async function replyToReview(p: Pro, reviewId: string, text: string): Promise<bo
   try {
     await api.replyReview(reviewId, text)
     await loadReviewsFor(p)
-    toast(text.trim() ? 'Réponse publiée' : 'Réponse retirée')
+    toast(text.trim() ? translate('Réponse publiée') : translate('Réponse retirée'))
     return true
   }
   catch (e) {
@@ -251,7 +251,7 @@ async function addPhotos(files: File[]): Promise<number> {
       break
     }
   }
-  if (added) toast(added > 1 ? `${added} photos ajoutées` : 'Photo ajoutée')
+  if (added) toast(added > 1 ? translate('{n} photos ajoutées', { n: added }) : translate('Photo ajoutée'))
   return added
 }
 
@@ -340,7 +340,7 @@ async function setBlocked(clientId: string, on: boolean) {
     if (on) await api.blockClient(p.id, clientId)
     else await api.unblockClient(p.id, clientId)
     blocked.value = on ? [...new Set([...blocked.value, clientId])] : blocked.value.filter(x => x !== clientId)
-    toast(on ? 'Cette personne ne pourra plus réserver chez toi' : 'Blocage levé')
+    toast(on ? translate('Cette personne ne pourra plus réserver chez toi') : translate('Blocage levé'))
   }
   catch (e) {
     toast(api.readable(e))
@@ -455,7 +455,7 @@ function setCommune(name: string) {
 /** Demande la position du téléphone. Renvoie un message d'erreur lisible, ou null si tout va bien. */
 function locate(): Promise<string | null> {
   return new Promise((resolve) => {
-    if (typeof navigator === 'undefined' || !navigator.geolocation) return resolve("La localisation n'est pas disponible sur cet appareil.")
+    if (typeof navigator === 'undefined' || !navigator.geolocation) return resolve(translate('La localisation n\'est pas disponible sur cet appareil.'))
     navigator.geolocation.getCurrentPosition(
       (g) => {
         const here = { lat: g.coords.latitude, lng: g.coords.longitude }
@@ -463,7 +463,7 @@ function locate(): Promise<string | null> {
         state.pos = { ...here, label: 'Ma position', gps: true }
         resolve(null)
       },
-      () => resolve('Position refusée ou introuvable. Choisis une commune à la place.'),
+      () => resolve(translate('Position refusée ou introuvable. Choisis une commune à la place.')),
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
     )
   })
@@ -672,7 +672,7 @@ async function addReview(bookingId: string, stars: number, text: string) {
   }
   else {
     const list = state.reviews[b.proId] ?? (state.reviews[b.proId] = [])
-    list.unshift({ a: firstName.value, s: stars, t: text.trim() || 'Sans commentaire.' })
+    list.unshift({ a: firstName.value, s: stars, t: text.trim() || translate('Sans commentaire.') })
   }
   b.reviewed = true
 }

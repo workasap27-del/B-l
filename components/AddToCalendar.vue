@@ -15,8 +15,8 @@ const event = computed(() => {
     date: props.booking.date,
     time: props.booking.time,
     dur: props.booking.dur,
-    place: props.booking.place === 'client' ? props.booking.address ?? 'À domicile' : `${p.quartier ? `${p.quartier}, ` : ''}${p.commune}`,
-    details: `${placeLabel(props.booking)}. Réservé sur VLADI : ${window.location.origin}/rdv`,
+    place: props.booking.place === 'client' ? props.booking.address ?? translate('À domicile') : `${p.quartier ? `${p.quartier}, ` : ''}${p.commune}`,
+    details: `${placeLabel(props.booking)}. ${translate('Réservé sur VLADI')} : ${window.location.origin}/rdv`,
   }
 })
 function ics() {
