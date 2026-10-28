@@ -36,5 +36,5 @@ export default defineNuxtPlugin((nuxtApp) => {
     window.scrollTo(0, t.top)
   }
 
-  nuxtApp.hook('page:finish', () => requestAnimationFrame(apply))
+  nuxtApp.hook('page:finish', () => { requestAnimationFrame(apply) })
 })
